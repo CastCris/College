@@ -1,3 +1,4 @@
+print()
 x=input()
 match x:
     case '1':
@@ -26,4 +27,4 @@ match x:
         x='Dezembro'
     case _:
         x='Mes inválido'
-print(x)
+print(x,'\n')

@@ -1,3 +1,4 @@
+print()
 while True:
     x=input('Insira os valores: ').split()
     if len(x)<1:
@@ -12,4 +13,4 @@ while True:
             men=True
     if men:
         print('são numeros divisiveis por 6')
-print('Até!')
+print('Até!\n')

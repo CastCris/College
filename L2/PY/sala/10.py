@@ -1,3 +1,4 @@
+print()
 match input('Insira o mês: '):
     case '1':
         x='Janeiro'
@@ -25,4 +26,4 @@ match input('Insira o mês: '):
         x='Dezembro'
     case _:
         x='Mes inválido'
-print(x)
+print(x,'\n')

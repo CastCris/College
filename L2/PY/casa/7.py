@@ -1,4 +1,4 @@
-x=input()
+x=input('\n')
 match x:
     case '1':
         x='Engenharia'
@@ -12,4 +12,4 @@ match x:
         x='Análise de Sistemas'
     case _:
         x='Inválido'
-print(x)
+print(x,'\n ')

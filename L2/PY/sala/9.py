@@ -1,3 +1,4 @@
+print()
 while True:
     x=input('Insira os valores: ').split()
     if len(x)<1:
@@ -17,4 +18,4 @@ while True:
             ok=True
     if ok:
         print('são números divisíveis por 4||5')
-print('Até!')
+print('Até!\n')

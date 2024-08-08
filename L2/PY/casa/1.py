@@ -1,3 +1,4 @@
+print()
 while True:
         x=input('Insira os valores: ').split(' ')
         if(x[0]==''): break
@@ -7,5 +8,5 @@ while True:
                 print(i,end=' ')
                 ok=True
         if ok:
-            print('\n')
-print("Até!")
+            print('são números divíveis por dois\n')
+print("Até!\n")

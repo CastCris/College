@@ -24,4 +24,4 @@ while True:
     else:
         print('Isso não é um triângulo')
     print()
-print('Até!\n')
+print('Até!')
