@@ -2,75 +2,75 @@
 # Sumário
 - <a href="#sala">Sala</a>
   - <a href="#questão-1">Enigma 1</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 2</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 3</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 4</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 5</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 6</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 7</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 8</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 9</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 10</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
+  	- <a href="#enunciado">Enuciado</a>
+  	- <a href="#resolução-python">Resolução Python</a>
+   	- <a href="#resolução-c">Resolução C</a>
+  - <a href="questão-2">Enigma 2</a>
+  	- <a href="#enunciado-1">Enuciado</a>
+  	- <a href="resolução-python-1">Resolução Python</a>
+   	- <a href="#resolução-c-1">Resolução C</a>
+  - <a href="questão-3">Enigma 3</a>
+  	- <a href="#enunciado-2">Enuciado</a>
+  	- <a href="resolução-python-2">Resolução Python</a>
+   	- <a href="#resolução-c-2">Resolução C</a>
+  - <a href="questão-4">Enigma 4</a>
+  	- <a href="#enunciado-3">Enuciado</a>
+  	- <a href="resolução-python-3">Resolução Python</a>
+   	- <a href="#resolução-c-3">Resolução C</a>
+  - <a href="questão-5">Enigma 5</a>
+  	- <a href="#enunciado-4">Enuciado</a>
+  	- <a href="resolução-python-4">Resolução Python</a>
+   	- <a href="#resolução-c-4">Resolução C</a>
+  - <a href="questão-6">Enigma 6</a>
+  	- <a href="#enunciado-5">Enuciado</a>
+  	- <a href="resolução-python-5">Resolução Python</a>
+   	- <a href="#resolução-c-5">Resolução C</a>
+  - <a href="questão-7">Enigma 7</a>
+  	- <a href="#enunciado-6">Enuciado</a>
+  	- <a href="resolução-python-6">Resolução Python</a>
+   	- <a href="#resolução-c-6">Resolução C</a>
+  - <a href="questão-8">Enigma 8</a>
+  	- <a href="#enunciado-7">Enuciado</a>
+  	- <a href="resolução-python-7">Resolução Python</a>
+   	- <a href="#resolução-c-7">Resolução C</a>
+  - <a href="questão-9">Enigma 9</a>
+  	- <a href="#enunciado-8">Enuciado</a>
+  	- <a href="resolução-python-8">Resolução Python</a>
+   	- <a href="#resolução-c-8">Resolução C</a>
+  - <a href="questão-10">Enigma 10</a>
+  	- <a href="#enunciado-9">Enuciado</a>
+  	- <a href="resolução-python-9">Resolução Python</a>
+   	- <a href="#resolução-c-9">Resolução C</a>
 
-- <a href="#sala">Cala</a>
-  - <a href="#questão-1">Enigma 1</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 2</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 3</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 4</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 5</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 6</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
-  - <a href="">Enigma 7</a>
-  	- <a href=" ">Enuciado</a>
-  	- <a href=" ">Resolução Python</a>
-   	- <a href=" ">Resolução C</a>
+- <a href="#casa">Casa</a>
+  - <a href="#questão-1-1">Enigma 1</a>
+  	- <a href="#enunciado-10">Enuciado</a>
+  	- <a href="#resolução-python-10">Resolução Python</a>
+   	- <a href="#resolução-c-10">Resolução C</a>
+  - <a href="questão-2-1">Enigma 2</a>
+  	- <a href="#enunciado-11">Enuciado</a>
+  	- <a href="resolução-python-11">Resolução Python</a>
+   	- <a href="#resolução-c-11">Resolução C</a>
+  - <a href="questão-3-1">Enigma 3</a>
+  	- <a href="#enunciado-12">Enuciado</a>
+  	- <a href="resolução-python-12">Resolução Python</a>
+   	- <a href="#resolução-c-12">Resolução C</a>
+  - <a href="questão-4-1">Enigma 4</a>
+  	- <a href="#enunciado-13">Enuciado</a>
+  	- <a href="resolução-python-13">Resolução Python</a>
+   	- <a href="#resolução-c-13">Resolução C</a>
+  - <a href="questão-5-1">Enigma 5</a>
+  	- <a href="#enunciado-14">Enuciado</a>
+  	- <a href="resolução-python-14">Resolução Python</a>
+   	- <a href="#resolução-c-14">Resolução C</a>
+  - <a href="questão-6-1">Enigma 6</a>
+  	- <a href="#enunciado-15">Enuciado</a>
+  	- <a href="resolução-python-15">Resolução Python</a>
+   	- <a href="#resolução-c-15">Resolução C</a>
+  - <a href="questão-7-1">Enigma 7</a>
+  	- <a href="#enunciado-16">Enuciado</a>
+  	- <a href="resolução-python-16">Resolução Python</a>
+   	- <a href="#resolução-c-16">Resolução C</a>
   
 # Sala
 ## Questão 1
@@ -149,7 +149,7 @@ print()
 ```
 #### Exemplo de Output+Input:
 ![Questão_2_Python_Sala](Prints/PY/Sala/2.png)
-### Resoluçaõ C
+### Resolução C
 ```c
 #include<stdio.h>
 #include<stdlib.h>
@@ -824,7 +824,7 @@ print("Até!\n")
 ```
 #### Exemplo de Output+Input
 ![Questão_1_Python_Casa](Prints/PY/Casa/1.png)
-### Resolução 
+### Resolução C
 ```c
 #include<stdio.h>
 #include<stdlib.h>
@@ -900,12 +900,12 @@ int main(){
 ![Questão_1_C_Casa](Prints/C/Casa/1.png)
 
 ## Questão 2
-### 
+### Enunciado
 Digitado um número inteiro entre 0 e 100, informar o quanto ele está distante de um
 determinado número chave, carregado no próprio programa. Ex.: Número chave=20,
 número digitado=15, resposta=5. Número chave=17, número digitado=20, resposta=3
 (Obs.: a resposta deverá ser sempre um número positivo).
-### Resolução 
+### Resolução Python
 ```py
 print()
 while True:
