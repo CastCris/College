@@ -5,6 +5,7 @@
 int main(){
     char*inp,*split;
     float v[2],novo;
+    printf("\n");
     for(int f=0;;++f){
         printf("Insira os dados do %i funcionario: ",f);
         char*inp=(char*)malloc(1000*sizeof(char));
@@ -20,5 +21,5 @@ int main(){
         v[1]>160?novo+=(v[1]-160.0)*(0.5*(novo/160.0)):novo;
         printf("O seu salario sera: %.2fR$\n",novo);
     }
-    printf("Verificacao check!\n");
+    printf("Verificacao check!\n\n");
 }

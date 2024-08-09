@@ -5,6 +5,8 @@
 //
 int main(){
     bool ctrl;
+    printf("\n");
+    float ponte;
     for(;;){
         printf("Insira as notas dos alunos: ");
         ctrl=true;
@@ -15,13 +17,18 @@ int main(){
             if(ctrl){
                 break;
             }
-            printf("%.0f,0 ",atof(split));
+            ponte=atof(split);
+            if(ponte-(int)ponte<=0.5){
+                printf("%i,0",(int)ponte);
+            } else{
+                printf("%i,0",(int)ponte+1);
+            }
         }
         if(ctrl){
             break;
         }
         printf("\n");
     }
-    printf("Bye, bye!\n");
+    printf("Bye, bye!\n\n");
     return 0;
 }

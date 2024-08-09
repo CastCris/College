@@ -11,7 +11,7 @@ int main(){
 		bool para=false,e=true;
 		float*v=(float*)calloc(3,sizeof(*v));
 		char*inp=(char*)malloc(20*sizeof(*inp)),*split;
-		printf("Insira os laods de um triangulo(uma linha): ");
+		printf("Insira os lados de um triangulo(uma linha): ");
 		fgets(inp,20,stdin);
 		for(int i=0;split=strtok_r(inp," ",&inp);++i){
 			if(i>2){
@@ -48,6 +48,6 @@ int main(){
 		}
 		free(v);
 	}
-	printf("Bye, bye!");
+	printf("Bye, bye!\n\n");
 	return 0;
 }

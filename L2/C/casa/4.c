@@ -9,6 +9,7 @@ int main(){
     int q;
     float*v;
     char*inp,*split;
+    printf("\n");
     for(;;){
         q=0;
         printf("Insira os valores a serem organizados: ");
@@ -46,6 +47,6 @@ int main(){
         printf("e a sua forma mais organizada");
         printf("\n\n");
     }
-    printf("Bye, bye!\n");
+    printf("Bye, bye!\n\n");
     return 0;
 }

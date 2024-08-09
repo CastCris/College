@@ -7,7 +7,7 @@ int main(){
     bool ctrl;
     float v[2];
     char*inp,*split;
-    printf("Insira dois valores para descobrir a distancia entre eles\n");
+    printf("\nInsira dois valores para descobrir a distancia entre eles\n");
     for(;;){
         inp=(char*)malloc(100*sizeof(*inp));
         printf("*: ");
@@ -26,6 +26,6 @@ int main(){
             printf("%.2f\n",v[1]-v[0]);
         }
     }
-    printf("Bye, bye!");
+    printf("Bye, bye!\n\n");
     return 0;
 }

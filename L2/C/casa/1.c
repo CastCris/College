@@ -7,6 +7,7 @@ int main(){
     bool ctrl;
     int q,e_1,e_2,e_3;
     char u[1],*inp,**par,*aux;
+	printf("\n");
     for(;;){
    	 q=e_1=e_2=e_3=0;
    	 ctrl=true;
@@ -59,11 +60,10 @@ int main(){
    		 }
    		 printf(", ");
    	 }
-     printf("sao valores divisiveis por dois");
-   	 printf("\n");
+     printf("sao valores divisiveis por dois\n");
    	 free(par);
    	 free(aux);
     }
-    printf("Bye, bye!\n");
+    printf("Bye, bye!\n\n");
     return 0;
 }

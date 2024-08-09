@@ -3,6 +3,7 @@
 #include<string.h>
 //
 int main(){
+	printf("\n");
 	float MAX_VALUE=20000000.0,*v=(float*)calloc(2,sizeof(*v)),*ponte=(float*)calloc(1,sizeof(*ponte));
 	v[1]=MAX_VALUE;
 	char*inp=(char*)malloc(200*sizeof(*inp)),*split;
@@ -15,7 +16,7 @@ int main(){
 	}
 	free(ponte);
 	free(inp);
-	printf("A diferenca entre o maior numero, %.2f, e o menor numero, %.2f, da lista apresentados, e: %.2f\n",v[0],v[1],v[0]-v[1]);
+	printf("A diferenca entre o maior numero, %.2f, e o menor numero, %.2f, da lista apresentados, e: %.2f\n\n",v[0],v[1],v[0]-v[1]);
 	free(v);
 	return 0;
 }

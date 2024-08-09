@@ -30,6 +30,6 @@ int main(){
 		printf("\n");
 		free(v);
 	}
-	printf("Bye, bye!\n");
+	printf("Bye, bye!\n\n");
 	return 0;
 }

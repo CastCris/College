@@ -1,3 +1,4 @@
+![Bichinho](Gif\moth-drum.gif)
 # Sumário
 - <a href="#sala">Sala</a>
   - <a href="#questão-1">Enigma 1</a>
@@ -95,7 +96,7 @@ print('Até!\n')
 ```
 
 #### Exemplo de Output+Input:
-![Questão_1_Python](Prints/PY/Sala/1.png)
+![Questão_1_Python_Sala](Prints/PY/Sala/1.png)
 
 ### Resolução C
 
@@ -123,7 +124,7 @@ int main(){
 ```
 
 #### Exemplo de Output+Input:
-![Questão_1_C](Prints/PY/Sala/1.png)
+![Questão_1_C_Sala](Prints/C/Sala/1.png)
 
 ## Questão 2
 ### Enunciado
@@ -147,7 +148,7 @@ else:
 print()
 ```
 #### Exemplo de Output+Input:
-![Questão_2_Python](Prints/PY/Sala/2.png)
+![Questão_2_Python_Sala](Prints/PY/Sala/2.png)
 ### Resoluçaõ C
 ```c
 #include<stdio.h>
@@ -155,31 +156,34 @@ print()
 #include<string.h>
 //
 int main(){
-	float v=0.0;
+	float v[2],n;
 	char*inp=(char*)malloc(10*sizeof(*inp)),*split;
-	printf("Insira as notas do aluno(uma linha): ");
+	printf("\nInsira as notas do aluno(uma linha): ");
 	fgets(inp,10,stdin);
 	for(int i=0;split=strtok_r(inp," ",&inp);++i){
-		v+=atof(split)/2.0;
+		v[i]=atof(split);
 	}
 	free(inp);
-	if(v<6.0){
+	n=(v[1]+v[0])/2.0;
+	if(n<6.0){
 		char*sit=(char*)malloc(10*sizeof(*sit)),*inp=(char*)malloc(3*sizeof(*inp));
 		sit="Aprovado!";
 		printf("Isso nao e bom, faca o exame(fez o exame).\nAgora insira a nota do exame: ");
 		fgets(inp,10,stdin);
-		v+=atof(inp);
-		v<5?sit="Reprovado!":sit;
+		n=(v[0]+v[1]+atof(inp))/3.0;
+		n<5.0?sit="Reprovado!":sit;
 		printf("%s",sit);
 	} else {
 		printf("Parabens!Te vejo no proximo bimestre!\n");
 	}
-	printf("Independe da sua condicao, voce tirou %.2f\n",v);
+	printf("Independe da sua condicao, voce tirou %.2f\n\n",n);
 	free(inp);
 	return 0;
 }
 ```
 #### Exemplode de Output+Input:
+![Questão_2_C_Sala](Prints/C/Sala/2.png)
+
 
 ## Questão 3
 ### Enunciado
@@ -218,6 +222,7 @@ int main(){
 }
 ```
 #### Exemplo de Output+Input:
+![Questão_3_C_Sala](Prints/C/Sala/3.png)
 
 ## Questão 4
 ### Enunciado
@@ -326,6 +331,7 @@ int main(){
 }
 ```
 #### Ememplo de Output+Input:
+![Questão_4_C_Sala](Prints/C/Sala/4.png)
 
 ## Questão 5
 ### Enunciado
@@ -377,6 +383,7 @@ int main(){
 }
 ```
 #### Exemplo de Output+Input:
+![Questão_5_C_Sala](Prints/C/Sala/5.png)
 
 ## Questão 6
 ### Enunciado
@@ -437,6 +444,8 @@ int main(){
 }
 ```
 #### Exemplo de Output+Input:
+![Questão_6_C_Sala](Prints/C/Sala/6.png)
+
 ## Questão 7
 ### Enunciado
 Ler um valor inteiro positivo ou negativo e exibir o número lido como sendo um valor
@@ -475,6 +484,7 @@ int main(){
 }
 ```
 #### Exemplo de Output+Input:
+![Questão_7_C_Sala](Prints/C/Sala/7.png)
 
 ## Questão 8
 ### Enunciado
@@ -581,6 +591,7 @@ int main(){
 }
 ```
 ### Exemplo de Output+Input
+![Questão_8_C_Sala](Prints/C/Sala/8.png)
 
 ## Questão 9
 ### Enunciado
@@ -708,6 +719,7 @@ int main(){
 }
 ```
 #### Exemplo de Output+Input:
+![Questão_9_C_Sala](Prints/C/Sala/9.png)
 
 ## Questão 10
 ### Enunciado
@@ -749,7 +761,7 @@ print(x,'\n')
 ![Questão_10_Python](Prints/PY/Sala/10.png)
 ### Resolução C
 #### Exemplo de Output+Input
-![]()
+![Questão_10_C_Sala](Prints/C/Sala/10.png)
 # Casa
 
 ## Questão 1
@@ -846,6 +858,7 @@ int main(){
 }
 ```
 #### Exemplo de Output+Input
+![Questão_1_C_Casa](Prints/C/Casa/1.png)
 
 ## Questão 2
 ### 
@@ -902,6 +915,7 @@ int main(){
 }
 ```
 #### Exemplo de Output+Input
+![Questão_2_C_Casa](Prints/C/Casa/2.png)
 
 ## Questão 3
 ### Enunciado
@@ -959,6 +973,7 @@ int main(){
 }
 ```
 #### Exemplo de Output+Input
+![Questão_3_C_Casa](Prints/C/Casa/3.png)
 
 ## Questão 4
 ### Enunciado
@@ -982,6 +997,7 @@ while True:
 print('Até!\n')
 ```
 #### Exemplo de Output+Input
+![Questão_4_Python_Casa](Prints/PY/Casa/4.png)
 
 ### Resolução C
 ```c
@@ -1038,6 +1054,7 @@ int main(){
 }
 ```
 #### Exemplo de Output+Input
+![Questão_4_C_Casa](Prints/C/Casa/4.png)
 
 ## Questão 5
 ### Enunciado
@@ -1101,6 +1118,7 @@ int main(){
 }
 ```
 #### Exemplo de Output+Input
+![Questão_5_C_Casa](Prints/C/Casa/5.png)
 
 ## Questão 6
 ### Enunciado
@@ -1141,8 +1159,47 @@ print(x,'\n')
 #### Exemplo de Output+Input
 ![Questão_6_Python_Casa](Prints/PY/Casa/6.png)
 ### Resolução C
-```c```
+```c
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+//
+int main(){
+    char bgl[3],*out=(char*)malloc(20*sizeof(*out)),*inp=(char*)malloc(3*sizeof(*inp));
+    printf("\nInsira um mes: ");
+    scanf("%s",inp);
+    if(strcmp(inp,"1")==0)
+        out="Janeiro";
+    else if(strcmp(inp,"2")==0)
+        out="Fevereiro";
+    else if(strcmp(inp,"3")==0)
+        out="Marco";
+    else if(strcmp(inp,"4")==0)
+        out="Abril";
+    else if(strcmp(inp,"5")==0)
+        out="Maio";
+    else if(strcmp(inp,"6")==0)
+        out="Junho";
+    else if(strcmp(inp,"7")==0)
+        out="Julho";
+    else if(strcmp(inp,"8")==0)
+        out="Agosto";
+    else if(strcmp(inp,"9")==0)
+        out="Setembro";
+    else if(strcmp(inp,"10")==0)
+        out="Outubro";
+    else if(strcmp(inp,"11")==0)
+        out="Novembro";
+    else if(strcmp(inp,"12")==0)
+        out="Dezembro";
+    else
+        out="Invalido";
+    printf("%s\n\n",out);
+    return 0;
+}
+```
 #### Exemplo de Output+Input
+![Questão_6_C_Casa](Prints/C/Casa/6.png)
 
 ## Questão 7
 ### Enunciado
@@ -1168,4 +1225,30 @@ print(x,'\n')
 #### Exemplo de Output+Input
 ![Questão_7_Python_Casa](Prints/PY/Casa/7.png)
 ### Resolução C
+```c
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+//
+int main(){
+    char*inp=(char*)malloc(3*sizeof(*inp)),*out=(char*)malloc(20*sizeof(*out));
+    printf("\nInsira o numero do curso: ");
+    scanf("%s",inp);
+    if(strcmp(inp,"1")==0)
+        out="Engenharia";
+    else if(strcmp(inp,"2")==0)
+        out="Edificações";
+    else if(strcmp(inp,"3")==0)
+        out="Sistemas Elétricos";
+    else if(strcmp(inp,"4")==0)
+        out="Turismo";
+    else if(strcmp(inp,"5")==0)
+        out="Analise de Sistemas";
+    else 
+        out="Curso invalido";
+    printf("%s\n\n",out);
+    return 0;
+}
+```
 #### Exemplo de Output+Input
+![Questão_7_C_Casa](Prints/C/Casa/7.png)
