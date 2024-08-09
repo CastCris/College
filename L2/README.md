@@ -1,23 +1,75 @@
 # Sumário
-- <a href="#Sala">Sala</a>
-  - <a href="#questão-1">1</a>
-  - <a href="##2">2</a>
-  - <a href="##3">3</a>
-  - <a href="##4">4</a>
-  - <a href="#5">5</a>
-  - <a href="#6">6</a>
-  - <a href="#7">7</a>
-  - <a href="#8">8</a>
-  - <a href="#9">9</a>
-  - <a href="#10">10</a>
-- <a href="">Casa</a>
-  - <a href="">1</a>
-  - <a href="">2</a>
-  - <a href="">3</a>
-  - <a href="">4</a>
-  - <a href="">5</a>
-  - <a href="">6</a>
-  - <a href="">7</a>
+- <a href="#sala">Sala</a>
+  - <a href="#questão-1">Enigma 1</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 2</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 3</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 4</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 5</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 6</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 7</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 8</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 9</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 10</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+
+- <a href="#sala">Cala</a>
+  - <a href="#questão-1">Enigma 1</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 2</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 3</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 4</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 5</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 6</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
+  - <a href="">Enigma 7</a>
+  	- <a href=" ">Enuciado</a>
+  	- <a href=" ">Resolução Python</a>
+   	- <a href=" ">Resolução C</a>
   
 # Sala
 ## Questão 1
@@ -43,7 +95,7 @@ print('Até!\n')
 ```
 
 #### Exemplo de Output+Input:
-![Questão_1_Python](L2/Prints/PY/Sala/1.png)
+![Questão_1_Python](Prints/PY/Sala/1.png)
 
 ### Resolução C
 
@@ -71,7 +123,7 @@ int main(){
 ```
 
 #### Exemplo de Output+Input:
-![Questão_1_C](L2/Prints/PY/Sala/1.png)
+![Questão_1_C](Prints/PY/Sala/1.png)
 
 ## Questão 2
 ### Enunciado
@@ -95,7 +147,7 @@ else:
 print()
 ```
 #### Exemplo de Output+Input:
-![Questão_2_Python](L2/Prints/PY/Sala/2.png)
+![Questão_2_Python](Prints/PY/Sala/2.png)
 ### Resoluçaõ C
 ```c
 #include<stdio.h>
@@ -140,7 +192,7 @@ print('A diferença entre eles é: ',max(x)-min(x))
 print()
 ```
 #### Ememplo de Output+Input:
-![Questão_3_Python](L2/Prints/PY/Sala/3.png)
+![Questão_3_Python](Prints/PY/Sala/3.png)
 ### Resolução C
 ```c
 #include<stdio.h>
@@ -216,7 +268,7 @@ while True:
 print('Até!\n')
 ```
 #### Exemplo de Output+Input
-![Questão_4_Python](L2/Prints/PY/Sala/4.png)
+![Questão_4_Python](Prints/PY/Sala/4.png)
 ### Resolução C
 ```c
 #include<stdio.h>
@@ -288,7 +340,7 @@ for i in x:
 print('\n')
 ```
 #### Exemplo de Output+Input:
-![Questão_5_Pyhton](L2/Prints/PY/Sala/5.png)
+![Questão_5_Pyhton](Prints/PY/Sala/5.png)
 ### Resolução C
 ```C
 #include<stdio.h>
@@ -345,7 +397,7 @@ while True:
 print('Até!\n')
 ```
 #### Exemplo de Output+Input:
-![Questão_6_Pyhton](L2/Prints/PY/Sala/6.png)
+![Questão_6_Pyhton](Prints/PY/Sala/6.png)
 ### Resolução C
 ```c
 #include<stdio.h>
@@ -398,7 +450,7 @@ print(x*-1) if x<0 else print(x)
 print()
 ```
 #### Exemplo de Output+Input:
-![Questão_7_Python](L2/Prints/PY/Sala/7.png)
+![Questão_7_Python](Prints/PY/Sala/7.png)
 ### Resolução C
 ```c
 #include<stdio.h>
@@ -447,7 +499,7 @@ while True:
 print('Até!\n')
 ```
 #### Exemplo de Output+Input
-![Questão_8_Python](L2/Prints/PY/Sala/8.png)
+![Questão_8_Python](Prints/PY/Sala/8.png)
 ### Resolução C
 ```c
 #include<stdio.h>
@@ -558,7 +610,7 @@ while True:
 print('Até!\n')
 ```
 #### Exemplo de Output+Input:
-![Questão_9_Python](L2/Prints/PY/Sala/9.png)
+![Questão_9_Python](Prints/PY/Sala/9.png)
 ### Resolução C
 ```c
 #include<stdio.h>
@@ -694,7 +746,7 @@ match input('Insira o mês: '):
 print(x,'\n')
 ```
 #### Exemplo de Output+Input
-![Questão_10_Python](L2/Prints/PY/Sala/10.png)
+![Questão_10_Python](Prints/PY/Sala/10.png)
 ### Resolução C
 #### Exemplo de Output+Input
 ![]()
@@ -720,7 +772,7 @@ while True:
 print("Até!\n")
 ```
 #### Exemplo de Output+Input
-![Questão_1_Python_Casa](L2\Prints\PY\Casa\1.png)
+![Questão_1_Python_Casa](Prints/PY/Casa/1.png)
 ### Resolução 
 ```c
 #include<stdio.h>
@@ -814,7 +866,7 @@ while True:
 print('Até!\n')
 ```
 #### Exemplo de Output+Input
-![Questão_2_Python_Casa](L2\Prints\PY\Casa\2.png)
+![Questão_2_Python_Casa](Prints/PY/Casa/2.png)
 ### Resolução C
 ```c
 #include<stdio.h>
@@ -875,7 +927,7 @@ while True:
 print('Até!\n')
 ```
 #### Exemplo de Output+Input
-![Questão_3_Python_Casa](L2\Prints\PY\Casa\3.png)
+![Questão_3_Python_Casa](Prints/PY/Casa/3.png)
 ### Resolução C
 ```c
 #include<stdio.h>
@@ -1020,7 +1072,7 @@ while True:
 print('Até!\n')
 ```
 #### Exemplo de Output+
-![Questão_4_Python_Casa](L2\Prints\PY\Casa\4.png)
+![Questão_5_Python_Casa](Prints/PY/Casa/5.png)
 ### Resolução C
 ```c
 #include<stdio.h>
@@ -1087,7 +1139,7 @@ match x:
 print(x,'\n')
 ```
 #### Exemplo de Output+Input
-![Questão_6_Python_Casa](L2/Prints/PY/Casa/6.png)
+![Questão_6_Python_Casa](Prints/PY/Casa/6.png)
 ### Resolução C
 ```c```
 #### Exemplo de Output+Input
@@ -1114,6 +1166,6 @@ match x:
 print(x,'\n')
 ```
 #### Exemplo de Output+Input
-![Questão_7_Python_Casa](L2/Prints/PY/Casa/7.png")
+![Questão_7_Python_Casa](Prints/PY/Casa/7.png)
 ### Resolução C
 #### Exemplo de Output+Input
