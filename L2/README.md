@@ -1,4 +1,4 @@
-![Bichinho](Gif\moth-drum.gif)
+![Epa](https://c.tenor.com/c9d8u2ok8HsAAAAC/tenor.gif)
 # Sumário
 - <a href="#sala">Sala</a>
   - <a href="#questão-1">Enigma 1</a>
