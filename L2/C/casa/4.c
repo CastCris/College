@@ -33,7 +33,7 @@ int main(){
         }
         for(int i=0;i<q;++i){
             for(int j=0;j<q;++j){
-                if(v[i]<v[j]){
+                if(v[i]>v[j]){
                     v[i]+=v[j];
                     v[j]=v[i]-v[j];
                     v[i]-=v[j];
@@ -43,7 +43,7 @@ int main(){
         for(int i=0;i<q;++i){
             printf("%.2f ",v[i]);
         }
-        printf(" e a sua forma mais organizada");
+        printf("e a sua forma mais organizada");
         printf("\n\n");
     }
     printf("Bye, bye!\n");

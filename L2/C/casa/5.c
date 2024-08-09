@@ -16,7 +16,7 @@ int main(){
             v[i]=atof(split);
         }
         novo=v[0];
-        1600>=novo&&novo>=800?novo-=(novo*13.0/100.0):novo>1600?novo-=(novo*22/100):novo;
+        1600>=novo&&novo>=800?novo-=(novo*0.13):novo>1600?novo-=(novo*0.22):novo;
         v[1]>160?novo+=(v[1]-160.0)*(0.5*(novo/160.0)):novo;
         printf("O seu salario sera: %.2fR$\n",novo);
     }

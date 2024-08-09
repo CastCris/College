@@ -4,6 +4,6 @@ while True:
     if len(x)<1:
         break
     v=x[1]-x[0]
-    v=x[0]-x[1] if x[0]>x[1] else v
+    v*=-1 if v<0 else 1
     print('A diferença entre os valores é: {:.2f}'.format(v))
 print('Até!\n')

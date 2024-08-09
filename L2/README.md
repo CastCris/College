@@ -128,7 +128,6 @@ int main(){
 }
 ```
 #### Exemplode de Output+Input:
-# Nada ainda
 
 ## Questão 3
 ### Enunciado
@@ -699,3 +698,422 @@ print(x,'\n')
 ### Resolução C
 #### Exemplo de Output+Input
 ![]()
+# Casa
+
+## Questão 1
+### Enunciado
+Elaborar um programa em que informe se o número digitado pelo usuário é par ou
+impar
+### Resolução Python
+```py
+print()
+while True:
+        x=input('Insira os valores: ').split(' ')
+        if(x[0]==''): break
+        ok=False
+        for i in x:
+            if int(i[len(i)-1])%2==0:
+                print(i,end=' ')
+                ok=True
+        if ok:
+            print('são números divíveis por dois\n')
+print("Até!\n")
+```
+#### Exemplo de Output+Input
+![Questão_1_Python_Casa](L2\Prints\PY\Casa\1.png)
+### Resolução 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<stdbool.h>
+//
+int main(){
+    bool ctrl;
+    int q,e_1,e_2,e_3;
+    char u[1],*inp,**par,*aux;
+    for(;;){
+   	 q=e_1=e_2=e_3=0;
+   	 ctrl=true;
+   	 inp=(char*)malloc(1000*sizeof(*inp));
+     printf("Insira os valores: ");
+   	 fgets(inp,1000,stdin);
+   	 for(int i=0;i<1000;++i){
+   		 if(inp[i]==32){
+   			 ++q;
+   		 }else if((int)inp[i]<48||(int)inp[i]>57){
+   			 break;
+   		 }
+   		 ctrl=false;
+   		 ++e_1;
+   	 }
+   	 inp[e_1]=' ';
+   	 ++e_1;
+   	 if(ctrl)
+   		 break;
+   	 par=(char**)malloc((q+1)*sizeof(char*));
+   	 aux=(char*)malloc((e_1+1)*sizeof(char));
+   	 for(int i=0;i<e_1;++i){
+   		 if((int)inp[i]==32){
+   			 if((u[0]-'0')%2==0){
+   				 par[e_3]=(char*)malloc((e_2-1)*sizeof(char));
+   				 for(int j=0;j<e_2;++j){
+   					 //printf("%c",aux[j]);
+   					 par[e_3][j]=aux[j];
+   				 }
+   				 //printf("\n");
+   				 ++e_3;
+   			 }
+   			 for(int j=0;j<e_2;++j){
+   				 aux[j]=' ';
+   			 }
+   			 e_2=0;
+   		 } else{
+   			 aux[e_2]=inp[i];
+   			 //printf("%c\n",inp[i]);
+   			 u[0]=inp[i];
+   			 ++e_2;
+   		 }
+   	 }
+   	 for(int i=0;i<e_3;++i){
+   		 for(int j=0;j<strlen(par[i]);++j){
+                if((int)par[i][j]<48||(int)par[i][j]>57){
+                    break;
+                }
+   			    printf("%c",par[i][j]);
+   		 }
+   		 printf(", ");
+   	 }
+     printf("sao valores divisiveis por dois");
+   	 printf("\n");
+   	 free(par);
+   	 free(aux);
+    }
+    printf("Bye, bye!\n");
+    return 0;
+}
+```
+#### Exemplo de Output+Input
+
+## Questão 2
+### 
+Digitado um número inteiro entre 0 e 100, informar o quanto ele está distante de um
+determinado número chave, carregado no próprio programa. Ex.: Número chave=20,
+número digitado=15, resposta=5. Número chave=17, número digitado=20, resposta=3
+(Obs.: a resposta deverá ser sempre um número positivo).
+### Resolução 
+```py
+print()
+while True:
+    x=list(map(float,input('Insira dois valores: ').split()))
+    if len(x)<1:
+        break
+    v=x[1]-x[0]
+    v*=-1 if v<0 else 1
+    print('A diferença entre os valores é: {:.2f}'.format(v))
+print('Até!\n')
+```
+#### Exemplo de Output+Input
+![Questão_2_Python_Casa](L2\Prints\PY\Casa\2.png)
+### Resolução C
+```c
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
+#include<stdlib.h>
+//
+int main(){
+    bool ctrl;
+    float v[2];
+    char*inp,*split;
+    printf("Insira dois valores para descobrir a distancia entre eles\n");
+    for(;;){
+        inp=(char*)malloc(100*sizeof(*inp));
+        printf("*: ");
+        fgets(inp,100,stdin);
+        ctrl=true;
+        for(int i=0;split=strtok_r(inp," ",&inp);++i){
+            (int)split[0]>46&&(int)split[0]<58?ctrl=false:ctrl;
+            v[i]=atof(split);
+        }
+        if(ctrl){
+            break;
+        }
+        if (v[0]>v[1]){
+            printf("%.2f\n",v[0]-v[1]);
+        }else{
+            printf("%.2f\n",v[1]-v[0]);
+        }
+    }
+    printf("Bye, bye!");
+    return 0;
+}
+```
+#### Exemplo de Output+Input
+
+## Questão 3
+### Enunciado
+Uma Universidade tem problemas com arredondamento das médias dos alunos,
+pois cada professor estipula um critério de arredondamento. Devemos elaborar um
+programa, em Linguagem C++, para a secretaria da Universidade, resolvendo esse
+problema. O programa deve solicitar uma nota e fazer o devido arredondamento.
+Regras:
+Notas que ultrapassem 0,5 de resto serão arredondas para CIMA.
+Ex: 4,6 –>5,0
+Notas que abaixo ou igual a 0,5 de resto serão arredondas para BAIXO.
+Ex: 4,5 –> 4,0
+### Resolução Python
+```py
+print()
+while True:
+    x=list(map(float,input('Insira as notas dos alunos: ').split()))
+    if len(x)<1:
+        break
+    for i in x:
+        print("{:.0f},0".format(i),end=' ')
+    print('\n')
+print('Até!\n')
+```
+#### Exemplo de Output+Input
+![Questão_3_Python_Casa](L2\Prints\PY\Casa\3.png)
+### Resolução C
+```c
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<stdbool.h>
+//
+int main(){
+    bool ctrl;
+    for(;;){
+        printf("Insira as notas dos alunos: ");
+        ctrl=true;
+        char*inp=(char*)malloc(1000*sizeof(*inp)),*split;
+        fgets(inp,1000,stdin);
+        for(;split=strtok_r(inp," ",&inp);){
+            (int)split[0]>46&&(int)split[0]<58?ctrl=false:ctrl;
+            if(ctrl){
+                break;
+            }
+            printf("%.0f,0 ",atof(split));
+        }
+        if(ctrl){
+            break;
+        }
+        printf("\n");
+    }
+    printf("Bye, bye!\n");
+    return 0;
+}
+```
+#### Exemplo de Output+Input
+
+## Questão 4
+### Enunciado
+Faça um programa que leia 3 números e exiba:
+a) O maior número;
+b) O menor número;
+c) O número do meio
+### Resolução Python
+```py
+print()
+while True:
+    x=list(map(float,input('Insira n valores: ').split()))
+    if len(x)<1:
+        break
+    x.sort()
+    x.reverse()
+    print('Organização decresente->',end=' ')
+    for i in x:
+        print('{:.2f}'.format(i),end=' ')
+    print('\n')
+print('Até!\n')
+```
+#### Exemplo de Output+Input
+
+### Resolução C
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<stdbool.h>
+#include<string.h>
+//
+int main(){
+    printf("\n");
+    bool ctrl;
+    int q;
+    float*v;
+    char*inp,*split;
+    for(;;){
+        q=0;
+        printf("Insira os valores a serem organizados: ");
+        ctrl=true;
+        inp=(char*)malloc(1000*sizeof(char));
+        fgets(inp,1000,stdin);
+        for(int i=0;i<1000;++i){
+            if((int)inp[i]==32){
+                ++q;
+            } else if((int)inp[i]<46||(int)inp[i]>57){
+                break;
+            }
+            ctrl=false;
+        }
+        if(ctrl){
+            break;
+        }
+        ++q;
+        v=(float*)calloc(q,sizeof(float));
+        for(int i=0;split=strtok_r(inp," ",&inp);++i){
+            v[i]=atof(split);
+        }
+        for(int i=0;i<q;++i){
+            for(int j=0;j<q;++j){
+                if(v[i]>v[j]){
+                    v[i]+=v[j];
+                    v[j]=v[i]-v[j];
+                    v[i]-=v[j];
+                }
+            }
+        }
+        for(int i=0;i<q;++i){
+            printf("%.2f ",v[i]);
+        }
+        printf("e a sua forma mais organizada");
+        printf("\n\n");
+    }
+    printf("Bye, bye!\n");
+    return 0;
+}
+```
+#### Exemplo de Output+Input
+
+## Questão 5
+### Enunciado
+- Faça o programa que calcule o salário líquido dos funcionários de uma empresa. O
+salário líquido é composto por descontos e adicionais, seguindo as seguintes regras:
+Descontos:
+Salário bruto < 800,00 – não realizar nenhum desconto;
+800,00 <= Salário bruto <=1600,00 – descontar 8% de Imposto de Renda e 5
+% de encargos.
+>1600,00 – descontar 15% de Imposto de Renda e 7% de encargos.
+Adicionais:
+Caso o funcionário tenha trabalhado mais de 160 horas no mês, divida o seu salário
+bruto por 160 (representa horas trabalhadas) e calcule 50% de adicional nas horas
+que excederam a 160.
+O usuário deverá digitar o salário bruto e o número de horas trabalhadas no mês de
+cada funcionário, e deverá receber como resultado o salário líquido. O usuário poderá
+calcular salário para N funcionários, para finalizar o programa o usuário deverá digitar
+0 no salário bruto, ao finalizar o programa exibir o total geral dos salários líquidos.
+### Resolução Python
+```py
+i=0
+print()
+while True:
+    print("Insira os dados do {} funcionário, salario e horas, uma linha:".format(i),end=' ')
+    x=list(map(float,input().split()))
+    if x[0]==0:break
+    x[0]-=(x[0]*0.13) if x[0]>=800 and x[0]<=1600 else 0
+    x[0]-=(x[0]*0.22) if x[0]>1600 else 0
+    x[0]+=(x[1]-160)*(0.5*(x[0]/160)) if x[1]>160 else 0
+    print("O seu salário será {:.2f}R$".format(x[0]))
+    i+=1
+print('Até!\n')
+```
+#### Exemplo de Output+
+![Questão_4_Python_Casa](L2\Prints\PY\Casa\4.png)
+### Resolução C
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+//
+int main(){
+    char*inp,*split;
+    float v[2],novo;
+    for(int f=0;;++f){
+        printf("Insira os dados do %i funcionario: ",f);
+        char*inp=(char*)malloc(1000*sizeof(char));
+        fgets(inp,1000,stdin);
+        if(inp[0]=='0'){
+            break;
+        }
+        for(int i=0;split=strtok_r(inp," ",&inp);++i){
+            v[i]=atof(split);
+        }
+        novo=v[0];
+        1600>=novo&&novo>=800?novo-=(novo*0.13):novo>1600?novo-=(novo*0.22):novo;
+        v[1]>160?novo+=(v[1]-160.0)*(0.5*(novo/160.0)):novo;
+        printf("O seu salario sera: %.2fR$\n",novo);
+    }
+    printf("Verificacao check!\n");
+}
+```
+#### Exemplo de Output+Input
+
+## Questão 6
+### Enunciado
+Faça um programa que receba como entrada o mês (de 1 a 12) e retorne o nome do respectivo mês.
+### Resolução Python
+```py
+print()
+x=input()
+match x:
+    case '1':
+        x='Janeiro'
+    case '2':
+        x='Faveiro'
+    case '3':
+        x='Março'
+    case '4':
+        x='Abril'
+    case '5':
+        x='Maio'
+    case '6':
+        x='Junho'
+    case '7':
+        x='Julho'
+    case '8':
+        x='Agosto'
+    case '9':
+        x='Setembro'
+    case '10':
+        x='Outubro'
+    case '11':
+        x='Novembro'
+    case '12':
+        x='Dezembro'
+    case _:
+        x='Mes inválido'
+print(x,'\n')
+```
+#### Exemplo de Output+Input
+![Questão_6_Python_Casa](L2/Prints/PY/Casa/6.png)
+### Resolução C
+```c```
+#### Exemplo de Output+Input
+
+## Questão 7
+### Enunciado
+Entrar um código de acesso a um curso. Se o código for 1, 2,3,4 e 5 exibir na telaEngenharia, Edificações, Sistemas Elétricos, Turismo e Análise de Sistemas respectivamente; caso contrário exibir que o código é inválido.
+### Resolução Python
+```py
+x=input('\n')
+match x:
+    case '1':
+        x='Engenharia'
+    case '2':
+        x='Edificações'
+    case '3':
+        x='Sistemas Elétricos'
+    case '4':
+        x='Turismo'
+    case '5':
+        x='Análise de Sistemas'
+    case _:
+        x='Inválido'
+print(x,'\n')
+```
+#### Exemplo de Output+Input
+![Questão_7_Python_Casa](L2/Prints/PY/Casa/7.png")
+### Resolução C
+#### Exemplo de Output+Input

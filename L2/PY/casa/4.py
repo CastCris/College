@@ -4,7 +4,8 @@ while True:
     if len(x)<1:
         break
     x.sort()
-    print('Organização cresente-> ',end=' ')
+    x.reverse()
+    print('Organização decresente->',end=' ')
     for i in x:
         print('{:.2f}'.format(i),end=' ')
     print('\n')

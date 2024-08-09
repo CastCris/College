@@ -12,4 +12,4 @@ match x:
         x='Análise de Sistemas'
     case _:
         x='Inválido'
-print(x,'\n ')
+print(x,'\n')
