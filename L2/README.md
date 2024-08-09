@@ -49,27 +49,27 @@
    	- <a href="#resolução-c-10">Resolução C</a>
   - <a href="#questão-2-1">Enigma 2</a>
   	- <a href="#enunciado-11">Enuciado</a>
-  	- <a href="resolução-python-11">Resolução Python</a>
+  	- <a href="#resolução-python-11">Resolução Python</a>
    	- <a href="#resolução-c-11">Resolução C</a>
   - <a href="#questão-3-1">Enigma 3</a>
   	- <a href="#enunciado-12">Enuciado</a>
-  	- <a href="resolução-python-12">Resolução Python</a>
+  	- <a href="#resolução-python-12">Resolução Python</a>
    	- <a href="#resolução-c-12">Resolução C</a>
   - <a href="#questão-4-1">Enigma 4</a>
   	- <a href="#enunciado-13">Enuciado</a>
-  	- <a href="resolução-python-13">Resolução Python</a>
+  	- <a href="#resolução-python-13">Resolução Python</a>
    	- <a href="#resolução-c-13">Resolução C</a>
   - <a href="#questão-5-1">Enigma 5</a>
   	- <a href="#enunciado-14">Enuciado</a>
-  	- <a href="resolução-python-14">Resolução Python</a>
+  	- <a href="#resolução-python-14">Resolução Python</a>
    	- <a href="#resolução-c-14">Resolução C</a>
   - <a href="#questão-6-1">Enigma 6</a>
   	- <a href="#enunciado-15">Enuciado</a>
-  	- <a href="resolução-python-15">Resolução Python</a>
+  	- <a href="#resolução-python-15">Resolução Python</a>
    	- <a href="#resolução-c-15">Resolução C</a>
   - <a href="#questão-7-1">Enigma 7</a>
   	- <a href="#enunciado-16">Enuciado</a>
-  	- <a href="resolução-python-16">Resolução Python</a>
+  	- <a href="#resolução-python-16">Resolução Python</a>
    	- <a href="#resolução-c-16">Resolução C</a>
   
 # Sala
