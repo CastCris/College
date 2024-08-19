@@ -1,11 +1,10 @@
 #include"funcoes.h"
-#include<stdio.h>
 #include<stdlib.h>
 #include<stdbool.h>
 #include<string.h>
 //
 void looop(int valores[], int**nm, int op){
-    int divi=1,q=0,*temp,e[2]={0,0};
+    int divi=1,q=0,*temp,e[2]={0,0},*aux;
     bool mudar=false;
     for(int i=0;i<4;++i){
         if(valores[i]==0&&i>1)
@@ -29,15 +28,47 @@ void looop(int valores[], int**nm, int op){
     for(int i=0;i<2;++i){
         nm[i]=(int*)calloc((valores[1]-valores[0])/valores[2],sizeof(int));
     }
-    for(int i=valores[0];i<valores[1]+1;i+=valores[2]){
-        if(*temp%divi){
-            nm[1][e[1]]=*temp;
-            ++e[1];
-        } else{
-            nm[0][e[0]]=*temp;
-            ++e[0];
+    if(op==0){
+        for(int i=valores[0];i<valores[1]+1;i+=valores[2]){
+            if(*temp%divi){
+                nm[1][e[1]]=*temp;
+                ++e[1];
+            } else{
+                nm[0][e[0]]=*temp;
+                ++e[0];
+            }
+            mudar?*temp-=valores[2]:!mudar?*temp+=valores[2]:*temp;
         }
-        mudar?*temp-=valores[2]:!mudar?*temp+=valores[2]:*temp;
+    } else if(op==1){
+        aux=(int*)malloc(1*sizeof(*aux));
+        *aux=valores[0];
+        while(*aux<=valores[1]){
+            if(*temp%divi){
+                nm[1][e[1]]=*temp;
+                ++e[1];
+            }else{
+                nm[0][e[0]]=*temp;
+                ++e[0];
+            }
+            mudar?*temp-=valores[2]:!mudar?*temp+=valores[2]:*temp;
+            *aux+=valores[2];
+        }
+        free(aux);
+    } else if(op==2){
+        aux=(int*)malloc(1*sizeof(*aux));
+        *aux=valores[0];
+        do{
+            if(*temp%divi){
+                nm[1][e[1]]=*temp;
+                ++e[1];
+            }else{
+                nm[0][e[0]]=*temp;
+                ++e[0];
+            }
+            mudar?*temp-=valores[2]:!mudar?*temp+=valores[2]:*temp;
+            *aux+=valores[2];
+        } while(*aux<=valores[1]);
+        free(aux);
     }
 };
 //
