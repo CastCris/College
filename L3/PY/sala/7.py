@@ -1,3 +1,4 @@
+print('\nDescrição:\n1-Valor x\n2-Primeiro valor da sequência\n3-Último valor da seuência\n4-Passo\n')
 while True:
     mudar=False
     if len(x:=list(map(int,input().split())))==0:
@@ -12,3 +13,4 @@ while True:
         temp+=x[3] if mudar==False else 0
         temp-=x[3] if mudar else 0
     print()
+print('Até!\n')
