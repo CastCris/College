@@ -5,8 +5,10 @@
 void main(){
     char*inp;
     int*v,**receba;
+    printf("\nDescricao\n1-Valor x\n2-Valor y\n3-Valor z\n4-Valor a\nOutput esperado: uma sequencia de todos os numeros nao multiplos de a na sequencia de x a y a passo z\n\n");
     for(;;){
         inp=(char*)malloc(1000*sizeof(*inp));
+        printf("-> ");
         fgets(inp,1000,stdin);
         if(termos(inp)==1)
             break;
@@ -22,6 +24,7 @@ void main(){
         }
         free(v);
         free(receba);
-        printf("\n");
+        printf("\n\n");
     }
+    printf("Bye, bye!\n\n");
 }

@@ -1,4 +1,4 @@
-print('\nDescrição:\n1-Número n\n2-Limite x de n\n3-Valor y que n será multiplicado sucesivamente enquanto for <=x\n')
+print('\nDescrição:\n1-Número n\n2-Limite x de n\n3-Valor y que n será multiplicado sucesivamente enquanto for <x\n')
 while True:
     x=list(map(int,input(': ').split()))
     if len(x)<1:

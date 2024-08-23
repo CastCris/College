@@ -6,8 +6,10 @@
 void main(){
     char*inp;
     int*v,**receba,m;
+    printf("\nDescricao\n1-Valor x\n2-Valor y\n3-Valor z\n4-Valor A\nOutput esperado: uma tabuada de x dos numeros y a z a passo A\n\n");
     for(;;){
         inp=(char*)malloc(1000*sizeof(*inp));
+        printf("-> ");
         fgets(inp,1000,stdin);
         if(termos(inp)==1)
             break;
@@ -25,6 +27,7 @@ void main(){
                 break;
             printf("%i*%i = %0.lf\n",m,receba[0][i],(double)m*(double)receba[0][i]);
         }
-        printf("\n");
+        printf("\n\n");
     }
+    printf("Bye, bye!\n\n");
 }

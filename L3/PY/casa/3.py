@@ -1,3 +1,4 @@
+print('\nDescrição:\n1-Primeiro valor da sequência\n2-Último valor da sequência\n3-passo\n4-Número divisor\n')
 while len(x:=list(map(int,input().split())))>0:
     mudar=False
     if x[0]>x[1]:
@@ -18,3 +19,5 @@ while len(x:=list(map(int,input().split())))>0:
         for j in divi[i]:
             print(j,end=' ')
         print()
+    print()
+print('Adeus!\n')

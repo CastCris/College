@@ -6,8 +6,10 @@
 void main(){
     char*inp;
     int*v,tam;
+    printf("\nInsira a ordem\n\n");
     for(;;){
         inp=(char*)malloc(1000*sizeof(*inp));
+        printf("-> ");
         fgets(inp,1000,stdin);
         tam=termos(inp);
         v=(int*)calloc(tam-1,sizeof(*v));
@@ -16,10 +18,8 @@ void main(){
             break;
         free(inp);
         merge_sort(v,0,tam-1);
-        for(int i=0;i<tam;++i){
-            printf("%i ",v[i]);
-        }
-        printf("\n");
+        printf("%i %i\n\n",v[0],v[tam-1]);
         free(v);
     }
+    printf("Bye, bye!\n\n");
 }

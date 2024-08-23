@@ -9,7 +9,9 @@ int main(){
     int*v,**receba;
     double*tot;
     bool  ctrl;
+    printf("\nDescricao:\n1-Primeiro valor do somatorio\n2-Ultimo valor do somatorio\n3-Passo\n\n");
     for(;;){
+        printf("-> ");
         inp=(char*)malloc(1000*sizeof(char));
         v=(int*)calloc(4,sizeof(*v));
         fgets(inp,1000,stdin);
@@ -26,13 +28,16 @@ int main(){
         looop(v,receba,0);
         tot=(double*)calloc(1,sizeof(double));
         for(int i=0;i<(v[1]-v[0])/v[2]+1;++i){
-            if(receba[0][i]==0&&i>1){
+            if(receba[0][i]==0&&i>0&&receba[0][i+1]==0){
                 if(receba[0][i-1]>0)
                     break;
             }
             *tot+=receba[0][i];
         }
-        printf("%.0lf\n",*tot);
+        printf("%.0lf\n\n",*tot);
+        free(v);
+        free(receba);
     }
+    printf("Bye, bye!\n\n");
     return 0;
 }

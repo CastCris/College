@@ -1,4 +1,5 @@
-while len(x:=list(map(int,input().split())))>0:
+print('\nDescrição:\n1-Valor y\n2-Valor z\n3-Passo\n4-Valor n para exibir todos os números de y a z divisíveis por n\n')
+while len(x:=list(map(int,input(': ').split())))>1:
     mudar=False
     if x[0]>x[1]:
         x[0],x[1]=x[1],x[0]
@@ -9,4 +10,5 @@ while len(x:=list(map(int,input().split())))>0:
         temp+=x[2] if not mudar else -x[2]
         x[0]+=x[2]
         if x[0]>x[1]:break
-    print()
+    print('\n')
+print('Adeus!\n')
