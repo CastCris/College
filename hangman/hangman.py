@@ -3,7 +3,7 @@ import random
 
 def get_file()->"file":
     pipe1=subprocess.Popen(["find","/home","-type","f"],stdout=subprocess.PIPE)
-    pipe2=subprocess.Popen(["grep","-Eo",'.*\\.py|.*\\.txt'],stdin=pipe1.stdout,stdout=subprocess.PIPE)
+    pipe2=subprocess.Popen(["grep","-Eo",'.*\\.py$|.*\\.txt$'],stdin=pipe1.stdout,stdout=subprocess.PIPE)
     pipe1.stdout.close()
 
     dirs,_=pipe2.communicate()
@@ -166,14 +166,13 @@ def finish_game_hangman()->None:
 
 	del monster
 	del chars_by_errors
-
 ###
 if __name__=="__main__":
-	print("\n")
 	while True:
 		print("========")
 		init_game_hangman(5)
 		while True:
+			print("\n")
 			display_situation()
 			inp=input('*: ')
 			#
