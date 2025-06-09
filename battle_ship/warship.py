@@ -1,5 +1,5 @@
 import random
-import subprocess
+import copy
 
 PREFIXES_WARSHIPS = [
     "USS",
@@ -36,11 +36,13 @@ SUFFIXES_WARSHIPS = [
     "Tarlac",
 ]
 SYMBOLS_SMALL  = [chr(i+97) for i in range(26)]
-SYMBOLS_MEDIUM = [chr(i+48) for i in range(10)]
+SYMBOLS_MEDIUM = [chr(i+49) for i in range(9)]
 SYMBOLS_BIG    = [chr(i+33) for i in range(10) if chr(i+33) != '(' and chr(i+33) != ')' and chr(i+33) != '\'']
 
 SMALL=3
 MEDIUM=7
+
+SHIPS=[1,1,1,2,4,4,6,6,7,8]
 
 ###
 def generate_warships_names(amount_ships:int,already_used_names:'list')->'list':
@@ -60,7 +62,7 @@ def generate_warships_names(amount_ships:int,already_used_names:'list')->'list':
         warships_names.append(name)
     return warships_names
 def generate_table(height:int,width:int)->'list':
-    table=[[0 for _ in range(width)] for _ in range(height)]
+    table=[["0" for _ in range(width)] for _ in range(height)]
     return table
 def display_table(table:'list',size_each_name:'dict')->None:
     link_name_symbol={}
@@ -83,17 +85,28 @@ def display_table(table:'list',size_each_name:'dict')->None:
         index_big%=len(SYMBOLS_BIG)
 
     longest_str=0
-    for i in table:
-        for j in i:
-            if not j:
+    for i in range(len(table)):
+        print('{}|'.format(i),end='')
+        for j in table[i]:
+            if j == '0':
                 print('.',end=' ')
-            elif j == 1:
-                print('X',end=' ')
-            else:
+            elif len(link_name_symbol):
                 print(link_name_symbol[j],end=' ')
+            else:
+                print(j,end=' ')
             if len(str(j)) > longest_str:
                 longest_str=len(str(j))
         print()
+    #
+    print('  ',end='')
+    for i in range(len(table[0])):
+        print('-',end=' ')
+    print()
+    print('  ',end='')
+    for i in range(len(table[0])):
+        print(i,end=' ')
+    print()
+    #
     longest_str+=2
     print('Caption:')
     for i in link_name_symbol.keys():
@@ -108,7 +121,7 @@ def check_able_lines(table:'matrix',ship_size:int)->'list':
     for i in range(table_height):
         tag_columns[i].append(-1)
         for j in range(table_width):
-            if table[i][j]:
+            if table[i][j] != '0':
                 tag_columns[i].append(j)
         tag_columns[i].append(table_width)
 
@@ -215,11 +228,11 @@ def put_randomly_ships_in_table(ships:'list',table:'matrix',ships_names:'liat')-
             if list_spots[j]!=0:
                index_spots.append(j)
         ##
-        print(list_spots,index_spots)
+        # print(list_spots,index_spots)
         line,column=None,None
         chosen_index=index_spots[int(random.random()*len(index_spots))]
         chosen=list_spots[chosen_index]
-        print(chosen_index,chosen)
+        # print(chosen_index,chosen)
         if vertical:
             column=chosen_list_spots
             line=chosen_index
@@ -233,7 +246,7 @@ def put_randomly_ships_in_table(ships:'list',table:'matrix',ships_names:'liat')-
         else:
             direction=int(random.random()*2+1)
         #
-        print(vertical,direction)
+        # print(vertical,direction)
         if vertical and direction==1:
             for j in range(i):
                 table[line+j][column]=ship_name
@@ -248,76 +261,156 @@ def put_randomly_ships_in_table(ships:'list',table:'matrix',ships_names:'liat')-
             for j in range(i):
                 table[line][column-j]=ship_name
         #
-        print("Ship {} size: {}, line:{}, column:{}, direction: {}".format(ship_name,i,line,column,direction))
+        # print("Ship {} size: {}, line:{}, column:{}, direction: {}".format(ship_name,i,line,column,direction))
         used_names[ship_name]=i
     return used_names
 ###
 def init_game_battleship(table_width:int,table_height:int,ships_list:"list")->None:
+    global ships_infos_user
+    global ships_infos_bot
+
     global table_ship_user
     global table_ship_bot
     
     global table_shot_user
     global table_shot_bot
 
-    global target_hit_user
-    global target_hit_bot
-
-    global puted_ships_user
-    global max_ships
-
     global commands
 
     global ships
-    global total_blocks
+    global total_blocks_user
+    global total_blocks_bot
     ## Init vars
-    table=[[0 for i in range(table_width)] for j in range(table_height)]
-    table_ship_user=table.copy()
-    table_ship_bot=table.copy()
+    ships_name_user=generate_warships_names(10,[])
+    ships_name_bot=generate_warships_names(10,ships_name_user)
 
-    table_shot_user=table_ship_user.copy()
-    table_shot_bot=table_ship_bot.copy()
+    table_ship_user=generate_table(table_width,table_height)
+    table_ship_bot=generate_table(table_width,table_height)
 
-    target_hit_user=0
-    target_hit_bot=0
+    table_shot_user=copy.deepcopy(table_ship_user)
+    table_shot_bot=copy.deepcopy(table_ship_bot)
+    # Put ships in tables
+    ships_infos_user=put_randomly_ships_in_table(ships_list,table_ship_user,ships_name_user)
+    ships_infos_bot=put_randomly_ships_in_table(ships_list,table_ship_bot,ships_name_bot)
 
-    puted_ships_user=0
-    max_ships=len(ships_list)
+    """
+    print("TABLE_USER")
+    display_table(table_ship_user,ships_infos_user)
+    print("TABLE BOT")
+    display_table(table_ship_bot,ships_infos_bot)
+    """
+
+    total_blocks_user=0
+    total_blocks_bot=0
+    for i in ships_infos_user.values():
+        total_blocks_user+=i
+    for i in ships_infos_bot.values():
+        total_blocks_bot+=i
     #
-    commands=["s","p"] # shot,put
-    #
+    commands=["s","v"]
+
     ships=ships_list
-    total_blocks=0
-    for i in ships:
-        total_blocks+=i
-def move_game_battleship(cmd:str)->None:
+def move_game_battleship(cmd:str,type_player:str)->None:
     cmd=cmd.split()
     if not cmd[0] in commands:
         print("Invalid command")
         return -1
-    if cmd[0]=="p":
-        put_ships_table(cmd[1:])
-        return 0
-    if puted_ships!=max_ship:
-        print("Please, put all ships in table!")
-        return 0
+    if cmd[0] == "s":
+        res=0
+        while not res:
+            inp=input('s: ').split()
+            res=shot(int(inp[0]),int(inp[1]),type_player)
+            display_table(table_shot_user,{})
+    elif cmd[0] == "v":
+            view_map(cmd[1])
+def end_game_battleship()->None:
+    global ships_infos_user
+    global ships_infos_bot
+
+    global table_ship_user
+    global table_ship_bot
+    
+    global table_shot_user
+    global table_shot_bot
+
+    global commands
+
+    global ships
+    global total_blocks_user
+    global total_blocks_bot
+    ###
+    del ships_infos_user
+    del ships_infos_bot
+
+    del table_ship_user
+    del table_ship_bot
+    
+    del table_shot_user
+    del table_shot_bot
+
+    del commands
+
+    del ships
+    del total_blocks_user
+    del total_blocks_bot
+
 ###
+def view_map(target:str)->None:
+    if target=="user":
+        display_table(table_ship_user,ships_infos_user)
+    else:
+        display_table(table_shot_user,{})
+def shot(line:int,column:int,type_player:str)->int: # 0:continue shooting 1:stop shoting
+    table_ship=[]
+    table_shot=[]
+    ships_info=[]
+    tot_blocks=0
+    #
+    if type_player=="user":
+        table_ship=table_ship_bot
+        table_shot=table_shot_user
+        ships_info=ships_infos_bot
+        tot_blocks=total_blocks_bot
+    else:
+        table_ship=table_ship_user
+        table_shot=table_shot_bot
+        ships_info=ships_infos_user
+        tot_blocks=total_blocks_user
+    ###
+    if line>len(table_ship) or column>len(table_ship[0]) or table_shot[line][column] in ['X','^']:
+        print("Invalid position. Try again")
+        return 0
+    ##
+    block_cont=table_ship[line][column]
+
+    table_shot[line][column]='X'
+    table_ship[line][column]='X'
+    if block_cont != '0' and block_cont!='X':
+        print("The {} hit a ship! Shot again".format(type_player))
+        ships_info[block_cont]-=1
+        table_shot[line][column]='^'
+        table_ship[line][column]='^'
+        ##
+        tot_blocks-=1
+        if not ships_info[block_cont] and type_player=="user":
+            print("You destroy the {} ship!".format(block_cont))
+        elif not ships_info[block_cont] and type_player=="bot":
+            print("The enumy destroy the {} ship!".format(block_cont))
+        return 0
+    print("The {} hit nothing".format(type_player))
+
+    return 1
+def check_victory()->int: # 1:user victory 2:bot victory 0:nothing
+    print(total_blocks_user,total_blocks_bot)
+    if not total_blocks_user:
+        return 1
+    if not total_blocks_bot:
+        return 2
+    return 0
 
 if __name__=='__main__':
-    table=[
-            [0,1,0,0,0,0,0],
-            [0,0,1,0,0,0,0],
-            [0,0,0,0,0,1,1],
-            [0,0,1,0,0,0,0]
-            ]
-    table=[
-            [0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0]
-            ]
-    table=generate_table(10,5)
-    #check_able_lines([],table,4)
-    #check_able_columns([],table,2)
-    names=generate_warships_names(25,[])
-    names=put_randomly_ships_in_table([4,3,2,1,3,10],table,names)
-    display_table(table,names)
+    while True:
+        init_game_battleship(10,10,SHIPS)
+        while not check_victory():
+            inp=input('*: ')
+            move_game_battleship(inp,"user")
