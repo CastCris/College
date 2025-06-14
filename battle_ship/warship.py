@@ -1,4 +1,7 @@
+import subprocess
+import keyboard
 import random
+import time
 import copy
 
 PREFIXES_WARSHIPS = [
@@ -65,7 +68,7 @@ def generate_table(height:int,width:int)->'list':
     table=[["0" for _ in range(width)] for _ in range(height)]
     return table
 def display_table(table:'list',size_each_name:'dict')->None:
-    link_name_symbol={}
+    link_name_symbol={'X':'X','^':'^'}
     index_small=0
     index_medium=0
     index_big=0
@@ -100,7 +103,7 @@ def display_table(table:'list',size_each_name:'dict')->None:
     #
     print('  ',end='')
     for i in range(len(table[0])):
-        print('-',end=' ')
+        print('-',end='-')
     print()
     print('  ',end='')
     for i in range(len(table[0])):
@@ -275,7 +278,11 @@ def init_game_battleship(table_width:int,table_height:int,ships_list:"list")->No
     global table_shot_user
     global table_shot_bot
 
+    global table_x
+    global table_y
+
     global commands
+    global commands_bot
 
     global ships
     global total_blocks_user
@@ -307,22 +314,28 @@ def init_game_battleship(table_width:int,table_height:int,ships_list:"list")->No
     for i in ships_infos_bot.values():
         total_blocks_bot+=i
     #
-    commands=["s","v"]
+    table_x=table_width
+    table_y=table_height
+    commands=["s","v","clear"]
+    commands_bot=["s"]
 
     ships=ships_list
-def move_game_battleship(cmd:str,type_player:str)->None:
+def move_game_battleship(cmd:str,type_player:int)->None:
     cmd=cmd.split()
+    print(cmd)
     if not cmd[0] in commands:
         print("Invalid command")
-        return -1
-    if cmd[0] == "s":
-        res=0
-        while not res:
-            inp=input('s: ').split()
-            res=shot(int(inp[0]),int(inp[1]),type_player)
-            display_table(table_shot_user,{})
-    elif cmd[0] == "v":
-            view_map(cmd[1])
+        return type_player
+    if cmd[0]=="s":
+        res=shot(int(cmd[1]),int(cmd[2]),type_player)
+        print("type:",type_player)
+        view_map((not type_player))
+        return res
+    if cmd[0]=="v":
+        return view_map((not type_player))
+    if cmd[0]=="clear":
+        subprocess.run(["clear"])
+        return type_player
 def end_game_battleship()->None:
     global ships_infos_user
     global ships_infos_bot
@@ -355,51 +368,57 @@ def end_game_battleship()->None:
     del total_blocks_bot
 
 ###
-def view_map(target:str)->None:
-    if target=="user":
+def view_map(target:int)->None:
+    if target:
         display_table(table_ship_user,ships_infos_user)
     else:
         display_table(table_shot_user,{})
-def shot(line:int,column:int,type_player:str)->int: # 0:continue shooting 1:stop shoting
+    return (not target)
+def shot(line:int,column:int,type_player:int)->int: 
     table_ship=[]
     table_shot=[]
     ships_info=[]
     tot_blocks=0
+    player_name=""
     #
-    if type_player=="user":
+    if type_player: #user
         table_ship=table_ship_bot
         table_shot=table_shot_user
         ships_info=ships_infos_bot
-        tot_blocks=total_blocks_bot
-    else:
+        tot_blocks=[total_blocks_bot]
+        player_name="user"
+    else: #bot
         table_ship=table_ship_user
         table_shot=table_shot_bot
         ships_info=ships_infos_user
-        tot_blocks=total_blocks_user
+        tot_blocks=[total_blocks_user]
+        player_name="bot"
     ###
     if line>len(table_ship) or column>len(table_ship[0]) or table_shot[line][column] in ['X','^']:
         print("Invalid position. Try again")
-        return 0
+        return type_player
     ##
     block_cont=table_ship[line][column]
 
     table_shot[line][column]='X'
     table_ship[line][column]='X'
     if block_cont != '0' and block_cont!='X':
-        print("The {} hit a ship! Shot again".format(type_player))
+        print("The {} hit a ship! Shot again".format(player_name))
+        # print(block_cont)
+        # print(ships_info[block_cont])
         ships_info[block_cont]-=1
         table_shot[line][column]='^'
         table_ship[line][column]='^'
         ##
-        tot_blocks-=1
-        if not ships_info[block_cont] and type_player=="user":
+        tot_blocks[0]-=1
+        if not ships_info[block_cont] and type_player:
             print("You destroy the {} ship!".format(block_cont))
-        elif not ships_info[block_cont] and type_player=="bot":
-            print("The enumy destroy the {} ship!".format(block_cont))
-        return 0
-    print("The {} hit nothing".format(type_player))
+        elif not ships_info[block_cont] and not type_player:
+            print("The enemy destroy the {} ship!".format(block_cont))
+        return type_player
+    print("The {} hit nothing".format(player_name))
 
-    return 1
+    return (not type_player)
 def check_victory()->int: # 1:user victory 2:bot victory 0:nothing
     print(total_blocks_user,total_blocks_bot)
     if not total_blocks_user:
@@ -407,10 +426,48 @@ def check_victory()->int: # 1:user victory 2:bot victory 0:nothing
     if not total_blocks_bot:
         return 2
     return 0
+###
+def generate_command()->str:
+    return commands_bot[int(random.random()*len(commands_bot))]
+def generate_options(cmd:str)->str:
+    if cmd=="s":
+        x,y=int(random.random()*table_x),int(random.random()*table_y)
+        cmd_cli=cmd+' '+str(x)+' '+str(y)
+        return cmd_cli
+#
+def wait_key(key:str)->None:
+    while True:
+        try:
+            if keyboard.is_pressed('Enter'):
+                break
+        except:
+            continue
 
 if __name__=='__main__':
     while True:
         init_game_battleship(10,10,SHIPS)
+        user=(not int(random.random()*2))
+        print("TABLE USER")
+        view_map(1)
+        print("==========")
+        print('\r',end='')
+        while len((inp:=input())):
+            pass
+        print("TABLE BOT")
+        view_map(0)
+        print()
+        time.sleep(2)
         while not check_victory():
-            inp=input('*: ')
-            move_game_battleship(inp,"user")
+            #print(user)
+            if user:
+                print("USER ROUND")
+                inp=input('*: ')
+                user=move_game_battleship(inp,user)
+                continue
+            #
+            print("BOT ROUND\r")
+            time.sleep(0.5)
+            bot_command=generate_command()
+            bot_command=generate_options(bot_command)
+            print(bot_command)
+            user=move_game_battleship(bot_command,user)
