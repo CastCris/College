@@ -2,9 +2,15 @@ import random
 import subprocess
 
 def generate_number()->int:
-    dirs_home=subprocess.run(["ls","-R","/home"], capture_output=True,text=True)
+    pwd=subprocess.run(["pwd"], capture_output=True,text=True)
+    pwd=pwd.stdout
+    path_home=""
+    for i in pwd.split('/'):
+        path_home+='/'+i
+        if i=="home":
+            break
+    dirs_home=subprocess.run(["ls",path_home,"-R"],text=True,capture_output=True)
     dirs_home=dirs_home.stdout
-    dirs_home=dirs_home.split()
     chose_dir=(dirs_home[int(random.random()*len(dirs_home))])
     # print(chose_dir)
     return len(chose_dir)

@@ -2,7 +2,14 @@ import subprocess
 import random
 
 def get_file()->"file":
-    pipe1=subprocess.Popen(["find","/home","-type","f"],stdout=subprocess.PIPE)
+    pwd=subprocess.run(["pwd"],text=True,capture_output=True)
+    pwd=pwd.stdout
+    dir_home=""
+    for i in pwd.split('/'):
+        if i=="home":
+            break
+        dir_home+='/'+i
+    pipe1=subprocess.Popen(["find",dir_home,"-type","f"],stdout=subprocess.PIPE)
     pipe2=subprocess.Popen(["grep","-Eo",'.*\\.py$|.*\\.txt$'],stdin=pipe1.stdout,stdout=subprocess.PIPE)
     pipe1.stdout.close()
 
