@@ -67,8 +67,29 @@ def generate_warships_names(amount_ships:int,already_used_names:'list')->'list':
 def generate_table(height:int,width:int)->'list':
     table=[["0" for _ in range(width)] for _ in range(height)]
     return table
-def display_table(table:'list',size_each_name:'dict')->None:
-    link_name_symbol={'X':'X','^':'^'}
+def display_table(table:'list',caption:'dict')->None:
+    for i in range(len(table)):
+        print('{}|'.format(i),end='')
+        for j in table[i]:
+            if j == '0':
+                print('.',end=' ')
+            elif j in caption.keys():
+                print(caption[j],end=' ')
+            else:
+                print('.',end=' ')
+        print()
+    #
+    print(' #',end='')
+    for i in range(len(table[0])):
+        print('-',end=' ')
+    print()
+    print('  ',end='')
+    for i in range(len(table[0])):
+        print(i,end=' ')
+    print()
+    #
+def create_caption(size_each_name:'dict')->'dict':
+    link_name_symbol={'shot missed':'X','hit ship':'^'}
     index_small=0
     index_medium=0
     index_big=0
@@ -86,34 +107,18 @@ def display_table(table:'list',size_each_name:'dict')->None:
         index_small%=len(SYMBOLS_SMALL)
         index_medium%=len(SYMBOLS_MEDIUM)
         index_big%=len(SYMBOLS_BIG)
+    return link_name_symbol
 
+def display_caption(caption:'dict')->None:
     longest_str=0
-    for i in range(len(table)):
-        print('{}|'.format(i),end='')
-        for j in table[i]:
-            if j == '0':
-                print('.',end=' ')
-            elif len(link_name_symbol):
-                print(link_name_symbol[j],end=' ')
-            else:
-                print(j,end=' ')
-            if len(str(j)) > longest_str:
-                longest_str=len(str(j))
-        print()
-    #
-    print('  ',end='')
-    for i in range(len(table[0])):
-        print('-',end='-')
-    print()
-    print('  ',end='')
-    for i in range(len(table[0])):
-        print(i,end=' ')
-    print()
-    #
+    for i in caption.keys():
+        if len(i)>longest_str:
+            longest_str=len(i)
     longest_str+=2
     print('Caption:')
-    for i in link_name_symbol.keys():
-        print(f"{i:<{longest_str}} = {link_name_symbol[i]}")
+    for i in caption.keys():
+        print(f"{i:<{longest_str}} = {caption[i]}")
+
 #
 def check_able_lines(table:'matrix',ship_size:int)->'list':
     table_height=len(table)
@@ -287,6 +292,10 @@ def init_game_battleship(table_width:int,table_height:int,ships_list:"list")->No
     global ships
     global total_blocks_user
     global total_blocks_bot
+    global score
+
+    global caption_user
+    global caption_bot
     ## Init vars
     ships_name_user=generate_warships_names(10,[])
     ships_name_bot=generate_warships_names(10,ships_name_user)
@@ -313,28 +322,43 @@ def init_game_battleship(table_width:int,table_height:int,ships_list:"list")->No
         total_blocks_user+=i
     for i in ships_infos_bot.values():
         total_blocks_bot+=i
+    score=[0,0] # bot,user
     #
     table_x=table_width
     table_y=table_height
-    commands=["s","v","clear"]
+    commands=["s","v","clear","caption"]
     commands_bot=["s"]
 
     ships=ships_list
+    #
+    caption_user=create_caption(ships_infos_user)
+    caption_bot=create_caption(ships_infos_bot)
 def move_game_battleship(cmd:str,type_player:int)->None:
     cmd=cmd.split()
-    print(cmd)
+    # print(cmd)
     if not cmd[0] in commands:
         print("Invalid command")
         return type_player
     if cmd[0]=="s":
         res=shot(int(cmd[1]),int(cmd[2]),type_player)
-        print("type:",type_player)
+        # print("type:",type_player)
+        time.sleep(1)
         view_map((not type_player))
+        time.sleep(2)
         return res
-    if cmd[0]=="v":
-        return view_map((not type_player))
+    #
+    if cmd[0]=="v" and cmd[1]=="user":
+        view_map(1)
+        return type_player
+    elif cmd[0]=="v":
+        view_map(0)
+        return type_player
+    #
     if cmd[0]=="clear":
         subprocess.run(["clear"])
+        return type_player
+    if cmd[0]=="caption":
+        display_caption(caption_user)
         return type_player
 def end_game_battleship()->None:
     global ships_infos_user
@@ -346,11 +370,19 @@ def end_game_battleship()->None:
     global table_shot_user
     global table_shot_bot
 
+    global table_x
+    global table_y
+
     global commands
+    global commands_bot
 
     global ships
     global total_blocks_user
     global total_blocks_bot
+    global score
+
+    global caption_user
+    global caption_bot
     ###
     del ships_infos_user
     del ships_infos_bot
@@ -361,56 +393,67 @@ def end_game_battleship()->None:
     del table_shot_user
     del table_shot_bot
 
+    del table_x
+    del table_y
+
     del commands
+    del commands_bot
 
     del ships
     del total_blocks_user
     del total_blocks_bot
+    del score
+
+    del caption_user
+    del caption_bot
 
 ###
 def view_map(target:int)->None:
     if target:
-        display_table(table_ship_user,ships_infos_user)
+        print("TABLE USER")
+        display_table(table_ship_user,caption_user)
     else:
-        display_table(table_shot_user,{})
+        print("TABLE BOT")
+        display_table(table_ship_bot,{"shot missed":'X',"hit ship":'^'})
     return (not target)
 def shot(line:int,column:int,type_player:int)->int: 
     table_ship=[]
     table_shot=[]
     ships_info=[]
-    tot_blocks=0
+    tot_blocks=score
     player_name=""
     #
     if type_player: #user
         table_ship=table_ship_bot
         table_shot=table_shot_user
         ships_info=ships_infos_bot
-        tot_blocks=[total_blocks_bot]
         player_name="user"
     else: #bot
         table_ship=table_ship_user
         table_shot=table_shot_bot
         ships_info=ships_infos_user
-        tot_blocks=[total_blocks_user]
         player_name="bot"
     ###
-    if line>len(table_ship) or column>len(table_ship[0]) or table_shot[line][column] in ['X','^']:
+    if line>=len(table_ship) or column>=len(table_ship[0]) or table_shot[line][column] in ['shot missed','hit ship']:
         print("Invalid position. Try again")
         return type_player
+
+    print("The {} will shot in {} line {} column!".format(player_name,line,column))
+    time.sleep(0.5)
     ##
     block_cont=table_ship[line][column]
 
-    table_shot[line][column]='X'
-    table_ship[line][column]='X'
-    if block_cont != '0' and block_cont!='X':
+    table_shot[line][column]='shot missed'
+    table_ship[line][column]='shot missed'
+    if block_cont != 'hit ship' and block_cont!='shot missed' and block_cont!='0':
         print("The {} hit a ship! Shot again".format(player_name))
         # print(block_cont)
         # print(ships_info[block_cont])
         ships_info[block_cont]-=1
-        table_shot[line][column]='^'
-        table_ship[line][column]='^'
+        table_shot[line][column]='hit ship'
+        table_ship[line][column]='hit ship'
         ##
-        tot_blocks[0]-=1
+        tot_blocks[type_player]+=1
         if not ships_info[block_cont] and type_player:
             print("You destroy the {} ship!".format(block_cont))
         elif not ships_info[block_cont] and not type_player:
@@ -420,10 +463,9 @@ def shot(line:int,column:int,type_player:int)->int:
 
     return (not type_player)
 def check_victory()->int: # 1:user victory 2:bot victory 0:nothing
-    print(total_blocks_user,total_blocks_bot)
-    if not total_blocks_user:
+    if score[1]==total_blocks_bot: # user
         return 1
-    if not total_blocks_bot:
+    if score[0]==total_blocks_user: # bot
         return 2
     return 0
 ###
@@ -435,39 +477,46 @@ def generate_options(cmd:str)->str:
         cmd_cli=cmd+' '+str(x)+' '+str(y)
         return cmd_cli
 #
-def wait_key(key:str)->None:
+def wait_key(key:str)->None: # Needs the root permision to run in linux :/
     while True:
-        try:
-            if keyboard.is_pressed('Enter'):
-                break
-        except:
-            continue
+        if keyboard.is_pressed(key):
+            break
 
 if __name__=='__main__':
     while True:
         init_game_battleship(10,10,SHIPS)
         user=(not int(random.random()*2))
-        print("TABLE USER")
+        ##
         view_map(1)
-        print("==========")
-        print('\r',end='')
-        while len((inp:=input())):
-            pass
-        print("TABLE BOT")
+        print("="*int((subprocess.run(["tput","cols"],text=True,capture_output=True)).stdout))
+
         view_map(0)
-        print()
+        print("="*int((subprocess.run(["tput","cols"],text=True,capture_output=True)).stdout))
         time.sleep(2)
-        while not check_victory():
+        prev_user_value=-1
+        ##
+        while not (victory:=check_victory()):
+            if prev_user_value!=user and user:
+                print("\033[92mUSER ROUND")
+                prev_user_value=user
+            elif prev_user_value!=user and not user:
+                print("\033[94mBOT ROUND")
+                prev_user_value=user
             #print(user)
             if user:
-                print("USER ROUND")
                 inp=input('*: ')
+                print("\033[1A",end='')
                 user=move_game_battleship(inp,user)
                 continue
             #
-            print("BOT ROUND\r")
             time.sleep(0.5)
             bot_command=generate_command()
             bot_command=generate_options(bot_command)
-            print(bot_command)
+            # print(bot_command)
             user=move_game_battleship(bot_command,user)
+        end_game_battleship()
+        if victory==1:
+            print("\033[1;92mYou win!\033[0m")
+        else:
+            print("\033[1;91mThe enemy win :(\033[0m")
+        time.sleep(1)
