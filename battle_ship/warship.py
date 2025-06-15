@@ -47,9 +47,18 @@ MEDIUM=7
 
 SHIPS=[1,1,1,2,4,4,6,6,7,8]
 
+BLOCK_IGNORE='0'
 SHOT_SYMBOL='^'
 HIT_SHIP_SYMBOL='/'
-BLOCK_IGNORE='0'
+DESTROY_SHIP_SYMBOL="&"
+
+MSG_SHOT="shot missed"
+MSG_HIT="hit ship"
+MSG_DESTROY="destroy ship"
+
+DEFAULT_CAPTION={MSG_SHOT:SHOT_SYMBOL,
+                 MSG_HIT:HIT_SHIP_SYMBOL,
+                 MSG_DESTROY:DESTROY_SHIP_SYMBOL}
 
 ###
 def generate_warships_names(amount_ships:int,already_used_names:'list')->'list':
@@ -102,7 +111,7 @@ def display_table(table:'list',caption:'dict')->None:
     print()
     #
 def create_caption(size_each_name:'dict')->'dict':
-    link_name_symbol={'shot missed':SHOT_SYMBOL,'hit ship':HIT_SHIP_SYMBOL}
+    link_name_symbol=DEFAULT_CAPTION.copy()
     index_small=0
     index_medium=0
     index_big=0
@@ -121,7 +130,6 @@ def create_caption(size_each_name:'dict')->'dict':
         index_medium%=len(SYMBOLS_MEDIUM)
         index_big%=len(SYMBOLS_BIG)
     return link_name_symbol
-
 def display_caption(caption:'dict')->None:
     longest_str=0
     for i in caption.keys():
@@ -131,7 +139,6 @@ def display_caption(caption:'dict')->None:
     print('Caption:')
     for i in caption.keys():
         print(f"{i:<{longest_str}} = {caption[i]}")
-
 #
 def check_able_lines(table:'matrix',ship_size:int)->'list':
     table_height=len(table)
@@ -321,8 +328,8 @@ def init_game_battleship(table_width:int,table_height:int,ships_list:"list")->No
     global ships_infos_user
     global ships_infos_bot
     # Ships posi
-    global ships_user_posi
-    global ships_bot_posi
+    global ships_posi_user
+    global ships_posi_bot
     # Able commands
     global commands
     global commands_bot
@@ -371,8 +378,6 @@ def init_game_battleship(table_width:int,table_height:int,ships_list:"list")->No
     print("TABLE BOT")
     display_table(table_ship_bot,ships_infos_bot)
     """
-    print(ships_posi_user)
-    print(ships_posi_bot)
 
 def move_game_battleship(cmd:str,type_player:int)->None:
     cmd=cmd.split()
@@ -449,7 +454,7 @@ def view_map(target:int)->None:
         display_table(table_ship_user,caption_user)
     else:
         print("TABLE BOT")
-        display_table(table_ship_bot,{"shot missed":SHOT_SYMBOL,"hit ship":HIT_SHIP_SYMBOL})
+        display_table(table_ship_bot,DEFAULT_CAPTION)
     return (not target)
 def shot(line:int,column:int,type_player:int)->int: 
     table_ship=[]
@@ -475,23 +480,42 @@ def shot(line:int,column:int,type_player:int)->int:
     ##
     block_cont=table_ship[line][column]
 
-    table_ship[line][column]='shot missed'
-    if block_cont != 'hit ship' and block_cont!='shot missed' and block_cont!='0':
+    table_ship[line][column]=MSG_SHOT
+    if block_cont != MSG_SHOT and block_cont!=MSG_HIT and block_cont!=BLOCK_IGNORE:
         print("The {} hit a ship! Shot again".format(player_name))
         # print(block_cont)
         # print(ships_info[block_cont])
         ships_info[block_cont]-=1
-        table_ship[line][column]='hit ship'
+        table_ship[line][column]=MSG_HIT
         ##
         tot_blocks[type_player]+=1
         if not ships_info[block_cont] and type_player:
+            destroy_ship(block_cont,type_player)
             print("You destroy the {} ship!".format(block_cont))
         elif not ships_info[block_cont] and not type_player:
+            destroy_ship(block_cont,type_player)
             print("The enemy destroy the {} ship!".format(block_cont))
         return type_player
     print("The {} hit nothing".format(player_name))
 
     return (not type_player)
+def destroy_ship(ship_name:str,type_player:int)->None:
+    table=[]
+    positions_line=[]
+    positions_column=[]
+    if not type_player: #bot
+        table=table_ship_user
+        positions_line=ships_posi_user[ship_name][0]
+        positions_column=ships_posi_user[ship_name][1]
+    else:
+        table=table_ship_bot
+        positions_line=ships_posi_bot[ship_name][0]
+        positions_column=ships_posi_bot[ship_name][1]
+
+    for i in range(len(positions_line)):
+        line=positions_line[i]
+        column=positions_column[i]
+        table[line][column]=MSG_DESTROY
 def check_victory()->int: # 1:user victory 2:bot victory 0:nothing
     if score[1]==total_blocks_bot: # user
         return 1
