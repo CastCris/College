@@ -1,5 +1,4 @@
 import subprocess
-import keyboard
 import random
 import time
 import copy
@@ -340,13 +339,16 @@ def init_game_battleship(table_width:int,table_height:int,ships_list:"list")->No
     # Caption
     global caption_user
     global caption_bot
+	# Bot QI
+    global table_shot_bot
+    global table_shot_user
     ###
     ## Init vars
     ships_name_user=generate_warships_names(10,[])
     ships_name_bot=generate_warships_names(10,ships_name_user)
     ## Tables with the ships
-    table_ship_user=generate_table(table_width,table_height)
-    table_ship_bot=generate_table(table_width,table_height)
+    table_ship_user=generate_table(table_height,table_width)
+    table_ship_bot=generate_table(table_height,table_width)
     ## Table size
     table_x=table_width
     table_y=table_height
@@ -372,6 +374,9 @@ def init_game_battleship(table_width:int,table_height:int,ships_list:"list")->No
     ## Caption
     caption_user=create_caption(ships_infos_user)
     caption_bot=create_caption(ships_infos_bot)
+	## BOT QI
+    table_shot_bot=generate_table(table_height,table_width)
+    table_shot_user=generate_table(table_height,table_width)
     """
     print("TABLE_USER")
     display_table(table_ship_user,ships_infos_user)
@@ -458,20 +463,23 @@ def view_map(target:int)->None:
     return (not target)
 def shot(line:int,column:int,type_player:int)->int: 
     table_ship=[]
+    table_shot=[]
     ships_info=[]
     tot_blocks=score
     player_name=""
     #
     if type_player: #user
         table_ship=table_ship_bot
+        table_shot=table_shot_user
         ships_info=ships_infos_bot
         player_name="user"
     else: #bot
         table_ship=table_ship_user
+        table_shot=table_shot_bot
         ships_info=ships_infos_user
         player_name="bot"
     ###
-    if line>=len(table_ship) or column>=len(table_ship[0]) or table_ship[line][column] in ['shot missed','hit ship']:
+    if line>=len(table_ship) or column>=len(table_ship[0]) or table_ship[line][column] in DEFAULT_CAPTION.keys():
         print("Invalid position. Try again")
         return type_player
 
@@ -481,12 +489,14 @@ def shot(line:int,column:int,type_player:int)->int:
     block_cont=table_ship[line][column]
 
     table_ship[line][column]=MSG_SHOT
+    table_shot[line][column]=MSG_SHOT
     if block_cont != MSG_SHOT and block_cont!=MSG_HIT and block_cont!=BLOCK_IGNORE:
         print("The {} hit a ship! Shot again".format(player_name))
         # print(block_cont)
         # print(ships_info[block_cont])
         ships_info[block_cont]-=1
         table_ship[line][column]=MSG_HIT
+        table_shot[line][column]=MSG_HIT
         ##
         tot_blocks[type_player]+=1
         if not ships_info[block_cont] and type_player:
@@ -500,22 +510,26 @@ def shot(line:int,column:int,type_player:int)->int:
 
     return (not type_player)
 def destroy_ship(ship_name:str,type_player:int)->None:
-    table=[]
+    table_ship=[]
+    table_shot=[]
     positions_line=[]
     positions_column=[]
     if not type_player: #bot
-        table=table_ship_user
+        table_ship=table_ship_user
+        table_shot=table_shot_bot
         positions_line=ships_posi_user[ship_name][0]
         positions_column=ships_posi_user[ship_name][1]
     else:
-        table=table_ship_bot
+        table_ship=table_ship_bot
+        table_shot=table_shot_user
         positions_line=ships_posi_bot[ship_name][0]
         positions_column=ships_posi_bot[ship_name][1]
 
     for i in range(len(positions_line)):
         line=positions_line[i]
         column=positions_column[i]
-        table[line][column]=MSG_DESTROY
+        table_ship[line][column]=MSG_DESTROY
+        table_shot[line][column]=MSG_DESTROY
 def check_victory()->int: # 1:user victory 2:bot victory 0:nothing
     if score[1]==total_blocks_bot: # user
         return 1
@@ -527,9 +541,15 @@ def generate_command()->str:
     return commands_bot[int(random.random()*len(commands_bot))]
 def generate_options(cmd:str)->str:
     if cmd=="s":
-        x,y=int(random.random()*table_x),int(random.random()*table_y)
-        cmd_cli=cmd+' '+str(x)+' '+str(y)
-        return cmd_cli
+        return generate_options_shot()
+def generate_options_shot()->str:
+    hit_ships=get_ships_positions(table_shot_bot)
+    if not MSG_HIT in hit_ships.keys():
+        white_spaces=get_ships_positions(table_shot_bot)
+        white_spaces=white_spaces[BLOCK_IGNORE]
+        index_xy=int(random.random()*len(white_spaces[0]))
+        
+        return 's '+str(white_spaces[0][index_xy])+' '+str(white_spaces[1][index_xy])
 #
 def wait_key(key:str)->None: # Needs the root permision to run in linux :/
     while True:
