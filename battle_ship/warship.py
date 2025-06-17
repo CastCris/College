@@ -296,7 +296,7 @@ def get_ships_names(table:'matrix')->'list':
     ships_name=[]
     for i in table:
         for j in i:
-            if not j in ships_name and j!=BLOCK_IGNORE:
+            if not j in ships_name:
                 ships_name.append(j)
     return ships_name
 def get_ships_positions(table:'matrix')->'dict':
@@ -550,6 +550,54 @@ def generate_options_shot()->str:
         index_xy=int(random.random()*len(white_spaces[0]))
         
         return 's '+str(white_spaces[0][index_xy])+' '+str(white_spaces[1][index_xy])
+    hit_ships=hit_ships[MSG_HIT]
+    direction_ships=generate_table(table_y,table_x)
+    ships_ID=1
+    for i in range(len(hit_ships[0])):
+        line,column=hit_ships[0][i],hit_ships[1][i]
+        able_directions=[]
+
+        ##
+        cont_over=direction_ships[line-1][column] if line else BLOCK_IGNORE
+        cont_down=direction_ships[line+1][column] if line<table_y-1 else BLOCK_IGNORE
+        cont_left=direction_ships[line][column-1] if column else BLOCK_IGNORE
+        cont_right=direction_ships[line][column+1] if column<table_x-1 else BLOCK_IGNORE
+
+        if cont_over != BLOCK_IGNORE:
+            able_directions.append(cont_over)
+        if cont_down != BLOCK_IGNORE:
+            able_directions.append(cont_down)
+        if cont_left != BLOCK_IGNORE:
+            able_directions.append(cont_left)
+        if cont_right != BLOCK_IGNORE:
+            able_directions.append(cont_right)
+        
+        if not len(able_directions):
+            able_directions.append(ships_ID)
+            ships_ID+=1
+        #
+        direction=able_directions[int(random.random()*len(able_directions))]
+        direction_ships[line][column]=direction
+    #
+    head_tail={}
+
+    guess_ships=get_ships_positions(direction_ships)
+    del guess_ships[BLOCK_IGNORE]
+    for i in guess_ships.keys():
+        #
+        if not i in head_tail.keys():
+            head_tail[i]=[[guess_ships[i][0][0],guess_ships[i][1][0]],
+                          [-1,-1]]
+        #
+        for j in range(len(guess_ships[i][0])):
+            line,column=guess_ships[i][0][j],guess_ships[i][1][j]
+            head_tail[i][1]=[line,column]
+    for i in direction_ships:
+        print(i)
+    for i in head_tail.keys():
+        print(head_tail[i])
+
+    return 's 0 0'
 #
 def wait_key(key:str)->None: # Needs the root permision to run in linux :/
     while True:
