@@ -46,7 +46,7 @@ MEDIUM=7
 
 SHIPS=[1,1,1,2,4,4,6,6,7,8]
 
-BLOCK_IGNORE='~'
+BLOCK_IGNORE='.'
 SHOT_SYMBOL='^'
 HIT_SHIP_SYMBOL='/'
 DESTROY_SHIP_SYMBOL="&"
@@ -55,9 +55,11 @@ MSG_SHOT="shot missed"
 MSG_HIT="hit ship"
 MSG_DESTROY="destroy ship"
 
-DEFAULT_CAPTION={MSG_SHOT:SHOT_SYMBOL,
-                 MSG_HIT:HIT_SHIP_SYMBOL,
-                 MSG_DESTROY:DESTROY_SHIP_SYMBOL}
+DEFAULT_CAPTION={
+        MSG_SHOT:SHOT_SYMBOL,
+        MSG_HIT:HIT_SHIP_SYMBOL,
+        MSG_DESTROY:DESTROY_SHIP_SYMBOL
+     }
 
 ###
 def generate_warships_names(amount_ships:int,already_used_names:'list')->'list':
@@ -92,12 +94,10 @@ def display_table(table:'list',caption:'dict')->None:
     for i in range(len(table)):
         print('{}|'.format(i),end='')
         for j in table[i]:
-            if j == '0':
-                print('.',end=' ')
-            elif j in caption.keys():
-                print(caption[j],end=' ')
+            if not j in caption.keys():
+                print(BLOCK_IGNORE,end=' ')
             else:
-                print('.',end=' ')
+                print(caption[j],end=' ')
         print()
     # Numbers columns
     print(' #',end='')
@@ -367,7 +367,7 @@ def init_game_battleship(table_width:int,table_height:int,ships_list:"list")->No
     ships_posi_user=get_ships_positions(table_ship_user)
     ships_posi_bot=get_ships_positions(table_ship_bot)
     ## Able commands
-    commands=["s","v","clear","caption"]
+    commands=["s","v","clear","caption","score"]
     commands_bot=["s"]
     ## Score
     total_blocks_user=0
@@ -410,6 +410,10 @@ def move_game_battleship(cmd:str,type_player:int)->None:
         view_map((not type_player))
         time.sleep(2)
         return res
+    #
+    if cmd[0]=="score":
+        print("Blocks ships remain to win: {}\nBlocks ships remain to defeat: {}".format(total_blocks_bot-score[1],total_blocks_user-score[0]))
+        return type_player
     #
     if cmd[0]=="v" and cmd[1]=="user":
         view_map(1)
@@ -472,24 +476,27 @@ def view_map(target:int)->None:
         display_table(table_ship_user,caption_user)
     else:
         print("TABLE BOT")
-        # display_table(table_ship_bot,DEFAULT_CAPTION)
-        display_table(table_ship_bot,caption_bot)
+        display_table(table_ship_bot,DEFAULT_CAPTION)
+        # display_table(table_ship_bot,caption_bot)
     return (not target)
 def shot(line:int,column:int,type_player:int)->int: 
     table_ship=[]
-    table_shot=[]
+    table_guess=[]
+    caption_guess={}
     ships_info=[]
     tot_blocks=score
     player_name=""
     #
     if type_player: #user
         table_ship=table_ship_bot
-        table_shot=table_guess_user
+        table_guess=table_guess_user
+        caption_guess=caption_guess_user
         ships_info=ships_infos_bot
         player_name="user"
     else: #bot
         table_ship=table_ship_user
-        table_shot=table_guess_bot
+        table_guess=table_guess_bot
+        caption_guess=caption_guess_bot
         ships_info=ships_infos_user
         player_name="bot"
     ###
@@ -503,15 +510,15 @@ def shot(line:int,column:int,type_player:int)->int:
     block_cont=table_ship[line][column]
 
     table_ship[line][column]=MSG_SHOT
-    table_shot[line][column]=MSG_SHOT
+    table_guess[line][column]=MSG_SHOT
     if block_cont != MSG_SHOT and block_cont!=MSG_HIT and block_cont!=BLOCK_IGNORE:
         print("The {} hit a ship! Shot again".format(player_name))
         # print(block_cont)
         # print(ships_info[block_cont])
         ships_info[block_cont]-=1
         table_ship[line][column]=MSG_HIT
-        table_shot[line][column]=MSG_HIT
-        decision_guess_table(type_player)
+        table_guess[line][column]=MSG_HIT
+        guess_ships(table_guess,caption_guess)
         ##
         tot_blocks[type_player]+=1
         if not ships_info[block_cont] and type_player:
@@ -526,14 +533,14 @@ def shot(line:int,column:int,type_player:int)->int:
     return (not type_player)
 def destroy_ship(ship_name:str,type_player:int)->None:
     table_ship=[]
-    table_shot=[]
+    table_guess=[]
     caption_guess=[]
     head_tail_guess=[]
     positions_line=[]
     positions_column=[]
     if not type_player: #bot
         table_ship=table_ship_user
-        table_shot=table_guess_bot
+        table_guess=table_guess_bot
 
         caption_guess=caption_guess_bot
         head_tail_guess=head_tail_bot
@@ -542,7 +549,7 @@ def destroy_ship(ship_name:str,type_player:int)->None:
         positions_column=ships_posi_user[ship_name][1]
     else:
         table_ship=table_ship_bot
-        table_shot=table_guess_user
+        table_guess=table_guess_user
 
         caption_guess=caption_guess_user
         head_tail_guess=head_tail_user
@@ -550,17 +557,24 @@ def destroy_ship(ship_name:str,type_player:int)->None:
         positions_line=ships_posi_bot[ship_name][0]
         positions_column=ships_posi_bot[ship_name][1]
 
-    ship_id_guess=table_shot[positions_line[0]][positions_column[0]]
+    ship_id_guess=[]
     for i in range(len(positions_line)):
         line=positions_line[i]
         column=positions_column[i]
+        if not table_guess[line][column] in ship_id_guess:
+            ship_id_guess.append(table_guess[line][column])
         table_ship[line][column]=MSG_DESTROY
-        table_shot[line][column]=MSG_DESTROY
+        table_guess[line][column]=MSG_DESTROY
 
-    curr_guess_ship=get_ships_names(table_shot)
-    if not ship_id_guess in curr_guess_ship:
-        del caption_guess[ship_id_guess]
-        del head_tail_guess[ship_id_guess]
+    curr_guess_ship=get_ships_names(table_guess)
+    for i in ship_id_guess:
+        if i in curr_guess_ship:
+            continue
+        # print('CLEAR {}'.format(i))
+        if i in caption_guess:
+            del caption_guess[i]
+        if i in head_tail_guess :
+            del head_tail_guess[i]
     decision_guess_table(type_player)
 #
 def update_head_tail(table_guess:'matrix',caption_guess:'dict',head_tail_guess:'dict')->None:
@@ -570,7 +584,7 @@ def update_head_tail(table_guess:'matrix',caption_guess:'dict',head_tail_guess:'
         if not i in caption_guess.keys():
             continue
         ship_posi=guess_ships[i]
-        print('2: {}'.format(ship_posi))
+        # print('2: {}'.format(ship_posi))
 
         line_head,colm_head=0,0
         line_tail,colm_tail=0,0
@@ -591,8 +605,8 @@ def update_head_tail(table_guess:'matrix',caption_guess:'dict',head_tail_guess:'
         if caption_guess[i]=='H' and colm_head<table_x-1 and table_guess[line_head][colm_head+1]==BLOCK_IGNORE:
             colm_head+=1
         #
-        print('6: {},{} {},{}'.format(line_head,colm_head,line_tail,colm_tail))
-        if table_guess[line_head][colm_head]==BLOCK_IGNORE or table_guess[line_tail][colm_tail]==BLOCK_IGNORE:
+        # print('6: {},{} {},{}'.format(line_head,colm_head,line_tail,colm_tail))
+        if table_guess[line_head][colm_head] in [BLOCK_IGNORE,MSG_HIT] or table_guess[line_tail][colm_tail] in [BLOCK_IGNORE,MSG_HIT] :
             head_tail_guess[i]=[[line_head,colm_head],[line_tail,colm_tail]]
             continue
 
@@ -605,7 +619,7 @@ def update_head_tail(table_guess:'matrix',caption_guess:'dict',head_tail_guess:'
             ship_ID+=1
             repeat=1
     if repeat:
-        print('REP!')
+        # print('REP!')
         update_head_tail(table_guess,caption_guess,head_tail_guess)
 def guess_ships(table_guess:'matrix',caption_guess:'dict')->None:
     hit_ships=get_ships_positions(table_guess)
@@ -645,8 +659,10 @@ def guess_ships(table_guess:'matrix',caption_guess:'dict')->None:
         if cont_down==BLOCK_IGNORE:
             able_positions.append('V')
         ##
-        print('1: {}'.format(able_positions))
-        print('5: {}'.format(able_ships))
+        # print('1: {}'.format(able_positions))
+        # print('5: {}'.format(able_ships))
+        if not len(able_positions):
+            able_positions=['V','H']
         if not len(able_ships):
             able_ships.append(ships_ID)
             caption_guess[ships_ID]=able_positions[int(random.random()*len(able_positions))]
@@ -667,10 +683,10 @@ def decision_guess_table(type_player:int)->None:
 
     guess_ships(table_guess,caption_guess)
     update_head_tail(table_guess,caption_guess,head_tail_guess)
-    for i in table_guess:
-        print(i)
-    print('3: {}'.format(caption_guess))
-    print('4: {}'.format(head_tail_guess))
+    # for i in table_guess:
+    #    print(i)
+    # print('3: {}'.format(caption_guess))
+    # print('4: {}'.format(head_tail_guess))
 
 def check_victory()->int: # 1:user victory 2:bot victory 0:nothing
     if score[1]==total_blocks_bot: # user
@@ -685,14 +701,26 @@ def generate_options(cmd:str)->str:
     if cmd=="s":
         return generate_options_shot()
 def generate_options_shot()->str:
-    hit_ships=get_ships_positions(table_guess_bot)
-    if not MSG_HIT in hit_ships.keys():
+    if not len(caption_guess_bot):
         white_spaces=get_ships_positions(table_guess_bot)
         white_spaces=white_spaces[BLOCK_IGNORE]
         index_xy=int(random.random()*len(white_spaces[0]))
         
         return 's '+str(white_spaces[0][index_xy])+' '+str(white_spaces[1][index_xy])
-    return 's 0 0'
+    ship_guess_id=list(head_tail_bot.keys())[int(random.random()*len(list(head_tail_bot.keys())))]
+    ship_head_tail=head_tail_bot[ship_guess_id]
+    line_head,colm_head=ship_head_tail[0][0],ship_head_tail[0][1]
+    line_tail,colm_tail=ship_head_tail[1][0],ship_head_tail[1][1]
+
+    able_posi=[]
+    if table_guess_bot[line_head][colm_head]==BLOCK_IGNORE:
+        able_posi.append([line_head,colm_head])
+    if table_guess_bot[line_tail][colm_tail]==BLOCK_IGNORE:
+        able_posi.append([line_tail,colm_tail])
+    index_random=int(random.random()*len(able_posi))
+    line_shot,colm_shot=able_posi[index_random][0],able_posi[index_random][1]
+
+    return 's '+str(line_shot)+' '+str(colm_shot)
 #
 def wait_key(key:str)->None: # Needs the root permision to run in linux :/
     while True:
