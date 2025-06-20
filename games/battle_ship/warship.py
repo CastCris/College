@@ -446,45 +446,71 @@ def decode_position_table(line:str,colm:str)->'list':
     line_dcode,colm_dcode=ord(line)-BASE_CHAR_CODE,ord(colm)-BASE_CHAR_CODE
     return [line_dcode,colm_dcode]
 def end_game_battleship()->None:
-    global ships_infos_user
-    global ships_infos_bot
-
     global table_ship_user
     global table_ship_bot
-    
-    global table_x
-    global table_y
-
+    # Table size
+    global table_x # width
+    global table_y # height
+    # Ships size
+    global ships
+    # Ships blocks
+    global ships_infos_user
+    global ships_infos_bot
+    # Ships posi
+    global ships_posi_user
+    global ships_posi_bot
+    # Able commands
     global commands
     global commands_bot
-
-    global ships
+    # Score
     global total_blocks_user
     global total_blocks_bot
     global score
-
+    # Caption
     global caption_user
     global caption_bot
-    ###
-    del ships_infos_user
-    del ships_infos_bot
+	# Bot QI
+    global table_guess_bot
+    global table_guess_user
 
+    global caption_guess_bot
+    global caption_guess_user
+
+    global head_tail_bot
+    global head_tail_user
+    ###
     del table_ship_user
     del table_ship_bot
-    
-    del table_x
-    del table_y
-
+    # Table size
+    del table_x # width
+    del table_y # height
+    # Ships size
+    del ships
+    # Ships blocks
+    del ships_infos_user
+    del ships_infos_bot
+    # Ships posi
+    del ships_posi_user
+    del ships_posi_bot
+    # Able commands
     del commands
     del commands_bot
-
-    del ships
+    # Score
     del total_blocks_user
     del total_blocks_bot
     del score
-
+    # Caption
     del caption_user
     del caption_bot
+	# Bot QI
+    del table_guess_bot
+    del table_guess_user
+
+    del caption_guess_bot
+    del caption_guess_user
+
+    del head_tail_bot
+    del head_tail_user
 
 ###
 def view_map(target:int)->None:
@@ -792,7 +818,7 @@ def wait_key(key:str)->None: # Needs the root permision to run in linux :/
     while True:
         if keyboard.is_pressed(key):
             break
-
+###
 """ Commands
 s [line] [column]   -> shot in line x and column y
 v [table_name]      -> view a selected table, user or bot table
@@ -849,9 +875,9 @@ if __name__=='__main__':
             bot_command=generate_options(bot_command)
             print(bot_command)
             user=move_game_battleship(bot_command,user)
-        end_game_battleship()
         if victory==1:
             print("\033[1;92mYou win!\033[0m")
         else:
             print("\033[1;91mThe enemy win :(\033[0m")
+        end_game_battleship()
         time.sleep(1)

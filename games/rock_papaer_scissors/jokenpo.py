@@ -84,7 +84,8 @@ def finish_game_jokenpo()->None:
     global comp_option
     global cmd_option
 
-    global score
+    global user_score
+    global bot_score
     ###
     del combinations
     del translate
@@ -93,9 +94,18 @@ def finish_game_jokenpo()->None:
     del comp_option
     del cmd_option
 
+    del user_score
+    del bot_score
+
+###
+""" COMMANDS
+p [R,P,S]   -> Play, select R(rock), P(papaer) and S(scissor)
+s           -> See the score
+"""
 if __name__=="__main__":
     while True:
         init_game_jokenpo()
         while True:
             inp=input('*: ')
             move_game_jokenpo(inp)
+        finish_game_jokenpo()

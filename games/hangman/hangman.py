@@ -6,9 +6,9 @@ def get_file()->"file":
     pwd=pwd.stdout
     dir_home=""
     for i in pwd.split('/'):
+        dir_home+='/'+i
         if i=="home":
             break
-        dir_home+='/'+i
     pipe1=subprocess.Popen(["find",dir_home,"-type","f"],stdout=subprocess.PIPE)
     pipe2=subprocess.Popen(["grep","-Eo",'.*\\.py$|.*\\.txt$'],stdin=pipe1.stdout,stdout=subprocess.PIPE)
     pipe1.stdout.close()
@@ -174,6 +174,9 @@ def finish_game_hangman()->None:
 	del monster
 	del chars_by_errors
 ###
+""" COMMANDS
+g [letters]     -> guest the select letters in phrase
+"""
 if __name__=="__main__":
 	while True:
 		print("========")
