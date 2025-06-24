@@ -70,6 +70,11 @@ def get_musics()->'list':
             continue
         musics.append(Music(key_name,artist,i,path_lyrics[key_name]))
     return musics
+def get_music_from_list(set_musics:'list',name:str,band:str)->object:
+    for i in set_musics:
+        if i.name==name and i.author==band:
+            return i
+    return None
 ###
 def init_game_quiz()->None:
     # Head vars
@@ -77,6 +82,7 @@ def init_game_quiz()->None:
     global musics_by_artist
     # Question orders
     global order_artist
+    global order_musics_by_artist
     # Able commands
     global commands
     # States
@@ -85,7 +91,13 @@ def init_game_quiz()->None:
     # Questions
     global type_question
     global curr_question
+    global curr_artist
     global curr_sound
+
+    global answer
+    # Score
+    global global_score
+    global potential_score
     ##
     # Head vars
     musics=get_musics()
@@ -96,33 +108,92 @@ def init_game_quiz()->None:
             continue
         musics_by_artist[i.author].append(i.name)
 
-    for i in musics_by_artist.keys():
-        musics_by_artist[i]=random.sample(musics_by_artist[i],len(musics_by_artist[i]))
     # Questions orders
     order_artist=random.sample(list(musics_by_artist.keys()),len(list(musics_by_artist.keys())))
+    order_musics_by_artist={}
+    for i in order_artist:
+        order_musics_by_artist[i]=random.sample(musics_by_artist[i],len(musics_by_artist[i]))
     # Able commands
     commands=["go","stop","try"]
     # States
-    all_states=["listing","guest"]
+    all_states=[0,1,2] # 0:listing, 1:stop_music, 2:guess
     curr_state=""
     # Questions
     type_question={
-            1:"From which band is this sound?",
-            2:"Type a lyric {} sound",
-            3:"Which band is the {} sound?",
-            4:"Type the lyric of {} sound NOW!"
+            0:"From which band is this sound?",
+            1:"Type a passage of the {} sound",
+            2:"Which band is the {} sound?",
+            3:"Type the lyric of {} sound NOW!",
+            4:"What is the name of this sound?"
             }
-    curr_question=""
+    curr_question=-1
+    
+    curr_artist=""
+    curr_sound=""
+    answer=""
+    # Score
+    global_score=0
+    potential_score=0
     
 def move_game_quiz(cmd:str)->None:
     cmd=cmd.split()
+    #
+    if not curr_state: # listing
+        curr_state=1
+        play
+    #
     if not cmd[0] in commands:
         print("Invalid command")
         return
-    if 
-        
+    #
+    if cmd[0]=="go" and curr_question!=-1:
+        print("You already have a question, answer it first!")
+        return
+    if cmd[0]=="go" and curr_question==-1:
+        next_question()
+        return
+###
+def next_question()->None:
+    global curr_question
+    global curr_artist
+    global curr_sound
+    global curr_state
+    global answer
+    #
+    keys_type_question=list(type_question.keys())
+    keys_type_question.pop(0)
+    if not curr_artist in order_musics_by_artist.keys() or not len(order_musics_by_artist[curr_artist]):
+        curr_question=0
+        curr_artist=order_artist.pop(0)
+    else:
+        curr_question=random.sample(keys_type_question,len(keys_type_question))[int(random.random()*len(keys_type_question))]
+    #
+    curr_state="listing"
+    sound_name=order_musics_by_artist[curr_artist].pop(0)
+    curr_sound=get_music_from_list(musics,sound_name,curr_artist)
+    print(curr_sound)
+    #
+    if not curr_question or curr_question==2:
+        answer=curr_artist
+        return
+    if curr_question==1 or curr_question==3:
+        answer=subprocess.run(["cat",curr_sound.path_lyric],text=True,capture_output=True)
+        return 
+    if curr_question==4:
+        answer=curr_sound.name
+        return
+def ask_question()->None:
+    question=type_question[curr_question]
+    complement=""
+    if curr_question in [1,2,3]:
+        complement=curr_sound.name
+
+    print(question.format(complement))
+
 if __name__=="__main__":
-    init_game_quiz()
-    for i in musics_by_artist.keys():
-        print(musics_by_artist[i])
-    print(order_artist)
+    while True:
+        init_game_quiz()
+        while True:
+            inp=input('*: ')
+            move_game_quiz(inp)
+            curr_sound.display_infos()
