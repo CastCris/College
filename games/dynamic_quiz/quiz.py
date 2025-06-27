@@ -9,6 +9,10 @@ INFOS_FORMAT="infos.txt"
 
 DIVISOR_VAR_NAME_CONTENT='='
 
+YELLOW_COLOR='\033[1;33m'
+NO_COLOR='\033[0m'
+FILL_SYMBOL_CENTER='-'
+
 class Music:
     def __init__(self,path_audio:str,path_infos:str)->None:
         self.path_audio=path_audio
@@ -22,6 +26,7 @@ class Music:
         for i in cont_file:
             if not len(i):
                 continue
+            i=i.lower()
             if not DIVISOR_VAR_NAME_CONTENT in i:
                 setattr(self,prev_name,prev_cont+'\n'+i)
                 prev_cont=self.__dict__[prev_name]
@@ -33,7 +38,16 @@ class Music:
             prev_cont=name_content[1]
 
     def display_infos(self)->None:
-        print(self.__dict__)
+        terminal_width=int(subprocess.run(["tput","cols"],text=True,capture_output=True).stdout)
+        half_terminal=terminal_width//2
+        name=self.__dict__['name'].upper()
+
+        print(FILL_SYMBOL_CENTER*half_terminal)
+        print(YELLOW_COLOR+name+NO_COLOR)
+        print(FILL_SYMBOL_CENTER*half_terminal)
+        #
+        for i in self.__dict__.keys():
+            print('{} : {}'.format(i,self.__dict__[i]))
 class Player:
     def __init__(self)->None:
         self.media_path=None
@@ -44,17 +58,21 @@ class Player:
         instance=vlc.Instance()
         #
         media=instance.media_new(self.media_path)
-        media.parse_with_option(vlc.MediaParseFlag.local,timeout=5000)
+        media.parse_with_options(vlc.MediaParseFlag.local,timeout=5000)
         #
         time.sleep(1)
         self.player_duration=media.get_duration()
         #
-        player=instance.media_player_new()
-        player.set_media(media)
+        self.player=instance.media_player_new()
+        self.player.set_media(media)
     def sound_play(self)->None:
-        player.play()
+        self.player.play()
     def sound_pause(self)->None:
-        player.pause()
+        self.player.pause()
+    def get_state(self)->object:
+        return self.player.get_state()
+    def get_time_pass(self)->int:
+        return self.player.get_time()
 ###
 def get_files(path_dir:str,pattern:str)->'list':
     cmd_find=subprocess.run(["find",path_dir,"-name",pattern],text=True,capture_output=True)
@@ -84,15 +102,36 @@ def get_musics()->'list':
     return musics
 
 def init_game_quiz()->None:
+    # Musics
+    global musics
     # Sound manage
     global player
-    global player_media_time
+    # Order musics
+    global order_musics
     ###
-    player_state=None
-    player=None
+    # Musics
+    musics=get_musics()
+    # Sound manage
+    player=Player()
+    # Order musics
+    order_musics=random.sample(musics,len(musics))
 
 ###
 
+"""
+player=Player()
 for i in get_musics():
+    i.get_infos()
+    i.display_infos()
+    #
+    player.define_media(i.path_audio)
+    player.sound_play()
+    print(player.player_duration)
+    while player.get_state() != vlc.State.Ended:
+        print(player.get_time_pass())
+        time.sleep(1)
+"""
+init_game_quiz()
+for i in order_musics:
     i.get_infos()
     i.display_infos()
