@@ -1,199 +1,137 @@
-import os
+import vlc
+import time
 import random
 import subprocess
-import playsound3
 
-COLOR_INFOS="\033[1;49;33m"
-NO_COLOR="\033[0m"
+DIRECTORY_MUSIC="./musics"
+MUSIC_FORMAT="*.mp3"
+INFOS_FORMAT="infos.txt"
+
+DIVISOR_VAR_NAME_CONTENT='='
+
+YELLOW_COLOR='\033[1;33m'
+NO_COLOR='\033[0m'
+FILL_SYMBOL_CENTER='-'
 
 class Music:
-    def __init__(self,name:str,author:str,path_audio:str,path_lyric:str)->None:
-        self.name=name
-        self.author=author
+    def __init__(self,path_audio:str,path_infos:str)->None:
         self.path_audio=path_audio
-        self.path_lyric=path_lyric
-        # self.duration
-    def play_sound(self):
-        pass
-    #
-    def display_infos(self):
-        music_name_size=len(self.name)
-        console_size=int(subprocess.run(["tput","cols"],text=True,capture_output=True).stdout)
+        self.path_infos=path_infos
+    def get_infos(self)->None:
+        file=open(self.path_infos,'r')
+        prev_name=''
+        prev_cont=''
+        #
+        cont_file=file.read().split('\n')
+        for i in cont_file:
+            if not len(i):
+                continue
+            i=i.lower()
+            if not DIVISOR_VAR_NAME_CONTENT in i:
+                setattr(self,prev_name,prev_cont+'\n'+i)
+                prev_cont=self.__dict__[prev_name]
+                continue
+            name_content=i.split(DIVISOR_VAR_NAME_CONTENT)
+            setattr(self,name_content[0],name_content[1])
 
-        size_bars=console_size//2-music_name_size//2
-        one_plus_minus=1 if size_bars*2+music_name_size<console_size else -1 if size_bars*2+music_name_size>console_size else 0
+            prev_name=name_content[0]
+            prev_cont=name_content[1]
+
+    def display_infos(self)->None:
+        terminal_width=int(subprocess.run(["tput","cols"],text=True,capture_output=True).stdout)
+        half_terminal=terminal_width//2
+        name=self.__dict__['name'].upper()
+
+        print(FILL_SYMBOL_CENTER*half_terminal)
+        print(YELLOW_COLOR+name+NO_COLOR)
+        print(FILL_SYMBOL_CENTER*half_terminal)
         #
-        print(size_bars)
-        print("-"*(size_bars+one_plus_minus),end='')
-        print(COLOR_INFOS+self.name+NO_COLOR,end='')
-        print("-"*(size_bars),end='')
+        for i in self.__dict__.keys():
+            print('{} : {}'.format(i,self.__dict__[i]))
+class Player:
+    def __init__(self)->None:
+        self.media_path=None
+        self.player=None
+        self.player_duration=None
+    def define_media(self,media_path:str)->None:
+        self.media_path=media_path
+        instance=vlc.Instance()
         #
-        print(f"author = {self.author:>10}\npath audio =  {self.path_audio}\npath lyrics = {self.path_lyric:>10}")
-#
-def get_files(dir_path:str,name_files:str)->str:
-    files=subprocess.run(["find",dir_path,"-type","f","-name",name_files],text=True,capture_output=True)
-    files=files.stdout
-    files=files.split('\n')
+        media=instance.media_new(self.media_path)
+        media.parse_with_options(vlc.MediaParseFlag.local,timeout=5000)
+        #
+        time.sleep(1)
+        self.player_duration=media.get_duration()
+        #
+        self.player=instance.media_player_new()
+        self.player.set_media(media)
+    def sound_play(self)->None:
+        self.player.play()
+    def sound_pause(self)->None:
+        self.player.pause()
+    def get_state(self)->object:
+        return self.player.get_state()
+    def get_time_pass(self)->int:
+        return self.player.get_time()
+###
+def get_files(path_dir:str,pattern:str)->'list':
+    cmd_find=subprocess.run(["find",path_dir,"-name",pattern],text=True,capture_output=True)
+    files=cmd_find.stdout.split('\n')
     return files
 def get_musics()->'list':
-    audios=get_files(".","*.mp3") #get_files("./musics/audios/Skank","*.mp3")
-    lyrics=get_files(".","*.txt") #get_files("./musics/lyrics/Skank","*.txt")
-    #
-    path_lyrics={}
-    for i in lyrics:
-        if not len(i):
-            continue
-        i,_=os.path.splitext(i)
-        path_music=i.split('/')
-        #
-        sound_name=path_music[-1] # file
-        artist=path_music[-2] # parent file
-        #
-        # print(sound_name)
-        # print(artist)
-        #
-        key_name=artist+' - '+sound_name
-        path_lyrics[key_name]=i
-    #
     musics=[]
-    for i in audios:
+    path_infos=get_files(DIRECTORY_MUSIC,INFOS_FORMAT)
+    path_audios=get_files(DIRECTORY_MUSIC,MUSIC_FORMAT)
+    #
+    able_audios={}
+    for i in path_audios:
         if not len(i):
             continue
-        i,_=os.path.splitext(i)
-        path_music=i.split('/')
-        #
-        sound_name=path_music[-1]
-        artist=path_music[-2]
-        #
-        key_name=artist+' - '+sound_name
-        if not key_name in path_lyrics.keys():
+        cmd_dirname=subprocess.run(["dirname",i],text=True,capture_output=True)
+        parent_dir=cmd_dirname.stdout
+        able_audios[parent_dir]=i
+    
+    for i in path_infos:
+        if not len(i):
             continue
-        musics.append(Music(key_name,artist,i,path_lyrics[key_name]))
+        cmd_dirname=subprocess.run(["dirname",i],text=True,capture_output=True)
+        parent_dir=cmd_dirname.stdout
+        if parent_dir in able_audios.keys():
+            musics.append(Music(able_audios[parent_dir],i))
+
     return musics
-def get_music_from_list(set_musics:'list',name:str,band:str)->object:
-    for i in set_musics:
-        if i.name==name and i.author==band:
-            return i
-    return None
-###
+
 def init_game_quiz()->None:
-    # Head vars
+    # Musics
     global musics
-    global musics_by_artist
-    # Question orders
-    global order_artist
-    global order_musics_by_artist
-    # Able commands
-    global commands
-    # States
-    global all_states
-    global curr_state
-    # Questions
-    global type_question
-    global curr_question
-    global curr_artist
-    global curr_sound
-
-    global answer
-    # Score
-    global global_score
-    global potential_score
-    ##
-    # Head vars
+    # Sound manage
+    global player
+    # Order musics
+    global order_musics
+    ###
+    # Musics
     musics=get_musics()
-    musics_by_artist={}
-    for i in musics:
-        if not i.author in musics_by_artist.keys():
-            musics_by_artist[i.author]=[i.name]
-            continue
-        musics_by_artist[i.author].append(i.name)
+    # Sound manage
+    player=Player()
+    # Order musics
+    order_musics=random.sample(musics,len(musics))
 
-    # Questions orders
-    order_artist=random.sample(list(musics_by_artist.keys()),len(list(musics_by_artist.keys())))
-    order_musics_by_artist={}
-    for i in order_artist:
-        order_musics_by_artist[i]=random.sample(musics_by_artist[i],len(musics_by_artist[i]))
-    # Able commands
-    commands=["go","stop","try"]
-    # States
-    all_states=[0,1,2] # 0:listing, 1:stop_music, 2:guess
-    curr_state=""
-    # Questions
-    type_question={
-            0:"From which band is this sound?",
-            1:"Type a passage of the {} sound",
-            2:"Which band is the {} sound?",
-            3:"Type the lyric of {} sound NOW!",
-            4:"What is the name of this sound?"
-            }
-    curr_question=-1
-    
-    curr_artist=""
-    curr_sound=""
-    answer=""
-    # Score
-    global_score=0
-    potential_score=0
-    
-def move_game_quiz(cmd:str)->None:
-    cmd=cmd.split()
-    #
-    if not curr_state: # listing
-        curr_state=1
-        play
-    #
-    if not cmd[0] in commands:
-        print("Invalid command")
-        return
-    #
-    if cmd[0]=="go" and curr_question!=-1:
-        print("You already have a question, answer it first!")
-        return
-    if cmd[0]=="go" and curr_question==-1:
-        next_question()
-        return
 ###
-def next_question()->None:
-    global curr_question
-    global curr_artist
-    global curr_sound
-    global curr_state
-    global answer
-    #
-    keys_type_question=list(type_question.keys())
-    keys_type_question.pop(0)
-    if not curr_artist in order_musics_by_artist.keys() or not len(order_musics_by_artist[curr_artist]):
-        curr_question=0
-        curr_artist=order_artist.pop(0)
-    else:
-        curr_question=random.sample(keys_type_question,len(keys_type_question))[int(random.random()*len(keys_type_question))]
-    #
-    curr_state="listing"
-    sound_name=order_musics_by_artist[curr_artist].pop(0)
-    curr_sound=get_music_from_list(musics,sound_name,curr_artist)
-    print(curr_sound)
-    #
-    if not curr_question or curr_question==2:
-        answer=curr_artist
-        return
-    if curr_question==1 or curr_question==3:
-        answer=subprocess.run(["cat",curr_sound.path_lyric],text=True,capture_output=True)
-        return 
-    if curr_question==4:
-        answer=curr_sound.name
-        return
-def ask_question()->None:
-    question=type_question[curr_question]
-    complement=""
-    if curr_question in [1,2,3]:
-        complement=curr_sound.name
 
-    print(question.format(complement))
-
-if __name__=="__main__":
-    while True:
-        init_game_quiz()
-        while True:
-            inp=input('*: ')
-            move_game_quiz(inp)
-            curr_sound.display_infos()
+"""
+player=Player()
+for i in get_musics():
+    i.get_infos()
+    i.display_infos()
+    #
+    player.define_media(i.path_audio)
+    player.sound_play()
+    print(player.player_duration)
+    while player.get_state() != vlc.State.Ended:
+        print(player.get_time_pass())
+        time.sleep(1)
+"""
+init_game_quiz()
+for i in order_musics:
+    i.get_infos()
+    i.display_infos()
