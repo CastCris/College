@@ -3,66 +3,86 @@ import time
 import random
 import subprocess
 
-COLOR_INFOS="\033[1;49;33m"
-NO_COLOR="\033[0m"
+DIRECTORY_MUSIC="./musics"
+MUSIC_FORMAT="*.mp3"
+INFOS_FORMAT="infos.txt"
+
+DIVISOR_VAR_NAME_CONTENT='='
 
 class Music:
-    def __init__(self,name:str,author:str,path_audio:str,path_lyric:str)->None:
-        self.name=name
-        self.author=author
+    def __init__(self,path_audio:str,path_infos:str)->None:
         self.path_audio=path_audio
-        self.path_lyric=path_lyric
-        # self.duration
-    def play_sound(self):
-        pass
-    #
-    def display_infos(self):
-        music_name_size=len(self.name)
-        console_size=int(subprocess.run(["tput","cols"],text=True,capture_output=True).stdout)
-
-        size_bars=console_size//2-music_name_size//2
-        one_plus_minus=1 if size_bars*2+music_name_size<console_size else -1 if size_bars*2+music_name_size>console_size else 0
+        self.path_infos=path_infos
+    def get_infos(self)->None:
+        file=open(self.path_infos,'r')
+        prev_name=''
+        prev_cont=''
         #
-        print(size_bars)
-        print("-"*(size_bars+one_plus_minus),end='')
-        print(COLOR_INFOS+self.name+NO_COLOR,end='')
-        print("-"*(size_bars),end='')
+        cont_file=file.read().split('\n')
+        for i in cont_file:
+            if not len(i):
+                continue
+            if not DIVISOR_VAR_NAME_CONTENT in i:
+                setattr(self,prev_name,prev_cont+'\n'+i)
+                prev_cont=self.__dict__[prev_name]
+                continue
+            name_content=i.split(DIVISOR_VAR_NAME_CONTENT)
+            setattr(self,name_content[0],name_content[1])
+
+            prev_name=name_content[0]
+            prev_cont=name_content[1]
+
+    def display_infos(self)->None:
+        print(self.__dict__)
+class Player:
+    def __init__(self)->None:
+        self.media_path=None
+        self.player=None
+        self.player_duration=None
+    def define_media(self,media_path:str)->None:
+        self.media_path=media_path
+        instance=vlc.Instance()
         #
-        print(f"author = {self.author:>10}\npath audio =  {self.path_audio}\npath lyrics = {self.path_lyric:>10}")
+        media=instance.media_new(self.media_path)
+        media.parse_with_option(vlc.MediaParseFlag.local,timeout=5000)
+        #
+        time.sleep(1)
+        self.player_duration=media.get_duration()
+        #
+        player=instance.media_player_new()
+        player.set_media(media)
+    def sound_play(self)->None:
+        player.play()
+    def sound_pause(self)->None:
+        player.pause()
+###
+def get_files(path_dir:str,pattern:str)->'list':
+    cmd_find=subprocess.run(["find",path_dir,"-name",pattern],text=True,capture_output=True)
+    files=cmd_find.stdout.split('\n')
+    return files
+def get_musics()->'list':
+    musics=[]
+    path_infos=get_files(DIRECTORY_MUSIC,INFOS_FORMAT)
+    path_audios=get_files(DIRECTORY_MUSIC,MUSIC_FORMAT)
+    #
+    able_audios={}
+    for i in path_audios:
+        if not len(i):
+            continue
+        cmd_dirname=subprocess.run(["dirname",i],text=True,capture_output=True)
+        parent_dir=cmd_dirname.stdout
+        able_audios[parent_dir]=i
+    
+    for i in path_infos:
+        if not len(i):
+            continue
+        cmd_dirname=subprocess.run(["dirname",i],text=True,capture_output=True)
+        parent_dir=cmd_dirname.stdout
+        if parent_dir in able_audios.keys():
+            musics.append(Music(able_audios[parent_dir],i))
 
-def get_media(media_path:str)->None:
-    global player
-    global player_media_time
-    #
-    instance_media=vlc.Instance()
-    #
-    media=instance_media.media_new(media_path)
-    media.parse_with_options(vlc.MediaParseFlag.local, timeout=5000)
-    #
-    time.sleep(1)
-    duration_ms=media.get_duration()
-    ##
-    player=instance_media.media_player_new()
-    player.set_media(media)
-    player_media_time=duration_ms
-    print(player_media_time)
+    return musics
 
-    player.play()
-def get_player_time()->int:
-    curr_time=player.get_time()
-    return curr_time
-def sound_play():
-    player.play()
-def sound_pause():
-    player.pause()
-def decision_player(cmd:str,media_path:str)->None:
-    if not player or player.get_state()==vlc.State.Ended:
-        get_media('./musics/Skank/Acima_do_Sol/Acima_do_Sol.mp3')
-    if cmd=="stop":
-        sound_pause()
-        return
-    sound_play()
-##
 def init_game_quiz()->None:
     # Sound manage
     global player
@@ -71,7 +91,8 @@ def init_game_quiz()->None:
     player_state=None
     player=None
 
-while True:
-    inp=input('*: ')
-    decision_player(inp)
+###
 
+for i in get_musics():
+    i.get_infos()
+    i.display_infos()
