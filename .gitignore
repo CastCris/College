@@ -1,5 +1,6 @@
 *
 !*/
 !*.py
-!games/dynamic_quiz/musics/**
+!games/dynamic_quiz/musics/**/*.mp3
+!games/dynamic_quiz/musics/**/infos.txt
 !requirements.txt
