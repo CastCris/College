@@ -1,4 +1,5 @@
 import vlc
+import copy
 import time
 import random
 import subprocess
@@ -9,9 +10,12 @@ INFOS_FORMAT="infos.txt"
 
 DIVISOR_VAR_NAME_CONTENT='='
 
+GREEN_COLOR='\033[1;32m'
 YELLOW_COLOR='\033[1;33m'
 NO_COLOR='\033[0m'
 FILL_SYMBOL_CENTER='-'
+
+IGNORE_VARS_DISPLAY=["path_audio","path_infos"]
 
 class Music:
     def __init__(self,path_audio:str,path_infos:str)->None:
@@ -26,12 +30,13 @@ class Music:
         for i in cont_file:
             if not len(i):
                 continue
-            i=i.lower()
             if not DIVISOR_VAR_NAME_CONTENT in i:
                 setattr(self,prev_name,prev_cont+'\n'+i)
                 prev_cont=self.__dict__[prev_name]
                 continue
             name_content=i.split(DIVISOR_VAR_NAME_CONTENT)
+            name_content[0]=name_content[0].upper()
+            name_content[1]=name_content[1].lower()
             setattr(self,name_content[0],name_content[1])
 
             prev_name=name_content[0]
@@ -40,14 +45,18 @@ class Music:
     def display_infos(self)->None:
         terminal_width=int(subprocess.run(["tput","cols"],text=True,capture_output=True).stdout)
         half_terminal=terminal_width//2
-        name=self.__dict__['name'].upper()
+        name=self.__dict__['NAME'].upper()
 
         print(FILL_SYMBOL_CENTER*half_terminal)
         print(YELLOW_COLOR+name+NO_COLOR)
         print(FILL_SYMBOL_CENTER*half_terminal)
         #
+        longest_str=0
         for i in self.__dict__.keys():
-            print('{} : {}'.format(i,self.__dict__[i]))
+            if len(i)>longest_str:
+                longest_str=len(i)
+        for i in self.__dict__.keys():
+            print(f"{i:<{longest_str}} : {self.__dict__[i]}")
 class Player:
     def __init__(self)->None:
         self.media_path=None
@@ -65,10 +74,19 @@ class Player:
         #
         self.player=instance.media_player_new()
         self.player.set_media(media)
+
     def sound_play(self)->None:
         self.player.play()
     def sound_pause(self)->None:
         self.player.pause()
+    def sound_stop(self)->None:
+        self.player.stop()
+        time.sleep(1)
+        self.player.set_time(0)
+    def sound_reset(self)->None:
+        self.player.set_time(0)
+        time.sleep(1)
+
     def get_state(self)->object:
         return self.player.get_state()
     def get_time_pass(self)->int:
@@ -100,7 +118,7 @@ def get_musics()->'list':
             musics.append(Music(able_audios[parent_dir],i))
 
     return musics
-
+##
 def init_game_quiz()->None:
     # Musics
     global musics
@@ -108,14 +126,246 @@ def init_game_quiz()->None:
     global player
     # Order musics
     global order_musics
+    # Game status
+    global game_status
+    # Questions
+    global music_question
+    global music_answer
+    # Score
+    global score_local
+    global score_global
+
+    global score_local_max
+    global score_global_max
+    # Commands
+    global commands
     ###
     # Musics
     musics=get_musics()
     # Sound manage
     player=Player()
     # Order musics
-    order_musics=random.sample(musics,len(musics))
+    order_musics=list(random.sample(musics,len(musics)))
+    order_musics[0].get_infos()
+    # Game status
+    game_status=1 # 1 ->playing 0 -> end
+    # Question
+    music_question=order_musics.pop(0)
+    music_answer={}
+    for i in music_question.__dict__.keys():
+        music_answer[i]=""
+    # Score
+    score_local=0
+    score_global=0
 
+    score_local_max=len(music_answer.keys())-2
+    score_global_max=0
+    for i in musics:
+        copy_object=copy.copy(i)
+        copy_object.get_infos()
+        score_global_max+=len(copy_object.__dict__.keys())-2
+    # Commands
+    commands=["reply","next","lyric","play","stop","pause","reset","finish"]
+def move_game_quiz(cmd:str)->None:
+    global commands
+    global game_status
+
+    cmd=cmd.split()
+    if not len(cmd) or not cmd[0] in commands:
+        print("Invalid command")
+        return
+    #
+    if cmd[0]=="reply":
+        check_answer(cmd[1],cmd[2].replace('_',' '))
+        display_answer()
+        return
+    if cmd[0]=="lyric":
+        check_answer_lyric()
+        return
+    if cmd[0]=="next":
+        get_next_question()
+        return
+    if cmd[0]=="finish":
+        game_status=0
+        return
+
+    if cmd[0]=="play" and not player.get_state() in [vlc.State.Playing]:
+        play()
+        return
+    if cmd[0]=="play":
+        print("The sound already playing")
+
+    if cmd[0]=="pause":
+        player.sound_pause()
+    if cmd[0]=="stop":
+        player.sound_stop()
+    if cmd[0]=="reset":
+        player.sound_stop()
+        player.sound_play()
+def end_game_quiz()->None:
+    # Musics
+    global musics
+    # Sound manage
+    global player
+    # Order musics
+    global order_musics
+    # Game status
+    global game_status
+    # Questions
+    global music_question
+    global music_answer
+    # Score
+    global score_local
+    global score_global
+
+    global score_local_max
+    global score_global_max
+    # Commands
+    global commands
+    ###
+    player.sound_stop()
+    ###
+    # Musics
+    del musics
+    # Sound manage
+    del player
+    # Order musics
+    del order_musics
+    # Game status
+    del game_status
+    # Questions
+    del music_question
+    del music_answer
+    # Score
+    del score_local
+    del score_global
+
+    del score_local_max
+    del score_global_max
+    # Commands
+    del commands
+##
+def get_next_question()->None:
+    global music_question
+    global music_answer
+    global answer
+    global order_musics
+    #
+    if not len(order_musics):
+        print("There is no more able music!")
+        return
+    # print(order_musics)
+    music_question=order_musics.pop(0)
+    music_question.get_infos()
+    music_answer={}
+    for i in music_question.__dict__.keys():
+        music_answer[i]=""
+    #
+    player.sound_stop()
+    player.define_media(music_question.path_audio)
+    play()
+def check_answer(var_name:str,answer:str)->None:
+    global score_local
+    global score_global
+    #
+    # print(music_question.__dict__)
+    var_name=var_name.upper()
+    if not var_name in  music_question.__dict__.keys():
+        print("This attribute aren't in music infos")
+        return
+    if var_name in music_answer.keys() and music_answer[var_name]==music_question.__dict__[var_name]:
+        print("This question already completed")
+        return
+    answer=answer.lower()
+    # print(answer)
+    #
+    if answer==music_question.__dict__[var_name]:
+        music_answer[var_name]=answer
+        score_local+=1
+
+        print("Correct answer!")
+    else:
+        print("Incorrect answer")
+    if score_local==score_local_max:
+        score_local=0
+        score_global+=1
+
+        get_next_question()
+def check_answer_lyric()->None:
+    if not "lyric" in music_question.__dict__.keys():
+        print("This song doesn't have lyrics")
+        return
+    lyric_user=[]
+    print("Insert the lyric song")
+    while True:
+        try:
+            inp=input()
+        except EOFError:
+            break
+        lyric_user.append(inp.low())
+    lyric_correct=music_question.__dict__["lyric"].split('\n')
+    answer=""
+    for i in range(len(lyric_correct)):
+        if i>=len(lyric_user):
+            break
+        line_correct=lyric_correct[i].split()
+        line_user=lyric_user[i].split()
+
+        if len(line_correct) != len(line_user):
+            break
+        #
+        append_answer=""
+        for j in range(len(line_correct)):
+            if line_correct[j]!=line_user[j]:
+                continue
+            append_answer+=line_correct[j]+' '
+        if len(append_answer):
+            answer+=append_answer+'\n'
+##
+def display_answer()->None:
+    global music_answer
+    #
+    name=music_answer["NAME"]
+    name="No reply yet" if not len(name) else name
+    name=name.upper()
+    #
+    terminal_width=int(subprocess.run(["tput","cols"],text=True,capture_output=True).stdout)
+    half_terminal_width=terminal_width//2
+    print(FILL_SYMBOL_CENTER*half_terminal_width)
+    print(GREEN_COLOR+name+NO_COLOR)
+    print(FILL_SYMBOL_CENTER*half_terminal_width)
+    #
+    longest_str=0
+    for i in music_answer.keys():
+        if i in IGNORE_VARS_DISPLAY:
+            continue
+        if len(i)>longest_str:
+            longest_str=len(i)
+    for i in music_answer.keys():
+        if i in IGNORE_VARS_DISPLAY:
+            continue
+        i[0].upper()
+        print(f"{i:<{longest_str}} = {music_answer[i]}")
+##
+def play()->None:
+    global player
+    #
+    if player.get_state()==vlc.State.Ended:
+        player.sound_reset()
+    #
+    if player.get_state() in [vlc.State.Paused]:
+        print("Resume...")
+        player.sound_play()
+        return
+
+    for i in range(3):
+        print("The sound will begin in {}\r".format(3-i),end='')
+        time.sleep(1)
+    for i in range(int(subprocess.run(["tput","cols"],text=True,capture_output=True).stdout)):
+        print(' ',end='')
+    print('\r',end='')
+    print("GO!")
+    player.sound_play()
 ###
 
 """
@@ -131,7 +381,13 @@ for i in get_musics():
         print(player.get_time_pass())
         time.sleep(1)
 """
-init_game_quiz()
-for i in order_musics:
-    i.get_infos()
-    i.display_infos()
+while True:
+    init_game_quiz()
+    display_answer()
+    player.define_media(music_question.path_audio)
+    move_game_quiz("play")
+    while game_status:
+        inp=input('*: ')
+        move_game_quiz(inp)
+    end_game_quiz()
+    print("END!")
