@@ -1,0 +1,15 @@
+{% extends "default_page.html" %}
+{% block title %}LOGIN{% endblock %}
+{% block content %}
+	<p> {{ message }} </p>
+	<form method="POST" action="{{ url_for('login_or_signin') }}">
+		<label for="">Tip the type log(login/sigin</label>
+		<input type="text" name="type_input">
+		<!-- -->
+		<label for="">Put the user name</label>
+		<input type="text" name="user_name">
+		<!-- -->
+		<label for="">Put the password</label>
+		<input type="text" name="password">
+	</form>
+{% endblock %}
