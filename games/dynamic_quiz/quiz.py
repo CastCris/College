@@ -36,7 +36,6 @@ class Music:
                 continue
             name_content=i.split(DIVISOR_VAR_NAME_CONTENT)
             name_content[0]=name_content[0].upper()
-            name_content[1]=name_content[1].lower()
             setattr(self,name_content[0],name_content[1])
 
             prev_name=name_content[0]
@@ -165,7 +164,7 @@ def init_game_quiz()->None:
         copy_object.get_infos()
         score_global_max+=len(copy_object.__dict__.keys())-2
     # Commands
-    commands=["reply","next","lyric","play","stop","pause","reset","finish"]
+    commands=["reply","next","play","stop","pause","reset","finish"]
 def move_game_quiz(cmd:str)->None:
     global commands
     global game_status
@@ -175,11 +174,11 @@ def move_game_quiz(cmd:str)->None:
         print("Invalid command")
         return
     #
-    if cmd[0]=="reply":
+    if cmd[0]=="reply" and cmd[1]!="lyric":
         check_answer(cmd[1],cmd[2].replace('_',' '))
         display_answer()
         return
-    if cmd[0]=="lyric":
+    if cmd[0]=="reply" and cmd[1]=="lyric":
         check_answer_lyric()
         return
     if cmd[0]=="next":
@@ -279,8 +278,8 @@ def check_answer(var_name:str,answer:str)->None:
     answer=answer.lower()
     # print(answer)
     #
-    if answer==music_question.__dict__[var_name]:
-        music_answer[var_name]=answer
+    if answer==music_question.__dict__[var_name].lower():
+        music_answer[var_name]=music_question.__dict__[var_name]
         score_local+=1
 
         print("Correct answer!")
@@ -292,7 +291,7 @@ def check_answer(var_name:str,answer:str)->None:
 
         get_next_question()
 def check_answer_lyric()->None:
-    if not "lyric" in music_question.__dict__.keys():
+    if not "LYRIC" in music_question.__dict__.keys():
         print("This song doesn't have lyrics")
         return
     lyric_user=[]
@@ -302,25 +301,44 @@ def check_answer_lyric()->None:
             inp=input()
         except EOFError:
             break
-        lyric_user.append(inp.low())
-    lyric_correct=music_question.__dict__["lyric"].split('\n')
-    answer=""
-    for i in range(len(lyric_correct)):
-        if i>=len(lyric_user):
-            break
-        line_correct=lyric_correct[i].split()
-        line_user=lyric_user[i].split()
-
-        if len(line_correct) != len(line_user):
-            break
+        lyric_user.append(inp.lower())
+    #
+    lyric_correct=music_question.__dict__["LYRIC"].split('\n')
+    #
+    print(lyric_user)
+    for i in lyric_user:
+        splited_answer=i.split()
+        possible_phrases=[]
+        for j in lyric_correct:
+            if len(splited_answer)==len(j.split()) and not j in possible_phrases:
+                possible_phrases.append(j)
         #
-        append_answer=""
-        for j in range(len(line_correct)):
-            if line_correct[j]!=line_user[j]:
+        # print('U: '+i)
+        correct_words_cont=[0 for j in range(len(possible_phrases))]
+        for j in range(len(possible_phrases)):
+            splited_phrase=possible_phrases[j].split()
+            for k in range(len(splited_phrase)):
+                if splited_answer[k]!=splited_phrase[k].lower():
+                    continue
+                correct_words_cont[j]+=1
+        print(correct_words_cont,possible_phrases)
+        phrase=""
+        phrase_points=0
+        for j in range(len(correct_words_cont)):
+            if phrase_points<correct_words_cont[j]:
+                phrase_points=correct_words_cont[j]
+                phrase=possible_phrases[j]
+        splited_phrase=phrase.split()
+        answer=""
+        for j in range(len(splited_phrase)):
+            if splited_phrase[j].lower()!=splited_answer[j]:
                 continue
-            append_answer+=line_correct[j]+' '
-        if len(append_answer):
-            answer+=append_answer+'\n'
+            answer+=splited_phrase[j]+' '
+        #
+        # print(answer)
+        answer_correct=music_question.__dict__["LYRIC"]
+        answer_curr=music_answer.__dict__["LYRIC"]
+        answer_new=[]
 ##
 def display_answer()->None:
     global music_answer
