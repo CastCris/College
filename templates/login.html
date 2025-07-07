@@ -1,15 +1,83 @@
-{% extends "default_page.html" %}
-{% block title %}LOGIN{% endblock %}
-{% block content %}
-	<p> {{ message }} </p>
-	<form method="POST" action="{{ url_for('login_or_signin') }}">
-		<label for="">Tip the type log(login/sigin</label>
-		<input type="text" name="type_input">
-		<!-- -->
-		<label for="">Put the user name</label>
-		<input type="text" name="user_name">
-		<!-- -->
-		<label for="">Put the password</label>
-		<input type="text" name="password">
-	</form>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    
+    .container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 300px;
+    }
+    
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .input-group {
+        margin-bottom: 15px;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    
+    input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+    
+    button {
+        width: 100%;
+        padding: 10px;
+        background-color: #5cb85c;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+    
+    button:hover {
+        background-color: #4cae4c;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+        <form method="POST" action="{{ url_for('check_login') }}">
+            <div class="input-group">
+                <label for="username">Usuário</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Senha</label>
+                <input type="text" id="password" name="passphrase" required>
+            </div>
+            <button type="submit">Entrar</button>
+        </form>
+        {% if  fail %}
+            <div>
+                <p>Login deu ruim, faz de novo</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
