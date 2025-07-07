@@ -153,6 +153,8 @@ def init_game_quiz()->None:
     music_answer={}
     for i in music_question.__dict__.keys():
         music_answer[i]=""
+        if i=="LYRIC":
+            music_answer[i]={}
     # Score
     score_local=0
     score_global=0
@@ -164,7 +166,7 @@ def init_game_quiz()->None:
         copy_object.get_infos()
         score_global_max+=len(copy_object.__dict__.keys())-2
     # Commands
-    commands=["reply","next","play","stop","pause","reset","finish"]
+    commands=["reply","next","play","stop","pause","reset","finish","display"]
 def move_game_quiz(cmd:str)->None:
     global commands
     global game_status
@@ -201,6 +203,10 @@ def move_game_quiz(cmd:str)->None:
     if cmd[0]=="reset":
         player.sound_stop()
         player.sound_play()
+
+    if cmd[0]=="display":
+        display_answer()
+
 def end_game_quiz()->None:
     # Musics
     global musics
@@ -304,8 +310,9 @@ def check_answer_lyric()->None:
         lyric_user.append(inp.lower())
     #
     lyric_correct=music_question.__dict__["LYRIC"].split('\n')
+    answer_user={}
     #
-    print(lyric_user)
+    # print(lyric_user)
     for i in lyric_user:
         splited_answer=i.split()
         possible_phrases=[]
@@ -321,7 +328,7 @@ def check_answer_lyric()->None:
                 if splited_answer[k]!=splited_phrase[k].lower():
                     continue
                 correct_words_cont[j]+=1
-        print(correct_words_cont,possible_phrases)
+        # print(correct_words_cont,possible_phrases)
         phrase=""
         phrase_points=0
         for j in range(len(correct_words_cont)):
@@ -332,13 +339,38 @@ def check_answer_lyric()->None:
         answer=""
         for j in range(len(splited_phrase)):
             if splited_phrase[j].lower()!=splited_answer[j]:
+                answer+=('-'*len(splited_phrase[j]))+' '
                 continue
             answer+=splited_phrase[j]+' '
         #
-        # print(answer)
-        answer_correct=music_question.__dict__["LYRIC"]
-        answer_curr=music_answer.__dict__["LYRIC"]
-        answer_new=[]
+        # print('/'+answer)
+        answer_user[phrase]=[phrase_points,answer] # weight of the phrase and the phrase
+    #
+    """
+    for i in answer_user.keys():
+        print(i,answer_user[i])
+    """
+    #
+    answer_user_prev={}
+    if "LYRIC" in music_answer.keys():
+        answer_user_prev=music_answer["LYRIC"]
+    
+    for i in answer_user_prev.keys():
+        key_value_prev=answer_user_prev[i]
+        key_value_curr=answer_user[i] if i in answer_user.keys() else None
+        # print(i,key_value_prev,key_value_curr)
+        if not key_value_curr:
+            answer_user[i]=key_value_prev
+            continue
+        if key_value_prev[0]>key_value_curr[0]:
+            answer_user=key_value_prev
+    """
+    print('====')
+    for i in answer_user.keys():
+        print(i,answer_user[i])
+    """
+    music_answer["LYRIC"]=answer_user
+
 ##
 def display_answer()->None:
     global music_answer
@@ -359,11 +391,33 @@ def display_answer()->None:
             continue
         if len(i)>longest_str:
             longest_str=len(i)
+
     for i in music_answer.keys():
         if i in IGNORE_VARS_DISPLAY:
             continue
         i[0].upper()
+        if i=="LYRIC":
+            print("LYRIC:")
+            display_answer_lyric()
+            continue
         print(f"{i:<{longest_str}} = {music_answer[i]}")
+def display_answer_lyric()->None:
+    global music_answer
+    global music_question
+    #
+    if not "LYRIC" in music_question.__dict__.keys():
+        print("This song doesn't have lyric")
+        return
+    lyric_correct=music_question.__dict__["LYRIC"] # string
+    lyric_user=music_answer["LYRIC"] # dict
+
+    for i in lyric_correct.split('\n'):
+        if not i in lyric_user.keys():
+            for j in i.split():
+                print('-'*len(j),end=' ')
+            print()
+            continue
+        print(lyric_user[i][1])
 ##
 def play()->None:
     global player
@@ -401,11 +455,11 @@ for i in get_musics():
 """
 while True:
     init_game_quiz()
-    display_answer()
     player.define_media(music_question.path_audio)
     move_game_quiz("play")
     while game_status:
         inp=input('*: ')
         move_game_quiz(inp)
+        display_answer()
     end_game_quiz()
     print("END!")
