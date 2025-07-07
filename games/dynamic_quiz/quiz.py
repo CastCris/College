@@ -15,7 +15,7 @@ YELLOW_COLOR='\033[1;33m'
 NO_COLOR='\033[0m'
 FILL_SYMBOL_CENTER='-'
 
-IGNORE_VARS_DISPLAY=["path_audio","path_infos"]
+IGNORE_VARS_MUSIC=["path_audio","path_infos","score"]
 
 class Music:
     def __init__(self,path_audio:str,path_infos:str)->None:
@@ -121,8 +121,6 @@ def get_musics()->'list':
 def init_game_quiz()->None:
     # Musics
     global musics
-    # Sound manage
-    global player
     # Order musics
     global order_musics
     # Game status
@@ -136,13 +134,19 @@ def init_game_quiz()->None:
 
     global score_local_max
     global score_global_max
+
+    global able_questions
+    global able_verses
+
+    global score_by_question
+    global score_by_question_lyric
     # Commands
     global commands
+    # Sound manager
+    global player
     ###
     # Musics
     musics=get_musics()
-    # Sound manage
-    player=Player()
     # Order musics
     order_musics=list(random.sample(musics,len(musics)))
     order_musics[0].get_infos()
@@ -156,17 +160,14 @@ def init_game_quiz()->None:
         if i=="LYRIC":
             music_answer[i]={}
     # Score
-    score_local=0
-    score_global=0
-
-    score_local_max=len(music_answer.keys())-2
-    score_global_max=0
-    for i in musics:
-        copy_object=copy.copy(i)
-        copy_object.get_infos()
-        score_global_max+=len(copy_object.__dict__.keys())-2
+    get_scores_question()
+    # print(score_by_question,score_local_max)
+    # print(score_by_question_lyric,able_verses)
     # Commands
     commands=["reply","next","play","stop","pause","reset","finish","display"]
+    # Sound manager
+    player=Player()
+    player.define_media(music_question.path_audio)
 def move_game_quiz(cmd:str)->None:
     global commands
     global game_status
@@ -176,15 +177,19 @@ def move_game_quiz(cmd:str)->None:
         print("Invalid command")
         return
     #
-    if cmd[0]=="reply" and cmd[1]!="lyric":
+    if cmd[0]=="reply" and cmd[1].lower()!="lyric":
         check_answer(cmd[1],cmd[2].replace('_',' '))
+        count_score()
         display_answer()
         return
-    if cmd[0]=="reply" and cmd[1]=="lyric":
+    if cmd[0]=="reply" and cmd[1].lower()=="lyric":
         check_answer_lyric()
+        count_score()
+        display_answer()
         return
     if cmd[0]=="next":
         get_next_question()
+        display_answer()
         return
     if cmd[0]=="finish":
         game_status=0
@@ -206,7 +211,6 @@ def move_game_quiz(cmd:str)->None:
 
     if cmd[0]=="display":
         display_answer()
-
 def end_game_quiz()->None:
     # Musics
     global musics
@@ -253,6 +257,7 @@ def end_game_quiz()->None:
 def get_next_question()->None:
     global music_question
     global music_answer
+
     global answer
     global order_musics
     #
@@ -265,14 +270,15 @@ def get_next_question()->None:
     music_answer={}
     for i in music_question.__dict__.keys():
         music_answer[i]=""
+        if i=="LYRIC":
+            music_answer[i]={}
+    #
+    get_scores_question()
     #
     player.sound_stop()
     player.define_media(music_question.path_audio)
     play()
 def check_answer(var_name:str,answer:str)->None:
-    global score_local
-    global score_global
-    #
     # print(music_question.__dict__)
     var_name=var_name.upper()
     if not var_name in  music_question.__dict__.keys():
@@ -286,16 +292,9 @@ def check_answer(var_name:str,answer:str)->None:
     #
     if answer==music_question.__dict__[var_name].lower():
         music_answer[var_name]=music_question.__dict__[var_name]
-        score_local+=1
-
         print("Correct answer!")
     else:
         print("Incorrect answer")
-    if score_local==score_local_max:
-        score_local=0
-        score_global+=1
-
-        get_next_question()
 def check_answer_lyric()->None:
     if not "LYRIC" in music_question.__dict__.keys():
         print("This song doesn't have lyrics")
@@ -344,7 +343,7 @@ def check_answer_lyric()->None:
             answer+=splited_phrase[j]+' '
         #
         # print('/'+answer)
-        answer_user[phrase]=[phrase_points,answer] # weight of the phrase and the phrase
+        answer_user[phrase]=[phrase_points,answer.strip()] # weight of the phrase and the phrase
     #
     """
     for i in answer_user.keys():
@@ -371,6 +370,78 @@ def check_answer_lyric()->None:
     """
     music_answer["LYRIC"]=answer_user
 
+def get_score(music)->int:
+    if not "SCORE" in music.__dict__.keys():
+        return 100
+    return int(music.__dict__["SCORE"])
+def get_scores_question()->None:
+    global music_question
+
+    global score_local
+    global score_global
+
+    global score_local_max
+    global score_global_max
+
+    global able_question
+    global able_verses
+
+    global score_by_question
+    global score_by_question_lyric
+    #
+    score_local=0
+    score_global=0
+
+    score_local_max=get_score(music_question)
+    score_global_max=0
+    for i in musics:
+        copy_object=copy.copy(i)
+        copy_object.get_infos()
+        score_global_max+=get_score(copy_object)
+
+    able_questions=len(music_question.__dict__.keys())-len(IGNORE_VARS_MUSIC)
+    if not "SCORE" in music_question.__dict__.keys():
+        able_questions+=1
+    able_verses=len(music_question.__dict__["LYRIC"].split('\n'))-1 if "LYRIC" in music_question.__dict__.keys() else 0
+
+    score_by_question=score_local_max/able_questions
+    score_by_question_lyric=score_by_question/able_verses if able_verses else 0
+def count_score()->None:
+    global music_answer
+    global music_question
+
+    global score_local
+    global score_global
+
+    global score_by_question
+    global score_by_question_lyric
+    #
+    answer_user=music_answer
+    answer_correct=music_question.__dict__
+
+    score_global-=score_local
+    score_local=0
+    for i in answer_user.keys():
+        if answer_user[i]==answer_correct[i]:
+            score_local+=score_by_question
+
+    lyric_user=music_answer["LYRIC"] if "LYRIC" in music_answer.keys() else None
+    lyric_correct=music_question.__dict__["LYRIC"] if lyric_user else None
+    score_global+=score_local
+    if not lyric_user:
+        return
+    score_lyric=0
+    for i in lyric_correct.split('\n'):
+        if not len(i):
+            continue
+        if not i in lyric_user.keys():
+            continue
+        print(len(i.lower()),len(lyric_user[i][1].lower()))
+        if i.lower()!=lyric_user[i][1].lower():
+            continue
+        score_lyric+=score_by_question_lyric
+    score_local+=score_lyric
+    score_global+=score_lyric
 ##
 def display_answer()->None:
     global music_answer
@@ -383,21 +454,22 @@ def display_answer()->None:
     half_terminal_width=terminal_width//2
     print(FILL_SYMBOL_CENTER*half_terminal_width)
     print(GREEN_COLOR+name+NO_COLOR)
+    print("SCORE: {}/{}".format(round(score_local),score_local_max))
     print(FILL_SYMBOL_CENTER*half_terminal_width)
     #
     longest_str=0
     for i in music_answer.keys():
-        if i in IGNORE_VARS_DISPLAY:
+        if i in IGNORE_VARS_MUSIC:
             continue
         if len(i)>longest_str:
             longest_str=len(i)
 
     for i in music_answer.keys():
-        if i in IGNORE_VARS_DISPLAY:
+        if i.lower() in IGNORE_VARS_MUSIC:
             continue
         i[0].upper()
         if i=="LYRIC":
-            print("LYRIC:")
+            print(f"{i:<{longest_str}} = ")
             display_answer_lyric()
             continue
         print(f"{i:<{longest_str}} = {music_answer[i]}")
@@ -455,11 +527,11 @@ for i in get_musics():
 """
 while True:
     init_game_quiz()
-    player.define_media(music_question.path_audio)
+    display_answer()
     move_game_quiz("play")
     while game_status:
         inp=input('*: ')
         move_game_quiz(inp)
-        display_answer()
+        print(score_global)
     end_game_quiz()
     print("END!")

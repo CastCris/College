@@ -2,7 +2,4 @@ Name=Três lados
 Band=Skank
 Lyric=
 ABCD
-ABCD
-EFGH
-ABCD
-EFGH
+Score=299
