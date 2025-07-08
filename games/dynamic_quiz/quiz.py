@@ -140,6 +140,8 @@ def init_game_quiz()->None:
 
     global score_by_question
     global score_by_question_lyric
+
+    global leading_zeros
     # Commands
     global commands
     # Sound manager
@@ -161,6 +163,16 @@ def init_game_quiz()->None:
             music_answer[i]={}
     # Score
     get_scores_question()
+    leading_zeros=0
+    for i in musics:
+        object_copy=copy.copy(i)
+        object_copy.get_infos()
+        object_score=get_score(object_copy)
+        #
+        if object_score>leading_zeros:
+            leading_zeros=object_score
+    leading_zeros=len(str(leading_zeros))
+
     # print(score_by_question,score_local_max)
     # print(score_by_question_lyric,able_verses)
     # Commands
@@ -214,8 +226,6 @@ def move_game_quiz(cmd:str)->None:
 def end_game_quiz()->None:
     # Musics
     global musics
-    # Sound manage
-    global player
     # Order musics
     global order_musics
     # Game status
@@ -229,15 +239,21 @@ def end_game_quiz()->None:
 
     global score_local_max
     global score_global_max
+
+    global able_questions
+    global able_verses
+
+    global score_by_question
+    global score_by_question_lyric
+
+    global leading_zeros
     # Commands
     global commands
-    ###
-    player.sound_stop()
+    # Sound manager
+    global player
     ###
     # Musics
     del musics
-    # Sound manage
-    del player
     # Order musics
     del order_musics
     # Game status
@@ -251,8 +267,18 @@ def end_game_quiz()->None:
 
     del score_local_max
     del score_global_max
+
+    del able_questions
+    del able_verses
+
+    del score_by_question
+    del score_by_question_lyric
+
+    del leading_zeros
     # Commands
     del commands
+    # Sound manager
+    del player
 ##
 def get_next_question()->None:
     global music_question
@@ -383,14 +409,16 @@ def get_scores_question()->None:
     global score_local_max
     global score_global_max
 
-    global able_question
+    global able_questions
     global able_verses
 
     global score_by_question
     global score_by_question_lyric
+
     #
     score_local=0
-    score_global=0
+    if not "score_global" in globals():
+        score_global=0
 
     score_local_max=get_score(music_question)
     score_global_max=0
@@ -445,16 +473,23 @@ def count_score()->None:
 ##
 def display_answer()->None:
     global music_answer
+    global leading_zeros
+
+    global score_local
+    global score_local_max
     #
     name=music_answer["NAME"]
     name="No reply yet" if not len(name) else name
     name=name.upper()
+    
+    score_formated_local=str(round(score_local)).zfill(leading_zeros)
+    score_formated_local_max=str(score_local_max).zfill(leading_zeros)
     #
     terminal_width=int(subprocess.run(["tput","cols"],text=True,capture_output=True).stdout)
     half_terminal_width=terminal_width//2
     print(FILL_SYMBOL_CENTER*half_terminal_width)
     print(GREEN_COLOR+name+NO_COLOR)
-    print("SCORE: {}/{}".format(round(score_local),score_local_max))
+    print(f"SCORE {score_formated_local}/{score_formated_local_max} ")
     print(FILL_SYMBOL_CENTER*half_terminal_width)
     #
     longest_str=0
@@ -525,13 +560,13 @@ for i in get_musics():
         print(player.get_time_pass())
         time.sleep(1)
 """
-while True:
+if __name__=="__main__":
     init_game_quiz()
     display_answer()
     move_game_quiz("play")
     while game_status:
         inp=input('*: ')
         move_game_quiz(inp)
-        print(score_global)
+    print("Your final score is {}".format(score_global))
     end_game_quiz()
     print("END!")
