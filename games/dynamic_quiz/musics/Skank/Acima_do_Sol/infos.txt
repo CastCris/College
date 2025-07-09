@@ -1,0 +1,3 @@
+Name=Acima do sol
+Band=Skank
+SCORE=10000

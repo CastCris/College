@@ -1,0 +1,5 @@
+Name=Três lados
+Band=Skank
+Lyric=
+ABCD
+Score=299
