@@ -3,6 +3,7 @@ import copy
 import time
 import random
 import subprocess
+import unicodedata
 
 DIRECTORY_MUSIC="./musics"
 MUSIC_FORMAT="*.mp3"
@@ -83,8 +84,9 @@ class Player:
         time.sleep(1)
         self.player.set_time(0)
     def sound_reset(self)->None:
-        self.player.set_time(0)
-        time.sleep(1)
+        self.player=None
+        self.define_media(self.media_path)
+        time.sleep(2)
 
     def get_state(self)->object:
         return self.player.get_state()
@@ -189,13 +191,22 @@ def move_game_quiz(cmd:str)->None:
         print("Invalid command")
         return
     #
+    if cmd[0]=="reply" and len(cmd)==1:
+        print("The reply command needs, at least, one argument")
+        return
+    if cmd[0]=="reply" and not cmd[1].upper() in music_question.__dict__.keys():
+        print("This attribute doesn't exist in this music")
+        return
     if cmd[0]=="reply" and cmd[1].lower()!="lyric":
         check_answer(cmd[1],cmd[2].replace('_',' '))
         count_score()
         display_answer()
         return
     if cmd[0]=="reply" and cmd[1].lower()=="lyric":
-        check_answer_lyric()
+        if __name__=='__main__':
+            answer=get_answer_lyric_cli()
+        #
+        check_answer_lyric(answer)
         count_score()
         display_answer()
         return
@@ -280,6 +291,24 @@ def end_game_quiz()->None:
     # Sound manager
     del player
 ##
+def remove_marked_characters(text:str)->str:
+    text_formated=unicodedata.normalize('NFD',text)
+    text_nolatin=""
+    for i in text_formated:
+        if unicodedata.combining(i):
+            continue
+        text_nolatin+=i
+    return text_nolatin
+##
+def get_answer_lyric_cli()->str:
+    inp=""
+    while True:
+        try:
+            inp+=input().lower()+'\n'
+        except EOFError:
+            break
+    return inp
+##
 def get_next_question()->None:
     global music_question
     global music_answer
@@ -314,25 +343,19 @@ def check_answer(var_name:str,answer:str)->None:
         print("This question already completed")
         return
     answer=answer.lower()
+    answer_formated=remove_marked_characters(answer)
     # print(answer)
     #
-    if answer==music_question.__dict__[var_name].lower():
+    if answer_formated==remove_marked_characters(music_question.__dict__[var_name].lower()):
         music_answer[var_name]=music_question.__dict__[var_name]
         print("Correct answer!")
     else:
         print("Incorrect answer")
-def check_answer_lyric()->None:
+def check_answer_lyric(answer_lyric:str)->None:
     if not "LYRIC" in music_question.__dict__.keys():
         print("This song doesn't have lyrics")
         return
-    lyric_user=[]
-    print("Insert the lyric song")
-    while True:
-        try:
-            inp=input()
-        except EOFError:
-            break
-        lyric_user.append(inp.lower())
+    lyric_user=answer_lyric.split('\n')
     #
     lyric_correct=music_question.__dict__["LYRIC"].split('\n')
     answer_user={}
@@ -350,26 +373,36 @@ def check_answer_lyric()->None:
         for j in range(len(possible_phrases)):
             splited_phrase=possible_phrases[j].split()
             for k in range(len(splited_phrase)):
-                if splited_answer[k]!=splited_phrase[k].lower():
+                # print(remove_marked_characters(splited_answer[k]),remove_marked_characters(splited_phrase[k].lower()))
+                if remove_marked_characters(splited_answer[k])!=remove_marked_characters(splited_phrase[k].lower()):
                     continue
                 correct_words_cont[j]+=1
-        # print(correct_words_cont,possible_phrases)
-        phrase=""
+        print(correct_words_cont,possible_phrases)
+        phrases=[]
         phrase_points=0
         for j in range(len(correct_words_cont)):
             if phrase_points<correct_words_cont[j]:
                 phrase_points=correct_words_cont[j]
-                phrase=possible_phrases[j]
-        splited_phrase=phrase.split()
-        answer=""
-        for j in range(len(splited_phrase)):
-            if splited_phrase[j].lower()!=splited_answer[j]:
-                answer+=('-'*len(splited_phrase[j]))+' '
+
+                phrases.clear()
+                phrases.append(possible_phrases[j])
+            elif phrase_points==correct_words_cont[j]:
+                phrases.append(possible_phrases[j])
+        for  j in phrases:
+            splited_phrase=j.split()
+            answer=""
+            for k in range(len(splited_phrase)):
+                if remove_marked_characters(splited_phrase[k].lower())!=remove_marked_characters(splited_answer[k].lower()):
+                    answer+=('-'*len(splited_phrase[k]))+' '
+                    continue
+                answer+=splited_phrase[k]+' '
+            #
+            if j in answer_user.keys() and answer_user[j][0]<phrase_points:
+                answer_user[j]=[phrase_points,answer.strip()]
                 continue
-            answer+=splited_phrase[j]+' '
-        #
-        # print('/'+answer)
-        answer_user[phrase]=[phrase_points,answer.strip()] # weight of the phrase and the phrase
+            elif j in answer_user.keys():
+                continue
+            answer_user[j]=[phrase_points,answer.strip()] # weight of the phrases and the phrases
     #
     """
     for i in answer_user.keys():
@@ -388,7 +421,7 @@ def check_answer_lyric()->None:
             answer_user[i]=key_value_prev
             continue
         if key_value_prev[0]>key_value_curr[0]:
-            answer_user=key_value_prev
+            answer_user[i]=key_value_prev
     """
     print('====')
     for i in answer_user.keys():
