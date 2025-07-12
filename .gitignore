@@ -1,2 +1,5 @@
-.venv
-.swp
+*
+!*/
+!*.py
+!*.html
+!requirements.txt
