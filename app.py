@@ -39,6 +39,12 @@ if __name__=='__main__':
 """
 from features import *
 
-tst=Notice('./database/notices/Pele_vivo.txt')
-tst.get_infos()
-tst.display()
+tst=User("./database/users/Ronaldo.opa.txt")
+tst.get_infos(DIVISOR_VAR_CONTENT)
+tst.display_cli()
+
+"""
+tst=Notice("./database/notices/Pele_vivo.txt")
+tst.get_infos(DIVISOR_VAR_CONTENT)
+tst.display_cli()
+"""
