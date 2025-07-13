@@ -1,30 +1,6 @@
+"""
 import flask
 import subprocess
-#
-database={'1':'2'}
-#
-class Noticia:
-    def __init__(self,titulo:str,conteudo:str,type:str)->None:
-        self.title=titulo.lower()
-        self.content=conteudo.lower()
-        self.type=type.lower()
-
-def define_notices()->None:
-    global notices
-    #
-    notices=[]
-    notices.append(Noticia('Pele reviveu','QWERTYUIO','Entreterimento'))
-    notices.append(Noticia('Jordan morreu','1234567890','Comédia'))
-
-def match_item(item:str,pattern:str)->str:
-    pipe1 = subprocess.Popen(["echo",item],stdout=subprocess.PIPE) 
-    pipe2 = subprocess.Popen(["grep","-E",pattern],stdin=pipe1.stdout,stdout=subprocess.PIPE) 
-    pipe1.stdout.close()
-    
-    result,_ =pipe2.communicate() 
-    result = result.decode().strip() 
-
-    return result
 #
 app=flask.Flask(__name__)
 
@@ -32,7 +8,7 @@ app=flask.Flask(__name__)
 def view_login()->object:
     return flask.render_template('login.html',fail=0)
 
-@app.route('/process_login',methods=['POST','GET'])
+@app.route('/process_login',methods=['POST'])
 def check_login()->object:
     if flask.request.method=='POST':
         username=flask.request.form['username'].lower()
@@ -48,11 +24,21 @@ def home_page_display()->None:
     define_notices()
     print(notices)
     return flask.render_template('index.html',search='*',notices=notices)
-@app.route('/home_page_search')
+@app.route('/home_page_search',methods=['POST'])
 def home_page_search()->None:
+    global notices
+    #
     if flask.request.method=='POST':
         pattern=flask.request.form['pattern'].lower()
+        for i in notices:
+            search_result=match_item(i.type,pattern)
         return flask.render_template('index.html',notices=notices,search=pattern)
 
 if __name__=='__main__':
     app.run(debug=True)
+"""
+from features import *
+
+tst=Notice('./database/notices/Pele_vivo.txt')
+tst.get_infos()
+tst.display()
