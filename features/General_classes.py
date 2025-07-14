@@ -62,6 +62,7 @@ class Generic_manager():
         if not os.path.exists(path_control):
             print(RED_COLOR+"This path doesn't exist"+NO_COLOR)
         self.path_control=path_control
+
     def get_item(self,item_name:str)->list:
         items=subprocess.run(["find",self.path_control,"-type","f","-name",item_name+TYPE_FILE_INFOS],text=True,capture_output=True)
         items=items.stdout.strip().split('\n')
@@ -69,6 +70,16 @@ class Generic_manager():
             print(RED_COLOR+f"The item {item_name} doesn't exist"+NO_COLOR)
             return []
         return items
+    def get_item_all(self)->list:
+        items=subprocess.run(["find",self.path_control,"-type","f","-name","*"+TYPE_FILE_INFOS],text=True,capture_output=True)
+        items=items.stdout.strip().split('\n')
+        print(items)
+        #
+        if not len(items[0]):
+            print(RED_COLOR+"Doesn't exist any item"+NO_COLOR)
+            return []
+        return items
+
     def create_item(self,item_name:str,item_cont:dict,divisor:str)->None:
         subprocess.run(["touch",self.path_control+'/'+item_name+TYPE_FILE_INFOS])
         with open(self.path_control+'/'+item_name+TYPE_FILE_INFOS,'w') as file:
@@ -92,12 +103,3 @@ class Generic_manager():
             item[item_attr]=[item_attr_new]
             #
             self.create_item(item_name,item,divisor)
-    def get_item_all(self)->list:
-        items=subprocess.run(["find",self.path_control,"-type","f","-name","*"+TYPE_FILE_INFOS],text=True,capture_output=True)
-        items=items.stdout.strip().split('\n')
-        print(items)
-        #
-        if not len(items[0]):
-            print(RED_COLOR+"Doesn't exist any item"+NO_COLOR)
-            return []
-        return items

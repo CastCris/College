@@ -1,5 +1,16 @@
-{% exntends "default_page.html" %}
+{% extends "default_page.html" %}
 {% block title %}Sign{% endblock %}
-{% blcok content $}
-    <p>Rola</p>
+{% block content %}
+    <form method="POST" action="create_account">
+        <label>Your account name</label>
+        <input type="text" name="user_name" id="user_name">
+
+        <label>Your account passphrase</label>
+        <input type="text" name="user_passphrase" id="user_passphrase">
+
+        <label>Plus infos</label>
+        <input type="text" name="plus_infos" id="plus_infos">
+
+        <button type="submit">Create</button>
+    </form>
 {% endblock %}

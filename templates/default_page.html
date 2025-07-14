@@ -15,10 +15,8 @@
         {% else %}
             <header>
                 <div>
-                    <a href="./login.html">login</a>
-                </div>
-                <div>
-                    <a href="./sign.html">sign</a>
+                    <a href="{{ url_for("login_display") }}">login</a>
+                    <a href="{{ url_for("sign_display") }}">sign</a>
                 </div>
             </header>
         {% endif %}

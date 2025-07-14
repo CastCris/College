@@ -71,6 +71,27 @@ def login_authenticate()->object:
             return flask.redirect(flask.url_for('index_display'))
         flask.flash("Deu ruim, faz de novo o login","danger")
         return flask.render_template('login.html')
+@app.route('/sign_display')
+def sign_display()->object:
+    return flask.render_template('sign.html')
+@app.route('/create_account',methods=['POST'])
+def create_account()->object:
+    global user_control
+    global user
+    #
+    if flask.request.method=='POST':
+        user_name=flask.request.form['user_name']
+        user_pass=flask.request.form['user_passphrase']
+        user_plus=flask.request.form['plus_infos']
+        #
+        attr={}
+        attr["NAME"]=[user_name]
+        attr["PASSPHRASE"]=[user_pass]
+        attr_plus=get_attr_from_str(user_plus,DIVISOR_VAR_CONTENT)
+        attr.update(attr_plus)
+        #
+        user_control.create_item(user_name,attr,DIVISOR_VAR_CONTENT)
+        return
 
 @app.route('/index_display')
 def index_display()->None:
