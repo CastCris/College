@@ -3,3 +3,5 @@
 !*.py
 !*.html
 !requirements.txt
+!/database/users/*.txt
+!/database/notices/*.txt

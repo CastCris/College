@@ -1,30 +1,15 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página de Login</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+{% extends "default_page.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+
     <div>
         <h1>Login</h1>
-        <form method="POST" action="process_login">
-            <div class="input-group">
-                <label for="username">Usuário</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="input-group">
-                <label for="password">Senha</label>
-                <input type="text" id="password" name="passphrase" required>
-            </div>
-            <button type="submit">Entrar</button>
+        <form method="POST" action="login_authenticate">
+            <label>User name</label>
+            <input type="text" id="username" name="username" required>
+            <label>passphrase</label>
+            <input type="text" id="passphrase" name="passphrase" required>
+            <button type="submit">Logar</button>
         </form>
-        {% if  fail %}
-            <div>
-                <p>Login deu ruim, faz de novo</p>
-            </div>
-        {% endif %}
     </div>
-</body>
-</html>
+{% endblock %}

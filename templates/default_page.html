@@ -6,6 +6,22 @@
 		<title> {% block title %}ABCD{% endblock %}</title>
 	</head>
 	<body>
+        {% if user %}
+            <header>
+                <div>
+                    <p>Hello {{ user.get_attr("name")[0] }}!</p>
+                </div>
+            </header>
+        {% else %}
+            <header>
+                <div>
+                    <a href="./login.html">login</a>
+                </div>
+                <div>
+                    <a href="./sign.html">sign</a>
+                </div>
+            </header>
+        {% endif %}
 		<main>
 			{% block content %}{% endblock %}
 		</main>

@@ -21,10 +21,10 @@ class Generic_class_info():
     def __init__(self,path_infos:str)->None:
         self.path_infos=path_infos
     def get_attr(self,attr_name)->list:
-        if not attr_name in self.__dict__.keys():
+        if not attr_name.upper() in self.__dict__.keys():
             print("This attribute doesn't exist in this class")
             return
-        return self.__dict__[attr_name]
+        return self.__dict__[attr_name.upper()]
     def get_infos(self,divisor)->None:
         with open(self.path_infos,'r') as file:
             content_file=file.read().strip().split('\n')
@@ -92,7 +92,6 @@ class Generic_manager():
             item[item_attr]=[item_attr_new]
             #
             self.create_item(item_name,item,divisor)
-
     def get_item_all(self)->list:
         items=subprocess.run(["find",self.path_control,"-type","f","-name","*"+TYPE_FILE_INFOS],text=True,capture_output=True)
         items=items.stdout.strip().split('\n')

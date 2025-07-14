@@ -2,6 +2,7 @@ import flask
 import subprocess
 from features import *
 #
+user=None
 def define_users()->None:
     global user_control
     #
@@ -12,12 +13,18 @@ def define_notices()->None:
     notice_control=Notice_Manager("./database/notices")
 #
 app=flask.Flask(__name__)
+app.secret_key='12345'
 
-@app.route('/')
-def view_login()->object:
-    """
+@app.before_request
+def before_request()->None:
     define_users()
     define_notices()
+
+@app.route('/')
+def index():
+    define_users()
+    define_notices()
+    """
     for i in user_control.get_item_all():
         print(i)
         tst=User(i)
@@ -30,24 +37,47 @@ def view_login()->object:
         tst.display_cli()
     """
     #
-    return flask.render_template('login.html',fail=0)
+    if not user:
+        return flask.redirect(flask.url_for('login_display'))
+    else:
+        return flask.redirect(flask.url_for('index_display'))
 
-@app.route('/authenticate',methods=['POST'])
-def check_login()->object:
-    if flask.request.method=='POST':
-        username=flask.request.form['username'].lower()
-        passphrase=flask.request.form['passphrase'].lower()
-        if username in database.keys() and database[username]==passphrase:
-            return flask.redirect(flask.url_for('home_page_display'))
-        return flask.render_template('login.html',fail=1)
-
-@app.route('/home_page_display')
-def home_page_display()->None:
-    global notices
+@app.route('/login_display')
+def login_display()->object:
+    return flask.render_template('login.html',user=user)
+@app.route('/login_authenticate',methods=['POST'])
+def login_authenticate()->object:
+    global user_control
+    global user
     #
-    define_notices()
-    print(notices)
-    return flask.render_template('index.html',search='*',notices=notices)
+    if flask.request.method=='POST':
+        username=flask.request.form['username']
+        passphrase=flask.request.form['passphrase']
+        #
+        if not username or not passphrase:
+            flask.flash("Preenchar todos os dados")
+            return flask.render_template('login.html')
+        #
+        user=user_control.get_user(username.lower())
+        if not user:
+            flask.flash(f"The user {username} doesn't exist","danger")
+            return flask.redirect(flask.url_for("login_display"))
+        user.get_infos(DIVISOR_VAR_CONTENT)
+        passphrase_user=(user.get_attr("passphrase"))[0]
+        user.display_cli()
+        print(passphrase_user)
+        #
+        if passphrase==passphrase_user:
+            return flask.redirect(flask.url_for('index_display'))
+        flask.flash("Deu ruim, faz de novo o login","danger")
+        return flask.render_template('login.html')
+
+@app.route('/index_display')
+def index_display()->None:
+    global notice_control
+    #
+    notices=notice_control.get_notices(DIVISOR_VAR_CONTENT)
+    return flask.render_template('index.html',search='*',user=user)
 @app.route('/home_page_search',methods=['POST'])
 def home_page_search()->None:
     global notices

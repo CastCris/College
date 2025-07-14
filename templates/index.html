@@ -1,27 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal</title>
-</head>
-<body>
-    <form method="POST" action="home_page_search">
-        <label>Pesquisar</label>
-        <input type="text" name="pattern">
-        <input type="submit">
-    </form>
-    <!-- Notice -->
-    {% for i in notices %}
-        {% if search == '*' or search==i.type %}
-            <div>
-                <div>
-                    <h3>{{ i.title }}</h3>
-                    <p> {{ i.content }}</p>
-                    <p> {{ i.type }} </p>
-                </div>
-            </div>
-        {% endif %}
-    {% endfor %}
-</body>
-</html>
+{% extends "default_page.html" %}
+{% block title %}Index{% endblock %}
+{% block content %}
+    <p>QWERTYUIOP</p>
+{% endblock %}
