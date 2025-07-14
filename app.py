@@ -39,12 +39,30 @@ if __name__=='__main__':
 """
 from features import *
 
+"""
 tst=User("./database/users/Ronaldo.opa.txt")
 tst.get_infos(DIVISOR_VAR_CONTENT)
 tst.display_cli()
+"""
 
 """
 tst=Notice("./database/notices/Pele_vivo.txt")
 tst.get_infos(DIVISOR_VAR_CONTENT)
 tst.display_cli()
 """
+
+tst=Generic_manager('./database/users')
+items=tst.get_item('Ronaldo')
+print(items)
+items={
+        "NOME":["ROGER"],
+        "IDADE":["19"]
+        }
+tst.create_item("ROGER",items,DIVISOR_VAR_CONTENT)
+items="NOME=ROGER\nIDADE=19"
+tst.create_item("ROGER_2_0",get_attr_from_str(items,DIVISOR_VAR_CONTENT),DIVISOR_VAR_CONTENT)
+
+# tst.delete_item("ROGER")
+tst.update_item("ROGER","NOME","JOAQUIM",DIVISOR_VAR_CONTENT)
+tst.update_item("ROGER","IdaDe","JOAQUIM",DIVISOR_VAR_CONTENT)
+
