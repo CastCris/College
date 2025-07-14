@@ -1,14 +1,38 @@
-"""
 import flask
 import subprocess
+from features import *
+#
+def define_users()->None:
+    global user_control
+    #
+    user_control=User_Manager("./database/users")
+def define_notices()->None:
+    global notice_control
+    #
+    notice_control=Notice_Manager("./database/notices")
 #
 app=flask.Flask(__name__)
 
 @app.route('/')
 def view_login()->object:
+    """
+    define_users()
+    define_notices()
+    for i in user_control.get_item_all():
+        print(i)
+        tst=User(i)
+        tst.get_infos(DIVISOR_VAR_CONTENT)
+        tst.display_cli()
+    for i in notice_control.get_item_all():
+        print(i)
+        tst=Notice(i)
+        tst.get_infos(DIVISOR_VAR_CONTENT)
+        tst.display_cli()
+    """
+    #
     return flask.render_template('login.html',fail=0)
 
-@app.route('/process_login',methods=['POST'])
+@app.route('/authenticate',methods=['POST'])
 def check_login()->object:
     if flask.request.method=='POST':
         username=flask.request.form['username'].lower()
@@ -36,33 +60,3 @@ def home_page_search()->None:
 
 if __name__=='__main__':
     app.run(debug=True)
-"""
-from features import *
-
-"""
-tst=User("./database/users/Ronaldo.opa.txt")
-tst.get_infos(DIVISOR_VAR_CONTENT)
-tst.display_cli()
-"""
-
-"""
-tst=Notice("./database/notices/Pele_vivo.txt")
-tst.get_infos(DIVISOR_VAR_CONTENT)
-tst.display_cli()
-"""
-
-tst=Generic_manager('./database/users')
-items=tst.get_item('Ronaldo')
-print(items)
-items={
-        "NOME":["ROGER"],
-        "IDADE":["19"]
-        }
-tst.create_item("ROGER",items,DIVISOR_VAR_CONTENT)
-items="NOME=ROGER\nIDADE=19"
-tst.create_item("ROGER_2_0",get_attr_from_str(items,DIVISOR_VAR_CONTENT),DIVISOR_VAR_CONTENT)
-
-# tst.delete_item("ROGER")
-tst.update_item("ROGER","NOME","JOAQUIM",DIVISOR_VAR_CONTENT)
-tst.update_item("ROGER","IdaDe","JOAQUIM",DIVISOR_VAR_CONTENT)
-

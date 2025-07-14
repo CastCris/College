@@ -1,6 +1,6 @@
 import os
 import subprocess
-from ..config import *
+from .config import *
 #
 def get_attr_from_str(attr:str,divisor:str)->dict:
     item_attr={}
@@ -66,7 +66,7 @@ class Generic_manager():
         items=subprocess.run(["find",self.path_control,"-type","f","-name",item_name+TYPE_FILE_INFOS],text=True,capture_output=True)
         items=items.stdout.strip().split('\n')
         if not len(items[0]):
-            print(RED_COLOR+"This item doesn't exist"+NO_COLOR)
+            print(RED_COLOR+f"The item {item_name} doesn't exist"+NO_COLOR)
             return []
         return items
     def create_item(self,item_name:str,item_cont:dict,divisor:str)->None:
@@ -92,3 +92,13 @@ class Generic_manager():
             item[item_attr]=[item_attr_new]
             #
             self.create_item(item_name,item,divisor)
+
+    def get_item_all(self)->list:
+        items=subprocess.run(["find",self.path_control,"-type","f","-name","*"+TYPE_FILE_INFOS],text=True,capture_output=True)
+        items=items.stdout.strip().split('\n')
+        print(items)
+        #
+        if not len(items[0]):
+            print(RED_COLOR+"Doesn't exist any item"+NO_COLOR)
+            return []
+        return items
