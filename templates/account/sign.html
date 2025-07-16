@@ -3,13 +3,13 @@
 {% block content %}
     <form method="POST" action="create_account">
         <label>Your account name</label>
-        <input type="text" name="user_name" id="user_name">
+        <input type="text" name="user_name" id="user_name" required>
 
         <label>Your account passphrase</label>
-        <input type="text" name="user_passphrase" id="user_passphrase">
+        <input type="text" name="user_passphrase" id="user_passphrase" required>
 
         <label>Plus infos</label>
-        <input type="text" name="plus_infos" id="plus_infos">
+        <input type="text" name="plus_infos" id="plus_infos" >
 
         <button type="submit">Create</button>
     </form>

@@ -19,14 +19,14 @@ def get_attr_from_str(attr:str,divisor:str)->dict:
 #
 class Generic_class_info():
     def __init__(self,path_infos:str)->None:
-        self.path_infos=path_infos
+        self.PATH_INFOS=[path_infos]
     def get_attr(self,attr_name)->list:
         if not attr_name.upper() in self.__dict__.keys():
             print("This attribute doesn't exist in this class")
             return
         return self.__dict__[attr_name.upper()]
     def get_infos(self,divisor)->None:
-        with open(self.path_infos,'r') as file:
+        with open(self.PATH_INFOS[0],'r') as file:
             content_file=file.read().strip().split('\n')
             var_name=''
             for i in content_file:
@@ -64,20 +64,21 @@ class Generic_manager():
         self.path_control=path_control
 
     def get_item(self,item_name:str)->list:
+        print(item_name+TYPE_FILE_INFOS)
         items=subprocess.run(["find",self.path_control,"-type","f","-name",item_name+TYPE_FILE_INFOS],text=True,capture_output=True)
         items=items.stdout.strip().split('\n')
         if not len(items[0]):
             print(RED_COLOR+f"The item {item_name} doesn't exist"+NO_COLOR)
-            return []
+            return
         return items
     def get_item_all(self)->list:
         items=subprocess.run(["find",self.path_control,"-type","f","-name","*"+TYPE_FILE_INFOS],text=True,capture_output=True)
         items=items.stdout.strip().split('\n')
         print(items)
         #
-        if not len(items[0]):
+        if not items[0]:
             print(RED_COLOR+"Doesn't exist any item"+NO_COLOR)
-            return []
+            return
         return items
 
     def create_item(self,item_name:str,item_cont:dict,divisor:str)->None:
@@ -91,7 +92,7 @@ class Generic_manager():
             return
         os.remove(self.path_control+'/'+item_name+TYPE_FILE_INFOS)
     def update_item(self,item_name:str,item_attr:str,item_attr_new:str,divisor:str)->None:
-        if not len(self.get_item(item_name)):
+        if not self.get_item(item_name):
             return
         item_attr=item_attr.upper()
         with open(self.path_control+'/'+item_name+TYPE_FILE_INFOS,'r') as file:

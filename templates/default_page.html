@@ -10,6 +10,7 @@
             <header>
                 <div>
                     <p>Hello {{ user.get_attr("name")[0] }}!</p>
+					<a href="{{ url_for("logout") }}">log out</a>
                 </div>
             </header>
         {% else %}
@@ -21,7 +22,14 @@
             </header>
         {% endif %}
 		<main>
-			{% block content %}{% endblock %}
+			<section>
+				{% block content %}{% endblock %}
+			</section>
+			{% if message %}
+				<div>
+					<p>{{ message }}</p>
+				</div>
+			{% endif %}
 		</main>
 	</body>
 </html>

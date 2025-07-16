@@ -1,3 +1,0 @@
-NAME=Valter
-PASSPHRASE=qwertyuiop
-PEIXE=12
