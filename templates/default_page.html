@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="UTF-8">
@@ -25,11 +24,13 @@
 			<section>
 				{% block content %}{% endblock %}
 			</section>
+			<section>
 			{% if message %}
 				<div>
 					<p>{{ message }}</p>
 				</div>
 			{% endif %}
+			</section>
 		</main>
 	</body>
 </html>
