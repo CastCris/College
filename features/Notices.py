@@ -15,11 +15,13 @@ class Notice_Manager(Generic_manager):
             notices.append(Notice(i))
             notices[-1].get_infos(divisor)
         return notices
-    def get_notices_filter(self,pattern)->list:
-        notices=self.get_notices()
+    def get_notices_filter(self,pattern:str,divisor:str)->list:
+        notices=self.get_notices(divisor)
         notices_filtered=[]
+        pattern=remove_marked_str(pattern)
         for i in notices:
-            if not match_item(i.type,pattern):
+            notice_type=remove_marked_str(i.get_attr("type")[0])
+            if not match_item(notice_type.lower(),pattern):
                 continue
             notices_filtered.append(i)
         return notices_filtered

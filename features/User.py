@@ -10,7 +10,7 @@ class User(Generic_class_info):
         self.USER_NAME=self.USER_NAME.split('.')[0]
 
 class User_Manager(Generic_manager):
-    def get_user(self,user_name:str)->object:
+    def get_user(self,user_name:str,divisor:str)->object:
         user_file=self.get_item(user_name)
         if not user_file:
             print(RED_COLOR+f"The {user_name} doesn't exist"+NO_COLOR)
@@ -18,4 +18,6 @@ class User_Manager(Generic_manager):
         if len(user_file)>2:
             print(RED_COLOR+f"The {user_name} user is duplicate"+NO_COLOR)
             return
-        return User(user_file[0])
+        user=User(user_file[0])
+        user.get_infos(divisor)
+        return user

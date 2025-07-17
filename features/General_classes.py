@@ -20,12 +20,12 @@ def get_attr_from_str(attr:str,divisor:str)->dict:
 class Generic_class_info():
     def __init__(self,path_infos:str)->None:
         self.PATH_INFOS=[path_infos]
-    def get_attr(self,attr_name)->list:
+    def get_attr(self,attr_name:str)->list:
         if not attr_name.upper() in self.__dict__.keys():
-            print("This attribute doesn't exist in this class")
+            print(f"The attribute {attr_name} doesn't exist in this class")
             return
         return self.__dict__[attr_name.upper()]
-    def get_infos(self,divisor)->None:
+    def get_infos(self,divisor:str)->None:
         with open(self.PATH_INFOS[0],'r') as file:
             content_file=file.read().strip().split('\n')
             var_name=''
@@ -43,7 +43,7 @@ class Generic_class_info():
                 setattr(self,var_name,[var_content])
     def update_attr(self,attr_name:str,new_content:str)->None:
         if not attr_name in self.__dict__:
-            print(RED_COLOR+"Thus attribute doesn't exist in this class"+NO_COLOR)
+            print(RED_COLOR+f"The attribute {attr_name} doesn't exist in this class"+NO_COLOR)
         self.__dict__[attr_name]=new_content
     def display_cli(self)->None:
         console_width=subprocess.run(["tput","cols"],text=True,capture_output=True)
