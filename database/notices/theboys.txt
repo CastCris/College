@@ -6,4 +6,4 @@ date=02/07/2025
 
 source=GamesRadar / Tom’s Guide
 
-sort=Séries
+type=Séries

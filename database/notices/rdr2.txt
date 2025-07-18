@@ -6,4 +6,4 @@ date=17/07/2025
 
 source=The Game Awards
 
-sort=Games
+type=Games

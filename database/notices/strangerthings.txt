@@ -6,4 +6,4 @@ date=16/07/2025
 
 source=Metrópoles / Game Rant
 
-sort=Séries
+type=Séries

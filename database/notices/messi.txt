@@ -6,4 +6,4 @@ date=16/07/2025
 
 source=Globo Esporte
 
-sort=Esporte
+type=Esporte

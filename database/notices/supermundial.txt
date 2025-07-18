@@ -6,4 +6,4 @@ date=15/07/2025
 
 source=ESPN
 
-sort=Esporte
+type=Esporte

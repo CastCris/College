@@ -6,4 +6,4 @@ date=18/07/2025
 
 source=IGN Brasil
 
-sort=Games
+type=Games

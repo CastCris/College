@@ -6,4 +6,4 @@ date=25/05/2025
 
 source=UOL / Jovem Nerd
 
-sort=Séries
+type=Séries
