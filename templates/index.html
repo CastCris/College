@@ -8,7 +8,7 @@
 		<!---->
 		<button type="submit">search</button>
 	</form>
-	{% for i in notices %}
+	{% for i in g.notices %}
 		<div>
 			<div> <!-- Header journal -->
 				<h1>{{ i.get_attr("title")[0] }}</h1>

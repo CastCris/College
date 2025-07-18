@@ -1,36 +1,62 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewpoint" content="width=device-width, initial-scale=1.0">
 		<title> {% block title %}ABCD{% endblock %}</title>
+		<link rel="stylesheet" href="{{ url_for('static',filename='style/style.css') }}">
 	</head>
 	<body>
-        {% if user %}
-            <header>
-                <div>
-                    <p>Hello {{ user.get_attr("name")[0] }}!</p>
-					<a href="{{ url_for("logout") }}">log out</a>
-                </div>
-            </header>
-        {% else %}
-            <header>
-                <div>
-                    <a href="{{ url_for("login_display") }}">login</a>
-                    <a href="{{ url_for("sign_display") }}">sign</a>
-                </div>
-            </header>
-        {% endif %}
+		<header>
+			{% if g.user %}
+					<div>
+						<p>Hello {{ g.user.get_attr("name")[0] }}!</p>
+						<a href="{{ url_for("logout") }}">log out</a>
+					</div>
+			{% else %}
+					<div>
+						<a href="{{ url_for("login_display") }}">login</a>
+						<a href="{{ url_for("sign_display") }}">sign</a>
+					</div>
+			{% endif %}
+			<button id="light_night" onclick="change_theme()">
+				{% if g.ligth %}
+					night
+				{% else %}
+					light
+				{% endif %}
+			</button>
+		</header>
 		<main>
 			<section>
 				{% block content %}{% endblock %}
 			</section>
 			<section>
-			{% if message %}
+			{% if g.message %}
 				<div>
-					<p>{{ message }}</p>
+					<p>{{ g.message }}</p>
 				</div>
 			{% endif %}
 			</section>
 		</main>
 	</body>
+	<script>
+		fetch('/get_light')
+			.then(result=>result.json())
+			.then(data=>{
+				var light=Number(data.light);
+				var text_color='';
+				var back_color='';
+				if(!light){ // Dark theme
+					text_color='white';
+					back_color='black';
+				}else{ // White theme
+					text_color='black';
+					back_color='white';
+				}
+				document.documentElement.style.setProperty('--text-color',text_color);
+				document.documentElement.style.setProperty('--back-color',back_color);
+			});
+	</script>
+	<script src="{{ url_for('static',filename='js/change_theme.js') }}"></script>
 </html>

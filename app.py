@@ -14,6 +14,7 @@ def define_notices()->None:
 #
 app=flask.Flask(__name__)
 app.secret_key='12345'
+app.config['VERSION']='1.0.0'
 
 @app.before_request
 def before_request()->None:
@@ -24,6 +25,17 @@ def before_request()->None:
         user=User(flask.request.cookies.get("user"))
         user.get_infos(DIVISOR_VAR_CONTENT)
         user.display_cli()
+    flask.g.user=user
+    #
+    light=0
+    if "light" in flask.request.cookies:
+        light=flask.request.cookies.get("light");
+    flask.g.light=light
+    #
+    flask.g.message=""
+    #
+    flask.g.notices=None
+
     define_users()
     define_notices()
 
@@ -49,10 +61,14 @@ def index():
     else:
         return flask.redirect(flask.url_for('index_display'))
 
+@app.route('/get_light')
+def get_light():
+    return {'light':flask.g.light}
+
 @app.route('/login_display')
 def login_display()->object:
     if not user:
-        return flask.render_template('account/login.html',user=user)
+        return flask.render_template('account/login.html')
     return flask.redirect(flask.url_for('index_display'))
 @app.route('/login_auth',methods=['POST'])
 def login_auth()->object:
@@ -65,8 +81,8 @@ def login_auth()->object:
         #
         user=user_control.get_user(username,DIVISOR_VAR_CONTENT)
         if not user:
-            flask.flash(f"The user {username} doesn't exist","error")
-            return flask.render_template("account/login.html",messages="The user {} doesn't exist".format(username))
+            flask.g.message="The user {} doesn't exist".format(username)
+            return flask.render_template("account/login.html")
         passphrase_user=(user.get_attr("passphrase"))[0]
         user.display_cli()
         # print(user.get_attr("path_infos"))
@@ -76,10 +92,11 @@ def login_auth()->object:
             response=flask.make_response(flask.redirect('/'))
             response.set_cookie("user",user.get_attr("path_infos")[0])
             return response
-        return flask.render_template("account/login.html",messages="The user pass is incorret".format(passphrase))
+        flask.g.message="The passprase is incorrect"
+        return flask.render_template("account/login.html")
 @app.route('/sign_display')
 def sign_display()->object:
-    return flask.render_template('account/sign.html',user=user)
+    return flask.render_template('account/sign.html')
 @app.route('/create_account',methods=['POST'])
 def create_account()->object:
     global user_control
@@ -89,7 +106,7 @@ def create_account()->object:
         user_pass=flask.request.form['user_passphrase']
         user_plus=flask.request.form['plus_infos']
         if user_control.get_item(user_name):
-            return flask.render_template('sign.html',message="This user already exist, create other",user=user)
+            return flask.render_template('account/sign.html')
         #
         attr={}
         attr["NAME"]=[user_name]
@@ -101,7 +118,7 @@ def create_account()->object:
         return flask.redirect(flask.url_for('login_display'))
 @app.route('/change_pass_display')
 def change_pass_display()->object:
-    return flask.render_template('account/change_passphrase.html',user=user)
+    return flask.render_template('account/change_passphrase.html')
 @app.route('/change_pass_auth',methods=['POST'])
 def change_pass_auth()->object:
     global user_control
@@ -113,13 +130,15 @@ def change_pass_auth()->object:
         user_pass_new=flask.request.form['user_pass_new']
         #
         if not user_control.get_item(user_name):
-            return flask.render_template('account/change_pass.html',message="This user doesn't exist, create one",user=user)
+            flask.g.message="The user {} doesn't exist".format(user_name)
+            return flask.render_template('account/change_passphrase.html')
         user=user_control.get_user(user_name,DIVISOR_VAR_CONTENT)
         user.display_cli()
         if user_pass==user.get_attr("passphrase")[0]:
             user_control.update_item(user_name,"passphrase",user_pass_new,DIVISOR_VAR_CONTENT)
             return flask.redirect(flask.url_for('login_display'))
-        return flask.render_template("account/change_pass.html",message="Invalid passphrase",user=user)
+        flask.g.message="The passphrase is incorrect"
+        return flask.render_template("account/change_passphrase.html")
 @app.route("/logout")
 def logout()->object:
     response=flask.make_response(flask.redirect("/"))
@@ -132,7 +151,8 @@ def index_display()->object:
     global notice_control
     #
     notices=notice_control.get_notices(DIVISOR_VAR_CONTENT)
-    return flask.render_template('index.html',notices=notices,user=user)
+    flask.g.notices=notices
+    return flask.render_template('index.html')
 @app.route('/index_search',methods=['GET'])
 def index_search()->None:
     global notice_control
@@ -142,7 +162,9 @@ def index_search()->None:
         notices=notice_control.get_notices_filter(pattern,DIVISOR_VAR_CONTENT)
         for i in notices:
             i.display_cli()
-        return flask.render_template('index.html',notices=notices,user=user)
+        flask.g.notices=notices
+        return flask.render_template('index.html')
 
 if __name__=='__main__':
     app.run(debug=True)
+
