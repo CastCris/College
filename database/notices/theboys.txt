@@ -1,0 +1,9 @@
+Title=The Boys encerra gravações da temporada final e planeja estreia em 2026
+
+content=A 5ª e última temporada de The Boys já finalizou as gravações em julho de 2025, conforme confirmou o criador Eric Kripke. A série estreará em 2026 com oito episódios que prometem encerrar a saga sob o controle do Homelander nos EUA.
+
+date=02/07/2025
+
+source=GamesRadar / Tom’s Guide
+
+sort=Séries

@@ -1,0 +1,2 @@
+NAME=ar 
+PASSPHRASE=ar

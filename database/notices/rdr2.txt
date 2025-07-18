@@ -1,0 +1,9 @@
+Title=Red Dead Redemption 2 ultrapassa 80 milhões de cópias vendidas
+
+content=Red Dead Redemption 2 alcançou a marca impressionante de 80 milhões de unidades vendidas em todo o mundo. O jogo da Rockstar continua sendo um sucesso mesmo anos após o lançamento, sendo elogiado pela narrativa e imersão no Velho Oeste.
+
+date=17/07/2025
+
+source=The Game Awards
+
+sort=Games

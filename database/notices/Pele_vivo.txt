@@ -1,8 +1,0 @@
-Title=Pelé vivo
-Data=10/7/2020
-Type=comédia
-content=
-<p>É importanten salienta blá blá blá blá blá</p>
-<b>Estou destacado!</b>
-<i>Italiano</i>
-<s>Stoke!</s>

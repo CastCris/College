@@ -1,0 +1,9 @@
+Title=Rick and Morty estreia 8ª temporada em maio nos EUA e Brasil
+
+content=A 8ª temporada de Rick and Morty estreou nos EUA em 25 de maio de 2025 no Adult Swim, e chegou ao Brasil em 26 de maio via Max. A nova fase terá 10 episódios e segue com dublagem de Ian Cardoni (Rick) e Harry Belden (Morty), após a saída de Justin Roiland.
+
+date=25/05/2025
+
+source=UOL / Jovem Nerd
+
+sort=Séries
