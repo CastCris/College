@@ -1,12 +1,17 @@
 import flask
+import re
 
+REGEX_EMAIL=r'^[A-Za-z0-9%._+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
 amazin_database={
-       "Ronaldo":["12","abcd@efg"]
+       "Ronaldo":["12","abcd@efg.com"]
        }
 
 app=flask.Flask(__name__)
 app.secret_key='1234567890'
 
+def valid_email_format(email)->int:
+    result_regex=re.findall(REGEX_EMAIL,email)
+    return len(result_regex)
 
 @app.route('/')
 def load_page()->None:
@@ -28,10 +33,10 @@ def login_auth()->None:
         user=None
         if user_name in amazin_database.keys():
             user=amazin_database[user_name]
-        if user and  user_pass in user and user_email in user:
-            flask.g.user_name=user_name
+        if user and  user_pass in user and user_email in user and valid_email_format(user_email):
+            flask.session['user_name']=user_name
             response=flask.make_response(flask.redirect('/'))
-            response.set_cookie("user",';'.join(user),max_age=10)
+            response.set_cookie("user",';'.join(user),max_age=100)
 
             return response
         #
@@ -39,6 +44,8 @@ def login_auth()->None:
             flask.flash("Invalid user name","danger")
         elif not user_pass in user:
             flask.flash("Invliad user passphrase","danger")
+        elif not valid_email_format(user_email):
+            flask.flash("Invalid email format")
         elif not user_email in user:
             flask.flash("Invalid user email","danger")
         return flask.redirect(flask.url_for("login_display"))
