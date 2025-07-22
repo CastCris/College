@@ -1,11 +1,10 @@
-
 function swap(array,idx1,idx2){
 	array[idx1]+=array[idx2];
 	array[idx2]=array[idx1]-array[idx2];
 	array[idx1]-=array[idx2];
 }
 // Algorithms sort
-function bubble_sort(array){
+function selection_sort(array){
 	for(i in array){
 		for(var j=i;j<array.length;++j){
 			if(array[i]>array[j]){
@@ -111,12 +110,16 @@ function end_timer(){
 }
 //
 let timer_init;
-n=100000;
+/*
+n=100;
 tst=[];
 for(var i=0;i<n;++i){
 	tst.push(n-i);
-}
+}*/
+const tst=[10, 9 , 8 , 7 , 1 , 5 , 6 , 7 , 2 , 3 ,4]
+console.log("Original array ");
 console.log(tst);
+/*
 //
 console.log("Mrge_sort");
 array_merge=tst.slice()
@@ -145,12 +148,13 @@ end_timer()
 
 console.log(array_insert);
 //
-console.log("Bubble_sort");
-array_bubble=tst.slice();
+*/
+console.log("Selection_sort");
+array_selection_sort=tst.slice();
 
 start_timer()
-bubble_sort(array_bubble);
+selection_sort(array_selection_sort);
 end_timer()
 
-console.log(array_bubble);
+console.log(array_selection_sort);
 //
