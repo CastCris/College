@@ -17,6 +17,15 @@ function get_index_fib(type_fib,index){
 	return dp_fib[index-1];
 }
 
-var tst=[1,2,3,4,5,20,7,8,9,10];
-var new_arr=tst.map(index=>get_index_fib(2,index));
-console.log(new_arr);
+let readline=require('readline');
+let rl=readline.createInterface({
+    input:process.stdin,
+    output:process.stdout
+});
+
+rl.question('Insert an array ',(inp_list)=>{
+    var tst=inp_list.split(' ').map((x)=>Number(x));
+
+    var new_arr=tst.map(index=>get_index_fib(2,index));
+    console.log(new_arr);
+});

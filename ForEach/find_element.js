@@ -2,13 +2,27 @@ const find_element=(item,item_index,element,element_positions)=>{
 	if(item==element)
 		element_positions.push(item_index);
 }
-let tst=[1,2,3,10,10,2,3,4,5,10,10];
-let positions=[];
-tst.forEach((item,item_index)=>{
-	find_element(item,item_index,10,positions);
-	}
-);
-positions.forEach((item,item_index)=>{
-	console.log(item,tst[item]);
-	}
-);
+
+const readline=require('readline');
+const rl=readline.createInterface({
+    input:process.stdin,
+    output:process.stdout
+});
+
+rl.question('Inset the list for do the search ',(inp_list)=>{
+    rl.question('Insert the wish number',(inp_number)=>{
+
+        let tst=inp_list.split(' ').map((x)=>Number(x));
+        let number=Number(inp_number);
+        //
+        let positions=[];
+        tst.forEach((item,item_index)=>{
+            find_element(item,item_index,10,positions);
+            }
+        );
+        positions.forEach((item,item_index)=>{
+            console.log(item,tst[item]);
+            }
+        );
+    });
+});

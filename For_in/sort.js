@@ -109,52 +109,55 @@ function end_timer(){
 	console.log("The task take "+((timer_now-timer_init)/1000)+"seconds");
 }
 //
-let timer_init;
-/*
-n=100;
-tst=[];
-for(var i=0;i<n;++i){
-	tst.push(n-i);
-}*/
-const tst=[10, 9 , 8 , 7 , 1 , 5 , 6 , 7 , 2 , 3 ,4]
-console.log("Original array ");
-console.log(tst);
-/*
-//
-console.log("Mrge_sort");
-array_merge=tst.slice()
+let readline=require('readline');
+let rl=readline.createInterface({
+    input:process.stdin,
+    output:process.stdout
+});
 
-start_timer();
-merge_sort(array_merge,0,array_merge.length-1);
-end_timer();
+rl.question('Insert a list of intergers for be sort ',(inp_list)=>{
+    let timer_init;
+    let test=inp_list.split(' ').map((x)=>Number(x));
 
-console.log(array_merge);
-//
-console.log("Heap_sort")
-array_heap=tst.slice();
+    console.log("Original array ");
+    console.log(test);
+    /*
+    //
+    console.log("Mrge_sort");
+    array_merge=test.slice()
 
-start_timer()
-heap_sort(array_heap);
-end_timer()
+    start_timer();
+    merge_sort(array_merge,0,array_merge.length-1);
+    end_timer();
 
-console.log(array_heap);
-//
-console.log("Insert_sort");
-array_insert=tst.slice();
+    console.log(array_merge);
+    //
+    console.log("Heap_sort")
+    array_heap=test.slice();
 
-start_timer()
-insert_sort(array_insert);
-end_timer()
+    start_timer()
+    heap_sort(array_heap);
+    end_timer()
 
-console.log(array_insert);
-//
-*/
-console.log("Selection_sort");
-array_selection_sort=tst.slice();
+    console.log(array_heap);
+    //
+    console.log("Insert_sort");
+    array_insert=test.slice();
 
-start_timer()
-selection_sort(array_selection_sort);
-end_timer()
+    start_timer()
+    insert_sort(array_insert);
+    end_timer()
 
-console.log(array_selection_sort);
-//
+    console.log(array_insert);
+    //
+    */
+    console.log("Selection_sort");
+    array_selection_sort=test.slice();
+
+    start_timer()
+    selection_sort(array_selection_sort);
+    end_timer()
+
+    console.log(array_selection_sort);
+    //
+});
