@@ -1,9 +1,0 @@
-Title=GTA 6 tem lançamento adiado para 2026, confirma Rockstar
-
-content=A Rockstar Games anunciou oficialmente que o aguardado GTA 6 será lançado apenas em 2026. Segundo a empresa, o adiamento é necessário para garantir a qualidade e a escala do projeto, considerado o maior da história da desenvolvedora.
-
-date=18/07/2025
-
-source=IGN Brasil
-
-type=Games

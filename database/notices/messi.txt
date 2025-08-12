@@ -1,9 +1,0 @@
-Title=Messi brilha na MLS com sequência histórica de gols
-
-content=Lionel Messi marcou dois gols em cada uma das últimas cinco partidas pelo Inter Miami, totalizando 10 gols em cinco jogos. O argentino tem sido o destaque absoluto da temporada e levou seu time à liderança da Conferência Leste.
-
-date=16/07/2025
-
-source=Globo Esporte
-
-type=Esporte
