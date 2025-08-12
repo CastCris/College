@@ -17,3 +17,9 @@
 # Tiny games
 !/year_2/tiny_games/games/dynamic_quiz/musics/**/*.mp3
 !/year_2/tiny_games/games/dynamic_quiz/musics/**/infos.txt
+=======
+!.gitignore
+!requirements.txt
+!*.py
+!*.html
+!*.css
