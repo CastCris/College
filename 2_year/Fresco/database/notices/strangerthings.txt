@@ -1,0 +1,9 @@
+Title=Stranger Things divulga teaser e detalhes da temporada final
+
+content=A Netflix divulgou o primeiro teaser da 5ª e última temporada de Stranger Things, que será lançada em três partes: 26 de novembro, 25 de dezembro e 31 de dezembro de 2025. 
+
+date=16/07/2025
+
+source=Metrópoles / Game Rant
+
+type=Séries

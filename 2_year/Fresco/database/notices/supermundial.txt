@@ -1,0 +1,9 @@
+Title=Chelsea conquista o inédito título do Supermundial de Clubes
+
+content=Em uma final eletrizante contra o Real Madrid, o Chelsea venceu por 3 a 2 e se tornou campeão do novo formato do Supermundial de Clubes da FIFA. Sterling marcou o gol decisivo nos acréscimos, selando a conquista histórica para os Blues.
+
+date=15/07/2025
+
+source=ESPN
+
+type=Esporte

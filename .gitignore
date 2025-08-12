@@ -1,9 +1,18 @@
-*
 !*/
+
+!*.c
+!*.cpp
+
 !*.py
 !*.js
 !*.css
 !*.html
 !requirements.txt
-!/database/users/*.txt
-!/database/notices/*.txt
+
+# Fresco
+!/year_2/Freco/database/users/*.txt
+!/year_2/Freco/database/notices/*.txt
+
+# Tiny games
+!/year_2/tiny_games/games/dynamic_quiz/musics/**/*.mp3
+!/year_2/tiny_games/games/dynamic_quiz/musics/**/infos.txt

@@ -1,0 +1,28 @@
+<html>
+<head>
+	<title>{% block title %}{% endblock %}</title>
+	<link href="{{ url_for('static',filename='styles.css') }}">
+</head>
+<body>
+	<header>
+		{% if not "user" in request.cookies %}
+			<a href="{{ url_for("login_display") }}">login</a>
+		{% else %}
+			<a href="{{ url_for("logout") }}">logout</a>
+		{% endif %}
+	<main>
+		{% block content %}{% endblock %}
+	</main>
+	<section>
+		<div>
+			{% with messages=get_flashed_messages() %}
+				{% if messages %}
+					{% for i in messages %}
+						<p>{{ i }}</p>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+		</div>
+	</section>
+</body>
+</html>

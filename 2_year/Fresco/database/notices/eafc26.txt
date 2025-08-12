@@ -1,0 +1,9 @@
+Title=Novo jogo da série FIFA promete modo carreira mais imersivo
+
+content=O EA Sports FC 26, sucessor da franquia FIFA, será lançado ainda este ano e promete grandes melhorias no modo carreira, com mais opções de personalização, entrevistas e negociações mais realistas. Jogadores aguardam ansiosos as novidades.
+
+date=16/07/2025
+
+source=Eurogamer
+
+type=Games

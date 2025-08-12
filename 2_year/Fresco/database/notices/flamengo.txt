@@ -1,0 +1,9 @@
+Title=Flamengo tropeça no Maracanã e perde para o Santos
+
+content=O Flamengo foi derrotado por 1 a 0 pelo Santos em pleno Maracanã. O gol da vitória santista foi marcado por Soteldo, e a partida teve momentos polêmicos envolvendo a arbitragem. A torcida rubro-negra demonstrou insatisfação com vaias ao final do jogo.
+
+date=17/07/2025
+
+source=GE (Globo Esporte)
+
+type=Esporte
