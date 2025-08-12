@@ -9,5 +9,11 @@
 !*.css
 !*.html
 !requirements.txt
-!/database/users/*.txt
-!/database/notices/*.txt
+
+# Fresco
+!/2_year/Freco/database/users/*.txt
+!/2_year/Freco/database/notices/*.txt
+
+# Tiny games
+!/2_year/tiny_games/games/dynamic_quiz/musics/**/*.mp3
+!/2_year/tiny_games/games/dynamic_quiz/musics/**/infos.txt
