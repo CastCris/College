@@ -11,9 +11,9 @@
 !requirements.txt
 
 # Fresco
-!/2_year/Freco/database/users/*.txt
-!/2_year/Freco/database/notices/*.txt
+!/year_2/Freco/database/users/*.txt
+!/year_2/Freco/database/notices/*.txt
 
 # Tiny games
-!/2_year/tiny_games/games/dynamic_quiz/musics/**/*.mp3
-!/2_year/tiny_games/games/dynamic_quiz/musics/**/infos.txt
+!/year_2/tiny_games/games/dynamic_quiz/musics/**/*.mp3
+!/year_2/tiny_games/games/dynamic_quiz/musics/**/infos.txt
