@@ -1,0 +1,5 @@
+print()
+x=int(input('Insira algum valor: '))
+print('O seu modúlo vale:',end=' ')
+print(x*-1) if x<0 else print(x)
+print()

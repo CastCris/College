@@ -1,3 +1,0 @@
-NAME=Mariano
-PASSPHRASE=65
-CASA=casa1

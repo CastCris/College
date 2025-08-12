@@ -1,2 +1,0 @@
-NAME=Frigo Camelo
-PASSPHRASE=1

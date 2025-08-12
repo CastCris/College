@@ -1,6 +1,0 @@
-Title=RUan
-Subtitle=Jose
-Content=
-Nao sei o que colocar Aqui
-I don't know that I put here
-TYpe=família
