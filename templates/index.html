@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Index</title>
+</head>
+<body>
+    {% for i in session.character_names %}
+        <a href="{{ url_for('biography_auth', person = i) }}"> {{ i }} </a>
+        <br>
+    {% endfor %}
+
+    {% if "character_choosen" in session %}
+        <h1>Name: {{ session.character_choosen["name"] }}</h1>
+        <p>Biography: {{ session.character_choosen["bio"] }}</p>
+    {% endif %}
+    
+    {% if session.message %}
+        <p>{{ session.message }}</p>
+    {% endif %}
+
+</body>
+</html>
