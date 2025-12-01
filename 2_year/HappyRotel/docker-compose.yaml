@@ -1,0 +1,86 @@
+version: "3"
+
+services:
+
+  postgres:
+    image: postgres:latest
+    container_name: "happyRotel_postgres"
+
+    environment:
+      POSTGRES_USER: "happyRotel"
+      POSTGRES_PASSWORD: "shinyhappypeople"
+      POSTGRES_DB: "happyRotel"
+
+    restart: always
+
+    volumes:
+      - postgres_data:/var/lib/postgres/data
+
+    ports:
+      - "2601:2601"
+    
+
+  #
+  app:
+    build: 
+      context: .
+      dockerfile: dockerfile
+
+    # command: python3 app.py
+    command: python3 run.py
+    # command: ls -la
+
+    container_name: "happyRotel_flask"
+
+    environment:
+      HAPPYROTEL_DB_USER: "happyRotel"
+      HAPPYROTEL_DB_PASSWORD: "shinyhappypeople"
+      HAPPYROTEL_DB_DATABASE: "happyRotel"
+      HAPPYROTEL_DB_HOST: "postgres"
+
+    ports:
+      - "5000:5000"
+
+    depends_on:
+      - postgres
+
+    develop:
+      watch:
+        - action: sync+restart
+          path: .
+          target: .
+          ignore:
+            - templates/
+            - static/
+
+
+        - action: sync
+          path: templates/
+          target: templates/
+
+        - action: sync
+          path: static/
+          target: static/
+
+
+        - action: rebuild
+          path: requirements.txt
+          target: requirements.txt
+
+        - action: rebuild
+          path: dockerfile
+          target: dockerfile
+
+        - action: rebuild
+          path: docker-compose.yaml
+          target: docker-compose.yaml
+
+        - action: rebuild
+          path: .dockerignore
+          target: .dockerignore
+
+    # volumes:
+    #   - .:/app
+
+volumes:
+  postgres_data:
