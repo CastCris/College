@@ -1,18 +1,25 @@
+*
 !*/
 
-!*.c
-!*.cpp
+!.gitignore
 
-!*.py
-!*.js
-!*.css
-!*.html
+!docker-compose.yaml
+!dockerfile
+!.dockerignore
+
 !requirements.txt
 
-# Fresco
-!/year_2/Freco/database/users/*.txt
-!/year_2/Freco/database/notices/*.txt
+## Flask archictecture
+!/**/app/**/*.py
 
-# Tiny games
-!/year_2/tiny_games/games/dynamic_quiz/musics/**/*.mp3
-!/year_2/tiny_games/games/dynamic_quiz/musics/**/infos.txt
+!/**/app/database/casts/**/*.sql
+!/**/app/templates/**/*.html
+
+!/**/app/static/assets/
+!/**/app/static/fonts/**/*.ttf
+!/**/app/static/style/**/*.css
+!/**/app/static/scripts/**/*.js
+
+## Ignore all venvs
+/**/.venv/
+/**/__pycache__/
