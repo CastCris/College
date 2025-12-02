@@ -9,6 +9,7 @@ ALTER TABLE
 ALTER TABLE
     "User" ADD CONSTRAINT "user_userinfos_id_unique" UNIQUE("userInfos_id");
 CREATE TABLE "UserInfos"(
+    "dek" VARCHAR(255) NOT NULL,
     "id" CHAR(32) NOT NULL,
     "hashed_name" CHAR(32) NOT NULL,
     "hashed_email" CHAR(32) NOT NULL,
@@ -27,18 +28,18 @@ ALTER TABLE
 CREATE TABLE "Room"(
     "id" CHAR(32) NOT NULL,
     "roomInfos_id" CHAR(32) NOT NULL,
-    "roomType_id" CHAR(32) NOT NULL,
-    "roomStatus_id" CHAR(32) NOT NULL
+    "roomType_id" CHAR(32) NOT NULL
 );
 ALTER TABLE
     "Room" ADD PRIMARY KEY("id");
 ALTER TABLE
     "Room" ADD CONSTRAINT "room_roominfos_id_unique" UNIQUE("roomInfos_id");
 CREATE TABLE "RoomInfos"(
+    "dek" VARCHAR(255) NOT NULL,
     "id" CHAR(32) NOT NULL,
     "hashed_tag" CHAR(32) NOT NULL,
     "hashed_location" CHAR(32) NOT NULL,
-    "cipher_name" VARCHAR(255) NOT NULL,
+    "cipher_tag" VARCHAR(255) NOT NULL,
     "cipher_location" VARCHAR(255) NOT NULL
 );
 ALTER TABLE
@@ -52,12 +53,13 @@ CREATE TABLE "RoomType"(
 );
 ALTER TABLE
     "RoomType" ADD PRIMARY KEY("id");
-CREATE TABLE "Room_Status"(
+CREATE TABLE "RoomStatus"(
     "id" CHAR(32) NOT NULL,
-    "name" VARCHAR(255) NOT NULL
+    "name" VARCHAR(255) NOT NULL,
+    "value" INTEGER NOT NULL
 );
 ALTER TABLE
-    "Room_Status" ADD PRIMARY KEY("id");
+    "RoomStatus" ADD PRIMARY KEY("id");
 CREATE TABLE "ReserveCandidate"(
     "id" CHAR(32) NOT NULL,
     "room_id" CHAR(32) NOT NULL,
@@ -71,7 +73,8 @@ ALTER TABLE
     "ReserveCandidate" ADD CONSTRAINT "reservecandidate_user_id_unique" UNIQUE("user_id");
 CREATE TABLE "ReserveStatus"(
     "id" CHAR(32) NOT NULL,
-    "tag" VARCHAR(255) NOT NULL
+    "tag" VARCHAR(255) NOT NULL,
+    "value" INTEGER NOT NULL
 );
 ALTER TABLE
     "ReserveStatus" ADD PRIMARY KEY("id");
@@ -112,14 +115,23 @@ ALTER TABLE
     "InvoiceItem" ADD PRIMARY KEY("id");
 CREATE TABLE "InvoiceStatus"(
     "id" CHAR(32) NOT NULL,
-    "tag" VARCHAR(255) NOT NULL
+    "tag" VARCHAR(255) NOT NULL,
+    "value" INTEGER NOT NULL
 );
 ALTER TABLE
     "InvoiceStatus" ADD PRIMARY KEY("id");
+CREATE TABLE "RoomStatusItem"(
+    "roomStatus_id" CHAR(32) NOT NULL,
+    "room_id" CHAR(32) NOT NULL
+);
+ALTER TABLE
+    "RoomStatusItem" ADD PRIMARY KEY("roomStatus_id", "room_id");
 ALTER TABLE
     "InvoiceItem" ADD CONSTRAINT "invoiceitem_service_id_foreign" FOREIGN KEY("service_id") REFERENCES "Service"("id");
 ALTER TABLE
     "Reserve" ADD CONSTRAINT "reserve_reservestatus_id_foreign" FOREIGN KEY("reserveStatus_id") REFERENCES "ReserveStatus"("id");
+ALTER TABLE
+    "RoomStatusItem" ADD CONSTRAINT "roomstatusitem_roomstatus_id_foreign" FOREIGN KEY("roomStatus_id") REFERENCES "RoomStatus"("id");
 ALTER TABLE
     "ReserveCandidate" ADD CONSTRAINT "reservecandidate_room_id_foreign" FOREIGN KEY("room_id") REFERENCES "Room"("id");
 ALTER TABLE
@@ -131,7 +143,7 @@ ALTER TABLE
 ALTER TABLE
     "User" ADD CONSTRAINT "user_userinfos_id_foreign" FOREIGN KEY("userInfos_id") REFERENCES "UserInfos"("id");
 ALTER TABLE
-    "Room" ADD CONSTRAINT "room_roomstatus_id_foreign" FOREIGN KEY("roomStatus_id") REFERENCES "Room_Status"("id");
+    "RoomStatusItem" ADD CONSTRAINT "roomstatusitem_room_id_foreign" FOREIGN KEY("room_id") REFERENCES "Room"("id");
 ALTER TABLE
     "InvoiceItem" ADD CONSTRAINT "invoiceitem_invoice_id_foreign" FOREIGN KEY("invoice_id") REFERENCES "Invoice"("id");
 ALTER TABLE

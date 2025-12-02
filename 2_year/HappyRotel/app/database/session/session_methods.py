@@ -61,9 +61,6 @@ def session_delete(instances:tuple)->None:
         Messages.Error.print('session_delete', e)
 
 def session_update(instances:tuple, **kwargs)->None:
-    from begin.globals import Token
-
-    ##
     try:
         for i in instances:
             model_update(i, **kwargs)
@@ -75,9 +72,6 @@ def session_update(instances:tuple, **kwargs)->None:
         Messages.Error.print('session_update', e)
 
 def session_query(model:object, **kwargs)->tuple|None:
-    from begin.globals import Token
-
-    ##
     try:
         field_cipher = FIELD_CIPHER(model)
         instances_get = ()
@@ -130,9 +124,6 @@ def session_query(model:object, **kwargs)->tuple|None:
 
 ##
 def model_args_filter(model:object, **kwargs)->dict:
-    from begin.globals import Token
-
-    ##
     field_cipher = FIELD_CIPHER(model)
     field_hashed = FIELD_HASHED(model)
 
@@ -158,7 +149,7 @@ def model_args_filter(model:object, **kwargs)->dict:
         if not attr_name in kwargs_copy.keys() or i in kwargs_copy.keys():
             continue
 
-        kwargs_copy[i] = Token.crypt_sha256(kwargs_copy[attr_name])
+        kwargs_copy[i] = clm_encrypt_sha256(kwargs_copy[attr_name])
 
 
     ##
@@ -228,9 +219,6 @@ def model_create(model:object, **kwargs)->object|None:
         return None
 
 def model_update(instance:object, **kwargs)->None:
-    from begin.globals import Token
-
-    ##
     try:
         model = type(instance)
         model_args = model_args_filter(model, **kwargs, dek=getattr(instance, "dek", None))

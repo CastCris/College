@@ -27,7 +27,6 @@ services:
       dockerfile: dockerfile
 
     # command: python3 app.py
-    command: python3 run.py
     # command: ls -la
 
     container_name: "happyRotel_flask"
@@ -62,6 +61,10 @@ services:
           path: static/
           target: static/
 
+
+        - action: rebuild
+          path: run.py
+          target: run.py
 
         - action: rebuild
           path: requirements.txt

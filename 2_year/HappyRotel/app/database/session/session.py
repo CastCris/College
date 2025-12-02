@@ -4,45 +4,6 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.ext.declarative import declarative_base
 
 ##
-def _database_drop_tables(engine:object)->None:
-    metadata = MetaData()
-    metadata.reflect(bind=engine)
-
-    metadata.drop_all(engine)
-
-def _database_init(dbms:str, _database_create:object)->None:
-    import os
-    import time
-
-    ##
-    global engine
-
-    global Base
-    global session
-
-    #
-    DB_USER = os.environ.get("HAPPYROTEL_DB_USER", '')
-    DB_PASSWORD = os.environ.get("HAPPYROTEL_DB_PASSWORD", '')
-    DB_DATABASE = os.environ.get("HAPPYROTEL_DB_DATABASE", '')
-    DB_HOST = os.environ.get("HAPPYROTEL_DB_HOST", '')
-    
-    url = f"{dbms}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}"
-
-    for _ in range(20):
-        try:
-            engine = create_engine(url, echo=True)
-
-            _database_drop_tables(engine)
-            Base = _database_create(engine)
-
-            Session = sessionmaker(bind=engine)
-            session = Session()
-
-        except:
-            print('Try establish connection with database again...')
-            time.sleep(2)
-
-
 def sqlite_database_create(engine:object)->object:
     with open('./database/casts/schema_sqlite.sql', 'r') as file:
         sql = file.read()
@@ -73,9 +34,52 @@ def postgres_database_create(engine:object)->object:
     Base = declarative_base(metadata=metadata)
     return Base
 
+
+def _database_drop_tables(engine:object)->None:
+    metadata = MetaData()
+    metadata.reflect(bind=engine)
+
+    metadata.drop_all(engine)
+
+def _database_init(dbms:str, _database_create:object)->None:
+    import os
+    import time
+
+    ##
+    global engine
+
+    global Base
+    global session
+
+    #
+    DB_USER = os.environ.get("HAPPYROTEL_DB_USER", '')
+    DB_PASSWORD = os.environ.get("HAPPYROTEL_DB_PASSWORD", '')
+    DB_DATABASE = os.environ.get("HAPPYROTEL_DB_DATABASE", '')
+    DB_HOST = os.environ.get("HAPPYROTEL_DB_HOST", '')
+    
+    # url = f"{dbms}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}"
+    url = f"{dbms}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/happyRotelDB"
+    print(url)
+
+    for _ in range(20):
+        try:
+            engine = create_engine(url, echo=True)
+
+            _database_drop_tables(engine)
+            Base = _database_create(engine)
+
+            Session = sessionmaker(bind=engine)
+            session = Session()
+
+            break
+
+        except:
+            print('Try establish connection with database again...')
+            time.sleep(2)
+
 #
 engine, Base, session = None, None, None
 
 # run locally
-# _database_init('sqlite', sqlite_database_create)
-_database_init('postgresql', postgres_database_create)
+_database_init('sqlite', sqlite_database_create)
+# _database_init('postgresql', postgres_database_create)

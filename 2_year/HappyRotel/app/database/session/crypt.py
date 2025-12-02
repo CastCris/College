@@ -1,10 +1,10 @@
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from begin.globals.Token import MASTER_KEY
+from begin.globals.Token import MASTER_KEY, SALT_KEY
 
 import base64
 import os
 
-##
+## Dek encription
 def dek_generate()->bytes:
     return AESGCM.generate_key(bit_length=256)
 
@@ -45,3 +45,11 @@ def clm_decrypt(value:str, dek:bytes)->str:
     plaintext = aesgcm.decrypt(nonce, ciphertext, None)
 
     return plaintext.decode()
+
+## Hash encryptuon
+def clm_encrypt_sha256(value:str, salt_key:bytes=SALT_KEY)->str:
+    import hashlib
+    import base64
+
+    value_hashed =  hashlib.sha256(salt_key + value.encode()).digest()
+    return base64.b64encode(value_hashed).decode()
