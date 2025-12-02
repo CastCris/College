@@ -17,7 +17,7 @@ services:
       - postgres_data:/var/lib/postgres/data
 
     ports:
-      - "2601:2601"
+      - "2601:5432"
     
 
   #
@@ -26,8 +26,10 @@ services:
       context: .
       dockerfile: dockerfile
 
-    # command: python3 app.py
-    # command: ls -la
+    command: python3 run.py
+
+    volumes:
+      - ./app:/happyRotel
 
     container_name: "happyRotel_flask"
 
@@ -43,47 +45,5 @@ services:
     depends_on:
       - postgres
 
-    develop:
-      watch:
-        - action: sync+restart
-          path: .
-          target: .
-          ignore:
-            - templates/
-            - static/
-
-
-        - action: sync
-          path: templates/
-          target: templates/
-
-        - action: sync
-          path: static/
-          target: static/
-
-
-        - action: rebuild
-          path: run.py
-          target: run.py
-
-        - action: rebuild
-          path: requirements.txt
-          target: requirements.txt
-
-        - action: rebuild
-          path: dockerfile
-          target: dockerfile
-
-        - action: rebuild
-          path: docker-compose.yaml
-          target: docker-compose.yaml
-
-        - action: rebuild
-          path: .dockerignore
-          target: .dockerignore
-
-    # volumes:
-    #   - .:/app
-
 volumes:
-  postgres_data:
+  postgres_data: {}
