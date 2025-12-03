@@ -10,16 +10,17 @@ class Seeds():
 
     ##
     def init()->None:
+        import time
+
         for i in Seeds.SEQUENCE:
             Seeds.__dict__[i].init()
-
 
     ## Rooms
     class RoomStatus():
         STATUS = {
             'Free': [ 1, True ],
             'Busy': [ 1, False ],
-            'Clan': [ 2, True],
+            'Clean': [ 2, True],
             'Dirty': [ 2, False]
         }
 
@@ -45,7 +46,7 @@ class Seeds():
                 price = i[1][2]
                 tag = i[0]
 
-                session_insert(RoomType, tag=tag, description=description, capacity=capacity, price=price)
+                session_insert_SQL(RoomType, tag=tag, description=description, capacity=capacity, price=price)
 
     class RoomInfos():
         AMOUNT = 10
@@ -63,7 +64,7 @@ class Seeds():
 
             for i in range(Seeds.RoomInfos.AMOUNT):
                 location_chosen = random.choice(list(locations.keys()))
-                session_insert(RoomInfos, tag=str(locations[location_chosen]), location=location_chosen)
+                session_insert_SQL(RoomInfos, tag=str(locations[location_chosen]), location=location_chosen)
 
                 locations[location_chosen] += 1
 
@@ -80,7 +81,7 @@ class Seeds():
                 info_id = rooms_infos[i]
                 type_id = random.choice(rooms_types)
 
-                session_insert(Room \
+                session_insert_SQL(Room \
                         , roomInfos_id = info_id \
                         , roomType_id = type_id)
     
@@ -112,10 +113,10 @@ class Seeds():
 
         def init()->None:
             for i in Seeds.UserPermission.TAGS.items():
-                session_insert(UserPermission, tag=i[0], value=i[1])
+                session_insert_SQL(UserPermission, tag=i[0], value=i[1])
 
     class UserInfos():
-        AMOUNT = 50
+        AMOUNT = 10
 
         def init()->None:
             from faker import Faker
@@ -126,7 +127,7 @@ class Seeds():
                 name = faker.name()
                 email = faker.email()
 
-                session_insert(UserInfos, name=name, email=email)
+                session_insert_SQL(UserInfos, name=name, email=email)
 
     class User():
         def init()->None:
@@ -140,8 +141,7 @@ class Seeds():
             for i in userInfos:
                 permissions = sum(set([ random.choice(userPermission) for _ in range(random.randint(0, len(userPermission)-1)) ]))
                 password_random = Token.code_generate()
-
-                session_insert(User, userInfos_id=i, password=password_random, permissions=permissions)
+                session_insert_SQL(User, userInfos_id=i, password=password_random, permissions=permissions)
 
 def cultivate()->None:
     Seeds.init()
