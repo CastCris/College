@@ -1,16 +1,16 @@
 CREATE TABLE "User"(
     "id" CHAR(32) NOT NULL,
     "userInfos_id" CHAR(32) NOT NULL,
-    "userProfile_id" CHAR(32) NOT NULL,
-    "phashed_password" VARCHAR(255) NOT NULL
+    "phashed_password" VARCHAR(255) NOT NULL,
+    "permissions" INTEGER NOT NULL
 );
 ALTER TABLE
     "User" ADD PRIMARY KEY("id");
 ALTER TABLE
     "User" ADD CONSTRAINT "user_userinfos_id_unique" UNIQUE("userInfos_id");
 CREATE TABLE "UserInfos"(
-    "dek" VARCHAR(255) NOT NULL,
-    "id" CHAR(80) NOT NULL,
+    "dek" CHAR(80) NOT NULL,
+    "id" CHAR(32) NOT NULL,
     "hashed_name" CHAR(44) NOT NULL,
     "hashed_email" CHAR(44) NOT NULL,
     "cipher_name" VARCHAR(255) NOT NULL,
@@ -18,25 +18,27 @@ CREATE TABLE "UserInfos"(
 );
 ALTER TABLE
     "UserInfos" ADD PRIMARY KEY("id");
-CREATE TABLE "UserProfile"(
-    "id" CHAR(32) NOT NULL,
+CREATE TABLE "UserPermission"(
     "tag" VARCHAR(255) NOT NULL,
-    "permissions" INTEGER NOT NULL
+    "value" INTEGER NOT NULL
 );
 ALTER TABLE
-    "UserProfile" ADD PRIMARY KEY("id");
+    "UserPermission" ADD CONSTRAINT "userpermission_tag_unique" UNIQUE("tag");
+ALTER TABLE
+    "UserPermission" ADD PRIMARY KEY("value");
 CREATE TABLE "Room"(
     "id" CHAR(32) NOT NULL,
     "roomInfos_id" CHAR(32) NOT NULL,
-    "roomType_id" CHAR(32) NOT NULL
+    "roomType_id" CHAR(32) NOT NULL,
+    "status_value" INTEGER NOT NULL
 );
 ALTER TABLE
     "Room" ADD PRIMARY KEY("id");
 ALTER TABLE
     "Room" ADD CONSTRAINT "room_roominfos_id_unique" UNIQUE("roomInfos_id");
 CREATE TABLE "RoomInfos"(
-    "dek" VARCHAR(255) NOT NULL,
-    "id" CHAR(80) NOT NULL,
+    "dek" CHAR(80) NOT NULL,
+    "id" CHAR(32) NOT NULL,
     "hashed_tag" CHAR(44) NOT NULL,
     "hashed_location" CHAR(44) NOT NULL,
     "cipher_tag" VARCHAR(255) NOT NULL,
@@ -54,12 +56,14 @@ CREATE TABLE "RoomType"(
 ALTER TABLE
     "RoomType" ADD PRIMARY KEY("id");
 CREATE TABLE "RoomStatus"(
-    "id" CHAR(32) NOT NULL,
     "name" VARCHAR(255) NOT NULL,
-    "value" INTEGER NOT NULL
+    "value" INTEGER NOT NULL,
+    "positive" BOOLEAN NOT NULL
 );
 ALTER TABLE
-    "RoomStatus" ADD PRIMARY KEY("id");
+    "RoomStatus" ADD PRIMARY KEY("value", "positive");
+ALTER TABLE
+    "RoomStatus" ADD CONSTRAINT "roomstatus_name_unique" UNIQUE("name");
 CREATE TABLE "ReserveCandidate"(
     "id" CHAR(32) NOT NULL,
     "room_id" CHAR(32) NOT NULL,
@@ -120,18 +124,10 @@ CREATE TABLE "InvoiceStatus"(
 );
 ALTER TABLE
     "InvoiceStatus" ADD PRIMARY KEY("id");
-CREATE TABLE "RoomStatusItem"(
-    "roomStatus_id" CHAR(32) NOT NULL,
-    "room_id" CHAR(32) NOT NULL
-);
-ALTER TABLE
-    "RoomStatusItem" ADD PRIMARY KEY("roomStatus_id", "room_id");
 ALTER TABLE
     "InvoiceItem" ADD CONSTRAINT "invoiceitem_service_id_foreign" FOREIGN KEY("service_id") REFERENCES "Service"("id");
 ALTER TABLE
     "Reserve" ADD CONSTRAINT "reserve_reservestatus_id_foreign" FOREIGN KEY("reserveStatus_id") REFERENCES "ReserveStatus"("id");
-ALTER TABLE
-    "RoomStatusItem" ADD CONSTRAINT "roomstatusitem_roomstatus_id_foreign" FOREIGN KEY("roomStatus_id") REFERENCES "RoomStatus"("id");
 ALTER TABLE
     "ReserveCandidate" ADD CONSTRAINT "reservecandidate_room_id_foreign" FOREIGN KEY("room_id") REFERENCES "Room"("id");
 ALTER TABLE
@@ -143,11 +139,7 @@ ALTER TABLE
 ALTER TABLE
     "User" ADD CONSTRAINT "user_userinfos_id_foreign" FOREIGN KEY("userInfos_id") REFERENCES "UserInfos"("id");
 ALTER TABLE
-    "RoomStatusItem" ADD CONSTRAINT "roomstatusitem_room_id_foreign" FOREIGN KEY("room_id") REFERENCES "Room"("id");
-ALTER TABLE
     "InvoiceItem" ADD CONSTRAINT "invoiceitem_invoice_id_foreign" FOREIGN KEY("invoice_id") REFERENCES "Invoice"("id");
-ALTER TABLE
-    "User" ADD CONSTRAINT "user_userprofile_id_foreign" FOREIGN KEY("userProfile_id") REFERENCES "UserProfile"("id");
 ALTER TABLE
     "Invoice" ADD CONSTRAINT "invoice_reserve_id_foreign" FOREIGN KEY("reserve_id") REFERENCES "ReserveCandidate"("id");
 ALTER TABLE

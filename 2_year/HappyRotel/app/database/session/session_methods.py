@@ -156,7 +156,7 @@ def model_args_filter(model:object, **kwargs)->dict:
     for i in field_phashed:
         _, attr_name = i.split('phashed_')
 
-        if not attr_name in kwargs_copy.leus() or i in kwargs_copy.keys():
+        if not attr_name in kwargs_copy.keys() or i in kwargs_copy.keys():
             continue
 
         kwargs_copy[i] = clm_encrypt_phash(kwargs_copy[attr_name])
@@ -179,7 +179,6 @@ def model_create(model:object, **kwargs)->object|None:
         ##
         field_cipher = FIELD_CIPHER(model)
         field_hashed = FIELD_HASHED(model)
-        field_phashed = FIELD_PHASHED(model)
         default_value = FIELD_DEFAULT(model)
 
         for i in default_value:

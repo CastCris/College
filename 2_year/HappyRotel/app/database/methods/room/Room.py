@@ -15,3 +15,4 @@ class Room(Base):
     __tablename__ = 'Room'
 
     DEFAULT_id = id_generate
+    DEFAULT_status_value = 0

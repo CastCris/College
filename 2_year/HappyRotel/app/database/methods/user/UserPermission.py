@@ -11,7 +11,7 @@ def id_generate()->str:
     return Token.code_generate(prefix=ID_PREFIX, length=ID_LEN)
 
 ##
-class UserProfile(Base):
-    __tablename__ = 'UserProfile'
+class UserPermission(Base):
+    __tablename__ = 'UserPermission'
 
     DEFAULT_id = id_generate
