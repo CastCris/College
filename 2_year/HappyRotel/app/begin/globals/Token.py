@@ -15,4 +15,4 @@ CODE_LEN = 16
 def code_generate(prefix:str=CODE_PREFIX, chars:str=CODE_CHARS, length:int=CODE_LEN)->str:
     import secrets
 
-    return CODE_PREFIX + (''.join(secrets.choice(chars) for i in range(0, length-len(CODE_PREFIX))))
+    return prefix + (''.join(secrets.choice(chars) for i in range(0, length-len(prefix))))

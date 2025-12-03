@@ -3,7 +3,7 @@ from database import *
 
 ##
 class Seeds():
-    SEQUENCE = ['RoomStatus' , 'RoomType' , 'RoomInfos' ] #, 'Room', 'RoomStatusItem']
+    SEQUENCE = ['RoomStatus' , 'RoomType' , 'RoomInfos' , 'Room', 'RoomStatusItem']
 
     ##
     def init()->None:
@@ -63,8 +63,8 @@ class Seeds():
             import random
 
             ##
-            rooms_infos = [ model_get('id', i)[0] for i in session_query(RoomInfos) ]
-            rooms_types = [ model_get('id', i)[0] for i in session_query(RoomType) ]
+            rooms_infos = [ model_get(i, 'id')[0] for i in session_query(RoomInfos) ]
+            rooms_types = [ model_get(i, 'id')[0] for i in session_query(RoomType) ]
 
             ##
             for i in range(len(rooms_infos)):
@@ -80,8 +80,8 @@ class Seeds():
             import random
 
             ##
-            rooms = session_query(Room)
-            rooms_status = [ model_get('id', i)[0] for i in session_query(RoomStatus) ]
+            rooms = [ model_get(i, 'id')[0] for i in session_query(Room) ]
+            rooms_status = [ model_get(i, 'id')[0] for i in session_query(RoomStatus) ]
 
             for i in rooms:
                 status = [ random.choice(rooms_status) for i in range(random.randint(0, len(rooms_status)-1)) ]
