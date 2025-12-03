@@ -14,4 +14,4 @@ def id_generate()->str:
 class Room(Base):
     __tablename__ = 'Room'
 
-    DEFAULT_ID = id_generate
+    DEFAULT_id = id_generate

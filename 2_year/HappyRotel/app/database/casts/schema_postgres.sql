@@ -2,7 +2,7 @@ CREATE TABLE "User"(
     "id" CHAR(32) NOT NULL,
     "userInfos_id" CHAR(32) NOT NULL,
     "userProfile_id" CHAR(32) NOT NULL,
-    "password" VARCHAR(255) NOT NULL
+    "phashed_password" VARCHAR(255) NOT NULL
 );
 ALTER TABLE
     "User" ADD PRIMARY KEY("id");
@@ -10,9 +10,9 @@ ALTER TABLE
     "User" ADD CONSTRAINT "user_userinfos_id_unique" UNIQUE("userInfos_id");
 CREATE TABLE "UserInfos"(
     "dek" VARCHAR(255) NOT NULL,
-    "id" CHAR(32) NOT NULL,
-    "hashed_name" CHAR(32) NOT NULL,
-    "hashed_email" CHAR(32) NOT NULL,
+    "id" CHAR(80) NOT NULL,
+    "hashed_name" CHAR(44) NOT NULL,
+    "hashed_email" CHAR(44) NOT NULL,
     "cipher_name" VARCHAR(255) NOT NULL,
     "cipher_email" VARCHAR(255) NOT NULL
 );
@@ -36,9 +36,9 @@ ALTER TABLE
     "Room" ADD CONSTRAINT "room_roominfos_id_unique" UNIQUE("roomInfos_id");
 CREATE TABLE "RoomInfos"(
     "dek" VARCHAR(255) NOT NULL,
-    "id" CHAR(32) NOT NULL,
-    "hashed_tag" CHAR(32) NOT NULL,
-    "hashed_location" CHAR(32) NOT NULL,
+    "id" CHAR(80) NOT NULL,
+    "hashed_tag" CHAR(44) NOT NULL,
+    "hashed_location" CHAR(44) NOT NULL,
     "cipher_tag" VARCHAR(255) NOT NULL,
     "cipher_location" VARCHAR(255) NOT NULL
 );

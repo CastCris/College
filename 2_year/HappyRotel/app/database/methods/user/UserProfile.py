@@ -5,13 +5,13 @@ def id_generate()->str:
     from begin.globals import Token
 
     ##
-    ID_PREFIX = 'roomStatus_'
+    ID_PREFIX = 'userProfile_'
     ID_LEN = 32
 
     return Token.code_generate(prefix=ID_PREFIX, length=ID_LEN)
 
 ##
-class RoomStatus(Base):
-    __tablename__ = 'RoomStatus'
+class UserProfile(Base):
+    __tablename__ = 'UserProfile'
 
     DEFAULT_id = id_generate

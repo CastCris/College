@@ -57,8 +57,7 @@ def _database_init(dbms:str, _database_create:object)->None:
     DB_DATABASE = os.environ.get("HAPPYROTEL_DB_DATABASE", '')
     DB_HOST = os.environ.get("HAPPYROTEL_DB_HOST", '')
     
-    # url = f"{dbms}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}"
-    url = f"{dbms}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/happyRotelDB"
+    url = f"{dbms}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}"
     print(url)
 
     for _ in range(20):
@@ -81,5 +80,5 @@ def _database_init(dbms:str, _database_create:object)->None:
 engine, Base, session = None, None, None
 
 # run locally
-_database_init('sqlite', sqlite_database_create)
-# _database_init('postgresql', postgres_database_create)
+# _database_init('sqlite', sqlite_database_create)
+_database_init('postgresql', postgres_database_create)

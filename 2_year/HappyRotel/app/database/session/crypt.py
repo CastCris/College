@@ -24,7 +24,7 @@ def dek_decrypt(dek:str, master_key:bytes=MASTER_KEY)->bytes:
     return aesgcm.decrypt(nonce, ciphertext, None)
 
 
-def clm_encrypt(value:str, dek:bytes)->str|None:
+def clm_encrypt_dek(value:str, dek:bytes)->str|None:
     if value is None:
         return None
 
@@ -36,7 +36,7 @@ def clm_encrypt(value:str, dek:bytes)->str|None:
 
     return base64.b64encode(nonce + ciphertext).decode()
 
-def clm_decrypt(value:str, dek:bytes)->str:
+def clm_decrypt_dek(value:str, dek:bytes)->str:
     aesgcm = AESGCM(dek)
     data = base64.b64decode(value)
 
@@ -53,3 +53,20 @@ def clm_encrypt_sha256(value:str, salt_key:bytes=SALT_KEY)->str:
 
     value_hashed =  hashlib.sha256(salt_key + value.encode()).digest()
     return base64.b64encode(value_hashed).decode()
+
+
+def clm_encrypt_phash(password:str, **kwargs)->str:
+    import argon2
+
+    hasher = argon2.PasswordHasher(**kwargs)
+    return hasher.hash(password)
+
+def clm_encrypt_phash_auth(password:str)->bool:
+    import argon2
+
+    hasher = argon2.PasswordHasher()
+    try:
+        return hasher.verify(password)
+
+    except:
+        return False

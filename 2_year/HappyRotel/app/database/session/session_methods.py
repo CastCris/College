@@ -9,6 +9,7 @@ import re
 ##
 FIELD_CIPHER = lambda model : [ i for i in model.__dict__.keys() if re.search("^cipher_.*", i) ]
 FIELD_HASHED = lambda model : [ i for i in model.__dict__.keys() if re.search("^hashed_.*", i) ]
+FIELD_PHASHED = lambda model : [ i for i in model.__dict__.keys() if re.search("^phashed_.*", i) ]
 FIELD_DEFAULT = lambda model : [ i for i in model.__dict__.keys() if re.search("^DEFAULT_.*", i) ]
 
 op_comp = {
@@ -126,6 +127,7 @@ def session_query(model:object, **kwargs)->tuple|None:
 def model_args_filter(model:object, **kwargs)->dict:
     field_cipher = FIELD_CIPHER(model)
     field_hashed = FIELD_HASHED(model)
+    field_phashed = FIELD_PHASHED(model)
 
     kwargs_copy = kwargs.copy()
 
@@ -141,7 +143,7 @@ def model_args_filter(model:object, **kwargs)->dict:
         if not attr_name in kwargs_copy.keys() or i in kwargs_copy.keys():
             continue
 
-        kwargs_copy[i] = clm_encrypt(kwargs_copy[attr_name], dek)
+        kwargs_copy[i] = clm_encrypt_dek(kwargs_copy[attr_name], dek)
 
     for i in field_hashed:
         _, attr_name = i.split('hashed_')
@@ -151,6 +153,13 @@ def model_args_filter(model:object, **kwargs)->dict:
 
         kwargs_copy[i] = clm_encrypt_sha256(kwargs_copy[attr_name])
 
+    for i in field_phashed:
+        _, attr_name = i.split('phashed_')
+
+        if not attr_name in kwargs_copy.leus() or i in kwargs_copy.keys():
+            continue
+
+        kwargs_copy[i] = clm_encrypt_phash(kwargs_copy[attr_name])
 
     ##
     for i in list(kwargs_copy.keys()):
@@ -170,6 +179,7 @@ def model_create(model:object, **kwargs)->object|None:
         ##
         field_cipher = FIELD_CIPHER(model)
         field_hashed = FIELD_HASHED(model)
+        field_phashed = FIELD_PHASHED(model)
         default_value = FIELD_DEFAULT(model)
 
         for i in default_value:
@@ -182,7 +192,7 @@ def model_create(model:object, **kwargs)->object|None:
                     continue
 
                 kwargs_copy[attr_name] = model.__dict__[i]
-                if callable(model.__dict__[i]):
+                if callable(model.__dict__[i]): # Verifiy if default value is a function
                     kwargs_copy[attr_name] = model.__dict__[i]()
 
                 break
@@ -251,7 +261,7 @@ def model_get(instance:object, *args)->tuple|None:
                 continue
 
             if not dek is None and i in field_cipher:
-                values.append(clm_decrypt(value, dek))
+                values.append(clm_decrypt_dek(value, dek))
                 continue
 
             values.append(value)

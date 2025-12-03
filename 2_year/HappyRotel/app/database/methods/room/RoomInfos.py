@@ -5,7 +5,7 @@ def id_generate()->str:
     from begin.globals import Token
 
     ##
-    ID_PREFIX = 'roomInfos'
+    ID_PREFIX = 'roomInfos_'
     ID_LEN = 32
 
     return Token.code_generate(prefix=ID_PREFIX, length=ID_LEN)
