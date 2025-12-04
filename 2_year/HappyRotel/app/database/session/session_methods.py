@@ -4,6 +4,23 @@ from .model import *
 from .session import session
 
 ##
+def session_SQL(stmt:str, **kwargs)->tuple or None:
+    from sqlalchemy import text
+
+    ##
+    try:
+        query = None
+        values = model_args_filter(kwargs.get("values")) if "values" in kwargs.keys() else None
+
+        query = session.execute(text(stmt), values).all()
+
+        return tuple(query)
+
+    except Exception as e:
+        Messages.Error.print('session_query_SQL', e)
+        return None
+
+
 def session_insert(model:object, **kwargs)->object:
     try:
         instance = model_create(model, **kwargs)
@@ -22,23 +39,12 @@ def session_insert(model:object, **kwargs)->object:
 def session_insert_SQL(model:object, **kwargs)->None:
     try:
         args = model_create_SQL(model, **kwargs)
-        print('args: ', args)
         session.execute(args['stmt'], args['model_args'])
 
     except Exception as e:
         Messages.Error.print('session_insert_SQL', e)
         session.rollback()
 
-
-def session_delete(instances:tuple)->None:
-    try:
-        for i in instances:
-            session.delete(i)
-
-        session.commit()
-    except Exception as e:
-        session.rollback()
-        Messages.Error.print('session_delete', e)
 
 def session_update(instances:tuple, **kwargs)->None:
     try:
@@ -50,6 +56,17 @@ def session_update(instances:tuple, **kwargs)->None:
     except Exception as e:
         session.rollback()
         Messages.Error.print('session_update', e)
+
+def session_delete(instances:tuple)->None:
+    try:
+        for i in instances:
+            session.delete(i)
+
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        Messages.Error.print('session_delete', e)
+
 
 def session_query(model:object, **kwargs)->tuple|None:
     try:
@@ -98,7 +115,7 @@ def session_query(model:object, **kwargs)->tuple|None:
         return instances_get
 
     except Exception as e:
-        Messages.Error.print(e, 'session_query')
+        Messages.Error.print('session_query', e) 
 
         return None
 

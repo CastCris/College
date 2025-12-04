@@ -12,6 +12,7 @@ FIELD_HASHED = lambda model: [ i for i in model.__dict__.keys() if re.search("^h
 FIELD_PHASHED = lambda model: [ i for i in model.__dict__.keys() if re.search("^phashed_.*", i) ]
 FIELD_DEFAULT = lambda model: [ i for i in model.__dict__.keys() if re.search("^DEFAULT_.*", i) ]
 
+##
 STMT_INSERT = lambda model, values: f" INSERT INTO \"{model.__tablename__}\" " + "(" + ', '.join([ '"' + str(i) + '"' for i in values ]) + ")"
 STMT_VALUES = lambda parameters: " VALUES (" + ', '.join([ ':' + str(i) for i in parameters ]) + ") "
 
@@ -145,7 +146,7 @@ def model_create(model:object, **kwargs)->object|None:
 
         return None
 
-def model_create_SQL(model:object, **kwargs)->"**kwargs" or None:
+def model_create_SQL(model:object, **kwargs)->dict or None:
     try:
         kwargs_copy = kwargs.copy()
         if not "dek" in kwargs_copy.keys() and "dek" in model.__dict__.keys():
@@ -174,6 +175,7 @@ def model_create_SQL(model:object, **kwargs)->"**kwargs" or None:
         session.rollback()
 
         return None
+
 
 def model_update(instance:object, **kwargs)->None:
     try:
@@ -222,7 +224,6 @@ def model_get(instance:object, *args)->tuple|None:
         Messages.Error.print("model_get", e)
 
         return None
-
 
 def model_unwrap(instance:object)->dict|None:
     try:
