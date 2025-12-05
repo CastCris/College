@@ -27,6 +27,7 @@ services:
       dockerfile: dockerfile
 
     command: python3 run.py
+    # command: ls -a ./templates
 
     volumes:
       - ./app:/happyRotel
