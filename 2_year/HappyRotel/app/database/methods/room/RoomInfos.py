@@ -1,4 +1,4 @@
-from database.session import Base
+from database.session import *
 
 ##
 def id_generate()->str:

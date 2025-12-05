@@ -1,0 +1,26 @@
+def app_up_credentials(app:object)->None:
+    from database import session, methods
+    from begin.globals import Seeds, Router
+    
+    ##
+    Seeds.cultivate()
+    Router.register(app)
+
+def flask_app()->None:
+    from begin.globals import Init, Config
+    from begin.xtensions import flask
+
+    import os
+
+    ##
+    app = flask.Flask(__name__)
+    app.config.from_object(Config)
+
+    # If DEBUG flask options is enable, let this statement
+    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+        app_up_credentials(app)
+
+    # Or, if that options isn't enabled, uncomment the statement below and comment the up statement
+    # app_up_credentials()
+
+    app.run(debug=True, host='0.0.0.0', port=5000)

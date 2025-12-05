@@ -145,12 +145,14 @@ class Seeds():
                 # session_insert(User, userInfos_id=i, password=password_random, permissions=permissions)
                 session_insert_SQL(User, userInfos_id=i, password=password_random, permissions=permissions)
 
+            """
             query = session_SQL("SELECT u.id, up.tag, up.value FROM \"User\" AS u \
                     LEFT JOIN \"UserPermission\" AS up ON (u.permissions & up.value) = up.value"
             )
 
             for i in query:
                 print(i)
+            """
                     
 
 

@@ -4,7 +4,8 @@ import itsdangerous
 ##
 class Config:
     SECRET_KEY_LEN = 26
-
     SECRET_KEY = os.urandom(SECRET_KEY_LEN)
+
+    DEBUG = True
 
 serializer = itsdangerous.URLSafeSerializer(Config.SECRET_KEY)

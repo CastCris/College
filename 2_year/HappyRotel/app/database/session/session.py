@@ -41,7 +41,8 @@ def _database_drop_tables(engine:object)->None:
 
     metadata.drop_all(engine)
 
-def _database_init(dbms:str, _database_create:object)->None:
+# def _database_init(dbms:str, _database_create:object)->None:
+def _database_init(dbms:str, _database_create:object)->list:
     import os
     import time
 
@@ -51,14 +52,16 @@ def _database_init(dbms:str, _database_create:object)->None:
     global Base
     global session
 
-    #
+    ##
     DB_USER = os.environ.get("HAPPYROTEL_DB_USER", '')
     DB_PASSWORD = os.environ.get("HAPPYROTEL_DB_PASSWORD", '')
     DB_DATABASE = os.environ.get("HAPPYROTEL_DB_DATABASE", '')
     DB_HOST = os.environ.get("HAPPYROTEL_DB_HOST", '')
     
     url = f"{dbms}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}"
-    print(url)
+    print(os.environ.get("WERKZEUG_RUN_MAIN"))
+    if os.environ.get("WERKZEUG_RUN_MAIN") != 'true':
+        return
 
     for _ in range(20):
         try:
@@ -75,6 +78,8 @@ def _database_init(dbms:str, _database_create:object)->None:
         except:
             print('Try establish connection with database again...')
             time.sleep(2)
+
+    return engine, Base, session
 
 #
 engine, Base, session = None, None, None
