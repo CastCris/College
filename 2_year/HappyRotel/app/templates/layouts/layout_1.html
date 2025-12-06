@@ -1,0 +1,43 @@
+<!DOCTYPE html!>
+<html>
+<head>
+    <title>Index</title>
+
+    {% block system_javascript %}{% endblock %}
+    {% block system_style %}{% endblock %}
+
+    {% block page_javascript %}{% endblock %}
+    {% block page_style %} {% endblock %}
+</head>
+
+<body>
+    <header>
+        <div class="client_reception">
+            {% if "token_auth" in request.cookies %}
+            <h2>Hello {{ Cookie.get("user_name") }}</h2>
+            {% else %}
+            <h2> Hello Guested! </h2>
+            {% endif %}
+        </div>
+
+        <div class="client_auth">
+            {% if "token_auth" in request.cookies %}
+            <a>
+                <h2>Logout</h2>
+            </a>
+            {% else %}
+            <a>
+                <h2>Login</h2>
+            </a>
+
+            <a>
+                <h2>Sign</h2>
+            </a>
+            {% endif %}
+        </div>
+
+    <main>
+        {% block content_main %}{% endblock %}
+    </main>
+</body>
+</html>

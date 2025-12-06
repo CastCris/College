@@ -5,4 +5,4 @@ def register_app(app:object)->None:
 
     @app.route('/')
     def index()->None:
-        return flask.render_template('index.html')
+        return flask.redirect(flask.url_for("rooms_view"))

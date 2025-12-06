@@ -1,1 +1,43 @@
-<h1>Hello World!</h1>
+{% extends "layouts/layout_1.html" %}
+
+{% block content_main %}
+<div class="rooms">
+    <ul>
+        {% for room in rooms_infos %}
+        <li class="room_node">
+            <h2 class="room_tag">
+                {{ room["tag"] }}
+            </h2>
+
+            <div class="room_type">
+                <h3 class="room_type_tag">
+                    {{ room["type"] }}
+                </h3>
+
+                <h4 class="room_type_price">
+                    {{ room["price"] }}
+                </h4>
+                
+                <p class="room_type_description">
+                    {{ room["description"] }}
+                </p>
+
+            </div>
+
+            <ul class="room_infos_addictonal">
+                {% for i in room.items() %}
+                {% if not i[0] in [ "tag", "type", "price", "description" ] %}
+                <li>
+                    <p>
+                        <b>{{ i[0] }}:</b> {{ i[1] }}
+                    </p>
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

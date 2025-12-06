@@ -6,16 +6,19 @@ def app_up_credentials(app:object)->None:
     Seeds.cultivate()
     Router.register(app)
 
-def flask_app()->None:
-    from begin.globals import Init, Config
+def flask_app(**kwargs)->None:
+    from begin.globals import Init, Config, Cookie
     from begin.xtensions import flask
 
     import os
 
     ##
-    app = flask.Flask(__name__)
+    app = flask.Flask(__name__, **kwargs)
     app.config.from_object(Config)
 
+    app.jinja_env.globals["Cookie"] = Cookie
+
+    ##
     # If DEBUG flask options is enable, let this statement
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app_up_credentials(app)
