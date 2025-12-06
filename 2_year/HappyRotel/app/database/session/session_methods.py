@@ -9,12 +9,10 @@ def session_SQL(stmt:str, **kwargs)->tuple or None:
 
     ##
     try:
-        query = None
         values = model_args_filter(kwargs.get("values")) if "values" in kwargs.keys() else None
+        result = session.execute(text(stmt), values)
 
-        query = session.execute(text(stmt), values).all()
-
-        return tuple(query)
+        return result
 
     except Exception as e:
         Messages.Error.print('session_query_SQL', e)

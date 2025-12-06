@@ -42,7 +42,8 @@ CREATE TABLE "RoomInfos"(
     "hashed_tag" CHAR(44) NOT NULL,
     "hashed_location" CHAR(44) NOT NULL,
     "cipher_tag" VARCHAR(255) NOT NULL,
-    "cipher_location" VARCHAR(255) NOT NULL
+    "cipher_location" VARCHAR(255) NOT NULL,
+    "addictional_notes" TEXT NULL
 );
 ALTER TABLE
     "RoomInfos" ADD PRIMARY KEY("id");

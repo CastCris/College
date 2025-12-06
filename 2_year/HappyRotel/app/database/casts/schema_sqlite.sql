@@ -1,122 +1,117 @@
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE "User"(
-    "id" CHAR(32) PRIMARY KEY,
-    "userInfos_id" CHAR(32) NOT NULL UNIQUE,
-    "userProfile_id" CHAR(32) NOT NULL,
-    "password" VARCHAR(255) NOT NULL,
-    FOREIGN KEY("userInfos_id") REFERENCES "UserInfos"("id"),
-    FOREIGN KEY("userProfile_id") REFERENCES "UserProfile"("id")
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userInfos_id" TEXT NOT NULL UNIQUE,
+    "phashed_password" TEXT NOT NULL,
+    "permissions" INTEGER NOT NULL,
+    FOREIGN KEY("userInfos_id") REFERENCES "UserInfos"("id")
 );
 
 CREATE TABLE "UserInfos"(
-    "id" CHAR(32) PRIMARY KEY,
-    "hashed_name" CHAR(32) NOT NULL,
-    "hashed_email" CHAR(32) NOT NULL,
-    "cipher_name" VARCHAR(255) NOT NULL,
-    "cipher_email" VARCHAR(255) NOT NULL
+    "dek" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "hashed_name" TEXT NOT NULL,
+    "hashed_email" TEXT NOT NULL,
+    "cipher_name" TEXT NOT NULL,
+    "cipher_email" TEXT NOT NULL
 );
 
-CREATE TABLE "UserProfile"(
-    "id" CHAR(32) PRIMARY KEY,
-    "tag" VARCHAR(255) NOT NULL,
-    "permissions" INTEGER NOT NULL
+CREATE TABLE "UserPermission"(
+    "tag" TEXT NOT NULL UNIQUE,
+    "value" INTEGER NOT NULL PRIMARY KEY
 );
 
 CREATE TABLE "Room"(
-    "id" CHAR(32) PRIMARY KEY,
-    "roomInfos_id" CHAR(32) NOT NULL UNIQUE,
-    "roomType_id" CHAR(32) NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "roomInfos_id" TEXT NOT NULL UNIQUE,
+    "roomType_id" TEXT NOT NULL,
+    "status_value" INTEGER NOT NULL,
     FOREIGN KEY("roomInfos_id") REFERENCES "RoomInfos"("id"),
     FOREIGN KEY("roomType_id") REFERENCES "RoomType"("id")
 );
 
 CREATE TABLE "RoomInfos"(
-    "id" CHAR(32) PRIMARY KEY,
-    "hashed_tag" CHAR(32) NOT NULL,
-    "hashed_location" CHAR(32) NOT NULL,
-    "cipher_tag" VARCHAR(255) NOT NULL,
-    "cipher_location" VARCHAR(255) NOT NULL
+    "dek" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "hashed_tag" TEXT NOT NULL,
+    "hashed_location" TEXT NOT NULL,
+    "cipher_tag" TEXT NOT NULL,
+    "cipher_location" TEXT NOT NULL,
+    "addictional_notes" TEXT
 );
 
 CREATE TABLE "RoomType"(
-    "id" CHAR(32) PRIMARY KEY,
-    "tag" VARCHAR(255) NOT NULL,
-    "description" VARCHAR(155) NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "tag" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
     "capacity" INTEGER NOT NULL,
     "price" INTEGER NOT NULL
 );
 
 CREATE TABLE "RoomStatus"(
-    "id" CHAR(32) PRIMARY KEY,
-    "name" VARCHAR(255) NOT NULL,
-    "value" INTEGER NOT NULL
+    "name" TEXT NOT NULL UNIQUE,
+    "value" INTEGER NOT NULL,
+    "positive" INTEGER NOT NULL,
+    PRIMARY KEY("value", "positive")
 );
 
 CREATE TABLE "ReserveCandidate"(
-    "id" CHAR(32) PRIMARY KEY,
-    "room_id" CHAR(32) NOT NULL,
-    "user_id" CHAR(32) NOT NULL UNIQUE,
-    "reserve_id" CHAR(32) NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "room_id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL UNIQUE,
+    "reserve_id" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
     FOREIGN KEY("room_id") REFERENCES "Room"("id"),
-    FOREIGN KEY("user_id") REFERENCES "User"("id"),
-    FOREIGN KEY("reserve_id") REFERENCES "Reserve"("id")
+    FOREIGN KEY("reserve_id") REFERENCES "Reserve"("id"),
+    FOREIGN KEY("user_id") REFERENCES "User"("id")
 );
 
 CREATE TABLE "ReserveStatus"(
-    "id" CHAR(32) PRIMARY KEY,
-    "tag" VARCHAR(255) NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "tag" TEXT NOT NULL,
     "value" INTEGER NOT NULL
 );
 
 CREATE TABLE "Reserve"(
-    "id" CHAR(32) PRIMARY KEY,
-    "reserveStatus_id" CHAR(32) NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "reserveStatus_id" TEXT NOT NULL,
     "chekin_date" TEXT NOT NULL,
     "chekout_date" TEXT NOT NULL,
     FOREIGN KEY("reserveStatus_id") REFERENCES "ReserveStatus"("id")
 );
 
 CREATE TABLE "Invoice"(
-    "id" CHAR(32) PRIMARY KEY,
-    "reserve_id" CHAR(32) NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "reserve_id" TEXT NOT NULL,
     "emission_date" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
-    "daily_price" BIGINT NOT NULL,
-    "status_id" CHAR(32) NOT NULL,
+    "daily_price" INTEGER NOT NULL,
+    "status_id" TEXT NOT NULL,
     FOREIGN KEY("status_id") REFERENCES "InvoiceStatus"("id"),
     FOREIGN KEY("reserve_id") REFERENCES "ReserveCandidate"("id")
 );
 
 CREATE TABLE "Service"(
-    "id" CHAR(32) PRIMARY KEY,
-    "name" VARCHAR(255) NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
     "price" INTEGER NOT NULL
 );
 
 CREATE TABLE "InvoiceItem"(
-    "id" CHAR(32) PRIMARY KEY,
-    "invoice_id" CHAR(32) NOT NULL,
-    "service_id" CHAR(32) NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "invoice_id" TEXT NOT NULL,
+    "service_id" TEXT NOT NULL,
     "amount" INTEGER NOT NULL,
     "unit_value" INTEGER NOT NULL,
     "comsumption_date" TEXT NOT NULL,
-    FOREIGN KEY("invoice_id") REFERENCES "Invoice"("id"),
-    FOREIGN KEY("service_id") REFERENCES "Service"("id")
+    FOREIGN KEY("service_id") REFERENCES "Service"("id"),
+    FOREIGN KEY("invoice_id") REFERENCES "Invoice"("id")
 );
 
 CREATE TABLE "InvoiceStatus"(
-    "id" CHAR(32) PRIMARY KEY,
-    "tag" VARCHAR(255) NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "tag" TEXT NOT NULL,
     "value" INTEGER NOT NULL
-);
-
-CREATE TABLE "RoomStatusItem"(
-    "roomStatus_id" CHAR(32) NOT NULL,
-    "room_id" CHAR(32) NOT NULL,
-    PRIMARY KEY("roomStatus_id", "room_id"),
-    FOREIGN KEY("roomStatus_id") REFERENCES "RoomStatus"("id"),
-    FOREIGN KEY("room_id") REFERENCES "Room"("id")
 );
 

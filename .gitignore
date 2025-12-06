@@ -13,6 +13,7 @@
 !/**/app/**/*.py
 
 !/**/app/database/casts/**/*.sql
+!/**/app/database/casts/**/*.brM3
 !/**/app/templates/**/*.html
 
 !/**/app/static/assets/

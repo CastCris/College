@@ -59,9 +59,6 @@ def _database_init(dbms:str, _database_create:object)->list:
     DB_HOST = os.environ.get("HAPPYROTEL_DB_HOST", '')
     
     url = f"{dbms}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}"
-    print(os.environ.get("WERKZEUG_RUN_MAIN"))
-    if os.environ.get("WERKZEUG_RUN_MAIN") != 'true':
-        return
 
     for _ in range(20):
         try:
