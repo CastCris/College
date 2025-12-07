@@ -16,3 +16,20 @@ def code_generate(prefix:str=CODE_PREFIX, chars:str=CODE_CHARS, length:int=CODE_
     import secrets
 
     return prefix + (''.join(secrets.choice(chars) for i in range(0, length-len(prefix))))
+
+## Argon implementation
+def argon2_crypt(text:str, **kwargs)->str:
+    from argon2 import PasswordHasher
+
+    hasher = PasswordHasher(**kwargs)
+    return hasher.hash(text)
+
+def argon2_auth(text_hashed:str, text:str)->bool:
+    from argon2 import PasswordHasher
+
+    hasher = PasswordHasher()
+    try:
+        return hasher.verify(text_hashed, text)
+
+    except:
+        return False

@@ -15,3 +15,13 @@ class User(Base):
     __tablename__ = 'User'
 
     DEFAULT_id = id_generate
+
+    ##
+    def password_auth(password_input:str)->None:
+        from database.session.crypt import clm_encrypt_phash_auth
+        from database.session import model_get
+
+        ##
+        password = model_get("phashed_password")
+
+        return clm_encrypt_phash_auth(password, password_input)

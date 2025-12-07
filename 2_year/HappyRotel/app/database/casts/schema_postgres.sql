@@ -1,149 +1,164 @@
-CREATE TABLE "User"(
-    "id" CHAR(32) NOT NULL,
-    "userInfos_id" CHAR(32) NOT NULL,
-    "phashed_password" VARCHAR(255) NOT NULL,
-    "permissions" INTEGER NOT NULL
+CREATE TABLE "User" (
+    "id" CHAR(32) PRIMARY KEY,
+    "userInfos_id" CHAR(32) UNIQUE,
+    "phashed_password" VARCHAR(255),
+    "permissions" INTEGER
 );
-ALTER TABLE
-    "User" ADD PRIMARY KEY("id");
-ALTER TABLE
-    "User" ADD CONSTRAINT "user_userinfos_id_unique" UNIQUE("userInfos_id");
-CREATE TABLE "UserInfos"(
-    "dek" CHAR(80) NOT NULL,
-    "id" CHAR(32) NOT NULL,
-    "hashed_name" CHAR(44) NOT NULL,
-    "hashed_email" CHAR(44) NOT NULL,
-    "cipher_name" VARCHAR(255) NOT NULL,
-    "cipher_email" VARCHAR(255) NOT NULL
+
+CREATE TABLE "UserInfos" (
+    "dek" CHAR(80),
+    "id" CHAR(32) PRIMARY KEY,
+    "hashed_name" CHAR(44),
+    "hashed_email" CHAR(44),
+    "cipher_name" VARCHAR(255),
+    "cipher_email" VARCHAR(255)
 );
-ALTER TABLE
-    "UserInfos" ADD PRIMARY KEY("id");
-CREATE TABLE "UserPermission"(
-    "tag" VARCHAR(255) NOT NULL,
-    "value" INTEGER NOT NULL
+
+CREATE TABLE "UserPermission" (
+    "id" CHAR(32) PRIMARY KEY,
+    "tag" VARCHAR(155),
+    "value" INTEGER
 );
-ALTER TABLE
-    "UserPermission" ADD CONSTRAINT "userpermission_tag_unique" UNIQUE("tag");
-ALTER TABLE
-    "UserPermission" ADD PRIMARY KEY("value");
-CREATE TABLE "Room"(
-    "id" CHAR(32) NOT NULL,
-    "roomInfos_id" CHAR(32) NOT NULL,
-    "roomType_id" CHAR(32) NOT NULL,
-    "status_value" INTEGER NOT NULL
+
+CREATE TABLE "Invoice" (
+    "id" CHAR(32) PRIMARY KEY,
+    "reserveCandidate_id" CHAR(32),
+    "emission_date" TIMESTAMP,
+    "price" INTEGER,
+    "daily_price" INTEGER,
+    "status_id" CHAR(32)
 );
-ALTER TABLE
-    "Room" ADD PRIMARY KEY("id");
-ALTER TABLE
-    "Room" ADD CONSTRAINT "room_roominfos_id_unique" UNIQUE("roomInfos_id");
-CREATE TABLE "RoomInfos"(
-    "dek" CHAR(80) NOT NULL,
-    "id" CHAR(32) NOT NULL,
-    "hashed_tag" CHAR(44) NOT NULL,
-    "hashed_location" CHAR(44) NOT NULL,
-    "cipher_tag" VARCHAR(255) NOT NULL,
-    "cipher_location" VARCHAR(255) NOT NULL,
-    "addictional_notes" TEXT NULL
+
+CREATE TABLE "Room" (
+    "id" CHAR(32) PRIMARY KEY,
+    "roomInfos_id" CHAR(32),
+    "roomType_id" CHAR(32),
+    "status_value" INTEGER
 );
-ALTER TABLE
-    "RoomInfos" ADD PRIMARY KEY("id");
-CREATE TABLE "RoomType"(
-    "id" CHAR(32) NOT NULL,
-    "tag" VARCHAR(255) NOT NULL,
-    "description" VARCHAR(155) NOT NULL,
-    "capacity" INTEGER NOT NULL,
-    "price" INTEGER NOT NULL
+
+CREATE TABLE "InvoiceStatus" (
+    "id" CHAR(32) PRIMARY KEY,
+    "tag" VARCHAR(155),
+    "value" INTEGER
 );
-ALTER TABLE
-    "RoomType" ADD PRIMARY KEY("id");
-CREATE TABLE "RoomStatus"(
-    "name" VARCHAR(255) NOT NULL,
-    "value" INTEGER NOT NULL,
-    "positive" BOOLEAN NOT NULL
+
+CREATE TABLE "InvoiceItem" (
+    "id" CHAR(32) PRIMARY KEY,
+    "invoice_id" CHAR(32),
+    "service_id" CHAR(32),
+    "amount" INTEGER,
+    "unit_value" INTEGER,
+    "comsumption_date" TIMESTAMP
 );
-ALTER TABLE
-    "RoomStatus" ADD PRIMARY KEY("value", "positive");
-ALTER TABLE
-    "RoomStatus" ADD CONSTRAINT "roomstatus_name_unique" UNIQUE("name");
-CREATE TABLE "ReserveCandidate"(
-    "id" CHAR(32) NOT NULL,
-    "room_id" CHAR(32) NOT NULL,
-    "user_id" CHAR(32) NOT NULL,
-    "reserve_id" CHAR(32) NOT NULL,
-    "price" INTEGER NOT NULL
+
+CREATE TABLE "Service" (
+    "id" CHAR(32) PRIMARY KEY,
+    "name" CHAR(155),
+    "price" INTEGER
 );
-ALTER TABLE
-    "ReserveCandidate" ADD PRIMARY KEY("id");
-ALTER TABLE
-    "ReserveCandidate" ADD CONSTRAINT "reservecandidate_user_id_unique" UNIQUE("user_id");
-CREATE TABLE "ReserveStatus"(
-    "id" CHAR(32) NOT NULL,
-    "tag" VARCHAR(255) NOT NULL,
-    "value" INTEGER NOT NULL
+
+CREATE TABLE "RoomType" (
+    "id" CHAR(32) PRIMARY KEY,
+    "tag" VARCHAR(155),
+    "description" TEXT,
+    "capacity" SMALLINT,
+    "price" SMALLINT
 );
-ALTER TABLE
-    "ReserveStatus" ADD PRIMARY KEY("id");
-CREATE TABLE "Reserve"(
-    "id" CHAR(32) NOT NULL,
-    "reserveStatus_id" CHAR(32) NOT NULL,
-    "chekin_date" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
-    "chekout_date" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL
+
+CREATE TABLE "RoomInfos" (
+    "dek" CHAR(80),
+    "id" CHAR(32) PRIMARY KEY,
+    "hashed_tag" CHAR(44) UNIQUE,
+    "hashed_location" CHAR(44),
+    "cipher_tag" VARCHAR(255),
+    "cipher_location" VARCHAR(255)
 );
-ALTER TABLE
-    "Reserve" ADD PRIMARY KEY("id");
-CREATE TABLE "Invoice"(
-    "id" CHAR(32) NOT NULL,
-    "reserve_id" CHAR(32) NOT NULL,
-    "emission_date" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
-    "price" INTEGER NOT NULL,
-    "daily_price" BIGINT NOT NULL,
-    "status_id" CHAR(32) NOT NULL
+
+CREATE TABLE "RoomStatus" (
+    "name" VARCHAR(255) UNIQUE,
+    "value" INTEGER,
+    "positive" BOOLEAN,
+    PRIMARY KEY ("positive", "value")
 );
-ALTER TABLE
-    "Invoice" ADD PRIMARY KEY("id");
-CREATE TABLE "Service"(
-    "id" CHAR(32) NOT NULL,
-    "name" VARCHAR(255) NOT NULL,
-    "price" INTEGER NOT NULL
+
+CREATE TABLE "ReserveCandidate" (
+    "id" CHAR(32) PRIMARY KEY,
+    "room_id" CHAR(32),
+    "user_id" CHAR(32) UNIQUE,
+    "reserve_id" CHAR(32),
+    "price" INTEGER
 );
-ALTER TABLE
-    "Service" ADD PRIMARY KEY("id");
-CREATE TABLE "InvoiceItem"(
-    "id" CHAR(32) NOT NULL,
-    "invoice_id" CHAR(32) NOT NULL,
-    "service_id" CHAR(32) NOT NULL,
-    "amount" INTEGER NOT NULL,
-    "unit_value" INTEGER NOT NULL,
-    "comsumption_date" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL
+
+CREATE TABLE "Reserve" (
+    "id" CHAR(32) PRIMARY KEY,
+    "reserveStatus_id" CHAR(32),
+    "checkin_date" TIMESTAMP,
+    "checkout_date" TIMESTAMP
 );
-ALTER TABLE
-    "InvoiceItem" ADD PRIMARY KEY("id");
-CREATE TABLE "InvoiceStatus"(
-    "id" CHAR(32) NOT NULL,
-    "tag" VARCHAR(255) NOT NULL,
-    "value" INTEGER NOT NULL
+
+CREATE TABLE "ReserveStatus" (
+    "id" CHAR(32) PRIMARY KEY,
+    "tag" VARCHAR(155)
 );
-ALTER TABLE
-    "InvoiceStatus" ADD PRIMARY KEY("id");
-ALTER TABLE
-    "InvoiceItem" ADD CONSTRAINT "invoiceitem_service_id_foreign" FOREIGN KEY("service_id") REFERENCES "Service"("id");
-ALTER TABLE
-    "Reserve" ADD CONSTRAINT "reserve_reservestatus_id_foreign" FOREIGN KEY("reserveStatus_id") REFERENCES "ReserveStatus"("id");
-ALTER TABLE
-    "ReserveCandidate" ADD CONSTRAINT "reservecandidate_room_id_foreign" FOREIGN KEY("room_id") REFERENCES "Room"("id");
-ALTER TABLE
-    "ReserveCandidate" ADD CONSTRAINT "reservecandidate_reserve_id_foreign" FOREIGN KEY("reserve_id") REFERENCES "Reserve"("id");
-ALTER TABLE
-    "Invoice" ADD CONSTRAINT "invoice_status_id_foreign" FOREIGN KEY("status_id") REFERENCES "InvoiceStatus"("id");
-ALTER TABLE
-    "Room" ADD CONSTRAINT "room_roominfos_id_foreign" FOREIGN KEY("roomInfos_id") REFERENCES "RoomInfos"("id");
-ALTER TABLE
-    "User" ADD CONSTRAINT "user_userinfos_id_foreign" FOREIGN KEY("userInfos_id") REFERENCES "UserInfos"("id");
-ALTER TABLE
-    "InvoiceItem" ADD CONSTRAINT "invoiceitem_invoice_id_foreign" FOREIGN KEY("invoice_id") REFERENCES "Invoice"("id");
-ALTER TABLE
-    "Invoice" ADD CONSTRAINT "invoice_reserve_id_foreign" FOREIGN KEY("reserve_id") REFERENCES "ReserveCandidate"("id");
-ALTER TABLE
-    "ReserveCandidate" ADD CONSTRAINT "reservecandidate_user_id_foreign" FOREIGN KEY("user_id") REFERENCES "User"("id");
-ALTER TABLE
-    "Room" ADD CONSTRAINT "room_roomtype_id_foreign" FOREIGN KEY("roomType_id") REFERENCES "RoomType"("id");
+
+CREATE TABLE "Token" (
+    "id" CHAR(32) PRIMARY KEY,
+    "phashed_token" VARCHAR(255),
+    "tokenType_id" CHAR(32)
+);
+
+CREATE TABLE "TokenType" (
+    "id" CHAR(32) PRIMARY KEY,
+    "tag" VARCHAR(155) UNIQUE,
+    "expiration" TIMESTAMP
+);
+
+
+ALTER TABLE "User" ADD CONSTRAINT "FK_User_3"
+    FOREIGN KEY ("userInfos_id")
+    REFERENCES "UserInfos" ("id");
+
+ALTER TABLE "Invoice" ADD CONSTRAINT "FK_Invoice_1"
+    FOREIGN KEY ("status_id")
+    REFERENCES "InvoiceStatus" ("id");
+
+ALTER TABLE "Invoice" ADD CONSTRAINT "FK_Invoice_3"
+    FOREIGN KEY ("reserveCandidate_id")
+    REFERENCES "ReserveCandidate" ("id");
+
+ALTER TABLE "Room" ADD CONSTRAINT "FK_Room_2"
+    FOREIGN KEY ("roomInfos_id")
+    REFERENCES "RoomInfos" ("id");
+
+ALTER TABLE "Room" ADD CONSTRAINT "FK_Room_3"
+    FOREIGN KEY ("roomType_id")
+    REFERENCES "RoomType" ("id");
+
+ALTER TABLE "InvoiceItem" ADD CONSTRAINT "FK_InvoiceItem_2"
+    FOREIGN KEY ("invoice_id")
+    REFERENCES "Invoice" ("id");
+
+ALTER TABLE "InvoiceItem" ADD CONSTRAINT "FK_InvoiceItem_3"
+    FOREIGN KEY ("service_id")
+    REFERENCES "Service" ("id");
+
+ALTER TABLE "ReserveCandidate" ADD CONSTRAINT "FK_ReserveCandidate_1"
+    FOREIGN KEY ("room_id")
+    REFERENCES "Room" ("id");
+
+ALTER TABLE "ReserveCandidate" ADD CONSTRAINT "FK_ReserveCandidate_3"
+    FOREIGN KEY ("reserve_id")
+    REFERENCES "Reserve" ("id");
+
+ALTER TABLE "ReserveCandidate" ADD CONSTRAINT "FK_ReserveCandidate_4"
+    FOREIGN KEY ("user_id")
+    REFERENCES "User" ("id");
+
+ALTER TABLE "Reserve" ADD CONSTRAINT "FK_Reserve_2"
+    FOREIGN KEY ("reserveStatus_id")
+    REFERENCES "ReserveStatus" ("id");
+
+ALTER TABLE "Token" ADD CONSTRAINT "FK_Token_2"
+    FOREIGN KEY ("tokenType_id")
+    REFERENCES "TokenType" ("id");
+

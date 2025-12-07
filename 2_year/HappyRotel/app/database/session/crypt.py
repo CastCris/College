@@ -56,17 +56,11 @@ def clm_encrypt_sha256(value:str, salt_key:bytes=SALT_KEY)->str:
 
 
 def clm_encrypt_phash(password:str, **kwargs)->str:
-    import argon2
+    from begin.globals import Token
 
-    hasher = argon2.PasswordHasher(**kwargs)
-    return hasher.hash(password)
+    return Token.argon2_crypt(password, **kwargs)
 
-def clm_encrypt_phash_auth(password:str)->bool:
-    import argon2
+def clm_encrypt_phash_auth(password_hashed:str, password:str)->bool:
+    from begin.globals import Token
 
-    hasher = argon2.PasswordHasher()
-    try:
-        return hasher.verify(password)
-
-    except:
-        return False
+    return Token.argon2_auth(password_hashed, password)
