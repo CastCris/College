@@ -1,0 +1,15 @@
+{% extends "layouts/layout_1.html" %}
+
+{% block page_style %}
+<link rel="stylesheet" href="{{ url_for("static", filename="style/layout_2.css") }}" type="module">
+{% endblock %}
+
+{% block content_main %}
+<section class="main_1">
+    {% block content_main_1 %}{% endblock %}
+</section>
+
+<section class="main_2">
+    {% block content_main_2 %}{% endblock %}
+</section>
+{% endblock %}

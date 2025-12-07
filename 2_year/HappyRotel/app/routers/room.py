@@ -18,6 +18,7 @@ def register_app(app:object)->None:
 
         rooms_infos = []
         for room in rooms_chosen:
+            print('room: ', room, flush=True)
             room_type = model_get_columns_value(session_query(RoomType, id=room["roomType_id"])[0])
             room_infos = model_get_columns_value(session_query(RoomInfos, id=room["roomInfos_id"])[0])
             room_status = session_SQL(f"""

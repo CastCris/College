@@ -22,15 +22,15 @@
 
         <div class="client_auth">
             {% if "token_auth" in request.cookies %}
-            <a>
+            <a href="{{ url_for("logout_auth") }}">
                 <h2>Logout</h2>
             </a>
             {% else %}
-            <a>
+            <a href="{{ url_for("login_display") }}">
                 <h2>Login</h2>
             </a>
 
-            <a>
+            <a href="{{ url_for("sign_display") }}">
                 <h2>Sign</h2>
             </a>
             {% endif %}

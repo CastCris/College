@@ -1,0 +1,31 @@
+{% extends "layouts/layout_2.html" %}
+
+{% block page_javascript %}
+<script src="{{ url_for("static", filename="scripts/login.js") }}" type="module"></script>
+{% endblock %}
+
+<!-- -->
+{% block content_main_1 %}
+<form id="login_form_user">
+    <label>User Name</label>
+    <input autocomplete="off" type="text" name="user_name">
+
+    <label>User password</label>
+    <input autocomplete="off" type="text" name="user_password">
+</form>
+{% endblock %}
+
+{% block content_main_2 %}
+<form id="login_form_captcha">
+    <div class="captcha">
+        <label>Captcha</label>
+        <img id="login_form_captcha_IMG">
+
+        <input autocomplete="off" type="text" name="catpcha">
+
+        <button id="login_form_catpcha_IMG_button_generate">Generate</button>
+    </div>
+
+    <button id="login_form_button_submit">Submit!</button>
+</form>
+{% endblock %}

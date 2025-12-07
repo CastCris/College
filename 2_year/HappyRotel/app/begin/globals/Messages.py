@@ -27,23 +27,51 @@ class Success():
 ## Captcha
 class Captcha():
     class Error(Error):
-        invalid = "Invalid Captcha"
-        invalid_type = "Invalid Catpcha type"
-        not_requested = "Captcha not requested"
+        invalid = Message(
+            content="Invalid Captcha",
+            type=Error.js_class
+        )
+        invalid_type = Message(
+            content="Invalid Catpcha type",
+            type=Error.js_class
+        )
+        not_requested = Message(
+            content="Captcha not requested",
+            type=Error.js_class
+        )
 
     class Success(Success):
-        ok = "Valid captcha"
+        ok = Message(
+            content="Valid captcha",
+            type=Error.js_class
+        )
 
 ## Request
 class Request():
     class Error(Error):
-        internal = "Something goes wrong"
+        internal = Message(
+            content="Something goes wrong",
+            type=Error.js_class
+        )
 
-        invalid_method = "Method not allow"
-        invalid_fields = "Invalid fields"
+        invalid_method = Message(
+            content="Method not allow",
+            type=Error.js_class
+        )
+        invalid_fields = Message(
+            content="Invalid fields",
+            type=Error.js_class
+        )
 
-        missing_fields = "Missing fields"
-        empty_fields = "Please, fill all required fields"
+
+        missing_fields = Message(
+            content="Missing fields",
+            type=Error.js_class
+        )
+        empty_fields = Message(
+            content="Please, fill all required fields",
+            type=Error.js_class
+        )
 
         def invalid_client_behavior(timestamp):
             import time
@@ -55,10 +83,14 @@ class Request():
 ## Login
 class Login():
     class Error(Error):
-        user_not_found = "User not found"
-        invalid_password = "User password incorrect"
-
-        invalid_captcha = "Invalid catpcha"
+        user_not_found = Message(
+            content="User not found",
+            type=Error.js_class
+        )
+        invalid_user_password = Message(
+            content="User password incorrect",
+            type=Error.js_class
+        )
 
     class Request(Request):
         pass
@@ -66,22 +98,6 @@ class Login():
     class Success(Success):
         pass
 
-## Manager
-class Manager():
-    class Error(Error):
-        invalid_entity = "This entity doesn't exists"
-
-        invalid_column_name = "Invalid column name"
-        invalid_data_type_for_column = lambda column_name: f"Invalid data type for column {column_name}"
-        invalid_column_count = "Invalid column count for selected crud operation"
-
-        invalid_constraint = "Invalid constraint"
-        invalid_data_type_for_constraint_value = "Invalid data type for constraint "
-
-        not_permissions_enough_to_manage_entity = "You don't have permissions enough to manage this entity"
-
-    class Success(Success):
-        ok_operation = lambda operation_name: f"Operation {operation_name} completed sucessfully!"
-
-    class Request(Request):
-        pass
+## Sign
+class Sign():
+    pass
