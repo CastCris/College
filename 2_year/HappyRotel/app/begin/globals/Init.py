@@ -6,14 +6,14 @@ def app_up_credentials(app:object)->None:
     Seeds.cultivate()
     Router.register(app)
 
-def flask_app(**kwargs)->None:
+def flask_app(__context__:str, **kwargs)->None:
     from begin.globals import Init, Config, Cookie
     from begin.xtensions import flask
 
     import os
 
     ##
-    app = flask.Flask(__name__, **kwargs)
+    app = flask.Flask(__context__, **kwargs)
     app.config.from_object(Config)
 
     app.jinja_env.globals["Cookie"] = Cookie
