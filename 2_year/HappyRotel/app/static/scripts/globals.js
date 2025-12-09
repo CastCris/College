@@ -49,7 +49,8 @@ export function fieldSetData(...fieldSet){
 }
 
 
-export function captchaIMG_generate(img){
+// Captcha
+export function captcha_generate_IMG(img){
     fetch('/captcha/generate/img')
     .then(response => response.blob())
     .then(blob => {
