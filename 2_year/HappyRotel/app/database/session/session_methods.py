@@ -11,6 +11,7 @@ def session_SQL(stmt:str, **kwargs)->tuple or None:
     try:
         values = model_args_filter(kwargs.get("values")) if "values" in kwargs.keys() else None
         result = session.execute(text(stmt), values)
+        session.commit();
 
         return result
 
@@ -38,6 +39,7 @@ def session_insert_SQL(model:object, **kwargs)->None:
     try:
         args = model_create_SQL(model, **kwargs)
         session.execute(args['stmt'], args['model_args'])
+        session.commit();
 
     except Exception as e:
         Messages.Error.print('session_insert_SQL', e)
@@ -66,9 +68,11 @@ def session_delete(instances:tuple)->None:
         Messages.Error.print('session_delete', e)
 
 
-def session_query(model:object, **kwargs)->tuple|None:
+def session_query(*columns, **kwargs)->tuple|None:
+    from sqlalchemy.orm import deferred
+
     try:
-        field_cipher = FIELD_CIPHER(model)
+        model = columns[0].class_ if not model_is_mapped(columns[0]) else columns[0]
         instances_get = ()
         filters = []
 
@@ -109,7 +113,10 @@ def session_query(model:object, **kwargs)->tuple|None:
 
             filters.append(op(column, filter_args[i]))
 
-        instances_get = session.query(model).filter(*filters).all()
+        instances_get = session.query(*columns) \
+            .filter(*filters) \
+            .all()
+
         return instances_get
 
     except Exception as e:
