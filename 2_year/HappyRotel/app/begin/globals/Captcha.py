@@ -1,11 +1,11 @@
 def generate_code_img()->str:
-    from begin.globals import Token
+    from begin.globals import Crypt
     import string
 
-    ID_CHARS = string.ascii_uppercase]
+    ID_CHARS = string.ascii_uppercase + '123456789'
     ID_LEN = 10
 
-    return Token.code_generate(chars=ID_CHARS, length=ID_LEN)
+    return Crypt.code_generate(chars=ID_CHARS, length=ID_LEN)
 
 ##
 class Image():
@@ -154,9 +154,10 @@ class Image():
 ## Generation
 def generate_img()->object:
     from begin.xtensions import flask
-    from begin.globals import Cookie, Token
+    from begin.globals import Cookie, Crypt
 
     from io import BytesIO
+    import json
 
     ##
     captcha_instance = Image()
@@ -171,10 +172,10 @@ def generate_img()->object:
     img_io.seek(0)
 
     #
-    captcha_token_hashed = Token.argon2_crypt(captcha_token)
+    captcha_token_hashed = Crypt.argon2_crypt(captcha_token)
 
     response = flask.make_response(flask.send_file(img_io, mimetype="image/png", download_name="captcha.png"))
-    Cookie.define(response=response, name="captcha_token", value=captcha_token_hashed, max_age=5*60)
+    Cookie.define(response=response, name="captcha_IMG", value=captcha_token_hashed, max_age=5*60)
 
     return response
 
@@ -189,19 +190,20 @@ def generate(type:str)->object:
     })
 
 # Validation
-def valid(token_input:str)->object:
+def verify(token_input:str, token_type:str)->object:
     from begin.xtensions import flask
-    from begin.globals import Cookie, Messages, Token
+    from begin.globals import Cookie, Messages, Crypt
 
     ##
-    if Cookie.get("captcha_token") is None:
+    if Cookie.get(f"captcha_{token_type.upper()}") is None:
         return flask.jsonify({
-            'error': Messages.Captcha.Error.not_requested.json
+            "valid_captcha": False,
+            "message": Messages.Captcha.Error.not_requested.json
         })
 
-    captcha_token = Cookie.get("captcha_token")
-    valid = Token.crypt_phash_auth(captcha_token, token_input)
-    msg = Messages.Captcha.Error.invalid.json if not valid else Messages.Catpcha.Success.ok.json
+    captcha_token = Cookie.get(f"captcha_{token_type.upper()}")
+    valid = Crypt.argon2_auth(captcha_token, token_input)
+    msg = Messages.Captcha.Error.invalid.json if not valid else Messages.Captcha.Success.ok.json
 
     response = flask.make_response(flask.jsonify({
         "valid_captcha": valid,
@@ -209,6 +211,6 @@ def valid(token_input:str)->object:
     }))
     
     if valid:
-        Cookie.delete(response=response, name="captcha_token")
+        Cookie.delete(response=response, name=f"captcha_{token_type.upper()}")
 
     return response

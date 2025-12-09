@@ -7,10 +7,10 @@ from sqlalchemy import inspect, text
 import re
 
 ##
-FIELD_CIPHER = lambda model: [ i for i in model.__dict__.keys() if re.search("^cipher_.*", i) ]
-FIELD_HASHED = lambda model: [ i for i in model.__dict__.keys() if re.search("^hashed_.*", i) ]
-FIELD_PHASHED = lambda model: [ i for i in model.__dict__.keys() if re.search("^phashed_.*", i) ]
-FIELD_DEFAULT = lambda model: [ i for i in model.__dict__.keys() if re.search("^DEFAULT_.*", i) ]
+FIELD_CIPHER = lambda model: [ i for i in model.__dict__.keys() if re.search("^cipher_.*", i) ] if model else []
+FIELD_HASHED = lambda model: [ i for i in model.__dict__.keys() if re.search("^hashed_.*", i) ] if model else []
+FIELD_PHASHED = lambda model: [ i for i in model.__dict__.keys() if re.search("^phashed_.*", i) ] if model else []
+FIELD_DEFAULT = lambda model: [ i for i in model.__dict__.keys() if re.search("^DEFAULT_.*", i) ] if model else []
 
 ##
 STMT_INSERT = lambda model, values: f" INSERT INTO \"{model.__tablename__}\" " + "(" + ', '.join([ '"' + str(i) + '"' for i in values ]) + ")"
@@ -146,7 +146,7 @@ def model_create(model:object, **kwargs)->object|None:
 
         return None
 
-def model_create_SQL(model:object, **kwargs)->dict or None:
+def model_create_SQL(model:object, **kwargs)->dict|None:
     try:
         kwargs_copy = kwargs.copy()
         if not "dek" in kwargs_copy.keys() and "dek" in model.__dict__.keys():
@@ -332,3 +332,26 @@ def model_get_columns_value(instance:object)->dict:
         columns_value[attr_name] = value
 
     return columns_value
+
+
+def model_from_name(table_name:str)->object | None:
+    from .session import Base, metadata
+
+    ##
+    table = metadata.tables.get(table_name, None)
+    for i in metadata.tables.keys():
+        if table_name:
+            break
+
+        if table_name.lowercase() == i.lowercase() :
+            table = metadata.tables[i]
+            break
+
+    for i in Base.registry.mappers:
+        if i.local_table.name == table.name:
+            return i.class_
+
+    return table
+
+def model_is_mapped(model:object)->bool:
+    return hasattr(model, '__tablename__')

@@ -1,5 +1,5 @@
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from begin.globals.Token import MASTER_KEY, SALT_KEY
+from begin.globals.Crypt import MASTER_KEY, SALT_KEY
 
 import base64
 import os
@@ -56,11 +56,11 @@ def clm_encrypt_sha256(value:str, salt_key:bytes=SALT_KEY)->str:
 
 
 def clm_encrypt_phash(password:str, **kwargs)->str:
-    from begin.globals import Token
+    from begin.globals import Crypt
 
-    return Token.argon2_crypt(password, **kwargs)
+    return Crypt.argon2_crypt(password, **kwargs)
 
 def clm_encrypt_phash_auth(password_hashed:str, password:str)->bool:
-    from begin.globals import Token
+    from begin.globals import Crypt
 
-    return Token.argon2_auth(password_hashed, password)
+    return Crypt.argon2_auth(password_hashed, password)

@@ -4,7 +4,7 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.ext.declarative import declarative_base
 
 ##
-def sqlite_database_create(engine:object)->object:
+def sqlite_database_create(engine:object)->list:
     with open('./database/casts/schema_sqlite.sql', 'r') as file:
         sql = file.read()
 
@@ -18,9 +18,9 @@ def sqlite_database_create(engine:object)->object:
     metadata.reflect(bind=engine)
 
     Base = declarative_base(metadata=metadata)
-    return Base
+    return Base, metadata
 
-def postgres_database_create(engine:object)->object:
+def postgres_database_create(engine:object)->list:
     with open('./database/casts/schema_postgres.sql', 'r') as file:
         sql = file.read()
 
@@ -32,7 +32,7 @@ def postgres_database_create(engine:object)->object:
     metadata.reflect(bind=engine)
 
     Base = declarative_base(metadata=metadata)
-    return Base
+    return Base, metadata
 
 
 def _database_drop_tables(engine:object)->None:
@@ -50,6 +50,8 @@ def _database_init(dbms:str, _database_create:object)->list:
     global engine
 
     global Base
+    global metadata
+
     global session
 
     ##
@@ -65,7 +67,7 @@ def _database_init(dbms:str, _database_create:object)->list:
             engine = create_engine(url, echo=True)
 
             _database_drop_tables(engine)
-            Base = _database_create(engine)
+            Base, metadata = _database_create(engine)
 
             Session = sessionmaker(bind=engine)
             session = Session()
@@ -79,7 +81,7 @@ def _database_init(dbms:str, _database_create:object)->list:
     return engine, Base, session
 
 #
-engine, Base, session = None, None, None
+engine = Base = metadata = session = None
 
 # run locally
 # _database_init('sqlite', sqlite_database_create)

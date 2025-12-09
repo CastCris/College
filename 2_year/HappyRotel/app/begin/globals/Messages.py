@@ -43,7 +43,7 @@ class Captcha():
     class Success(Success):
         ok = Message(
             content="Valid captcha",
-            type=Error.js_class
+            type=Success.js_class
         )
 
 ## Request

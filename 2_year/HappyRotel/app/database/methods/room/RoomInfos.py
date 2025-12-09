@@ -2,13 +2,13 @@ from database.session import *
 
 ##
 def id_generate()->str:
-    from begin.globals import Token
+    from begin.globals import Crypt
 
     ##
     ID_PREFIX = 'roomInfos_'
     ID_LEN = 32
 
-    return Token.code_generate(prefix=ID_PREFIX, length=ID_LEN)
+    return Crypt.code_generate(prefix=ID_PREFIX, length=ID_LEN)
 
 ##
 class RoomInfos(Base):
