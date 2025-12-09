@@ -1,3 +1,5 @@
+/* PostgreSQL – Modelo convertido do brModelo */
+
 CREATE TABLE "User" (
     "id" CHAR(32) PRIMARY KEY,
     "userInfos_id" CHAR(32) UNIQUE,
@@ -9,7 +11,7 @@ CREATE TABLE "UserInfos" (
     "dek" CHAR(80),
     "id" CHAR(32) PRIMARY KEY,
     "hashed_name" CHAR(44),
-    "hashed_email" CHAR(44),
+    "hashed_email" CHAR(44) UNIQUE,
     "cipher_name" VARCHAR(255),
     "cipher_email" VARCHAR(255)
 );
@@ -103,16 +105,18 @@ CREATE TABLE "ReserveStatus" (
 
 CREATE TABLE "Token" (
     "id" CHAR(32) PRIMARY KEY,
-    "phashed_token" VARCHAR(255),
-    "tokenType_id" CHAR(32)
+    "token" VARCHAR(255),
+    "tokenType_id" CHAR(32),
+    "emission_date" TIMESTAMP
 );
 
 CREATE TABLE "TokenType" (
     "id" CHAR(32) PRIMARY KEY,
     "tag" VARCHAR(155) UNIQUE,
-    "expiration" TIMESTAMP
+    "validity" INTERVAL
 );
 
+/* ---------- FOREIGN KEYS ---------- */
 
 ALTER TABLE "User" ADD CONSTRAINT "FK_User_3"
     FOREIGN KEY ("userInfos_id")
