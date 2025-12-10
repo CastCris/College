@@ -1,4 +1,5 @@
 from database.session import Base
+from begin.globals import flask_auth
 
 ##
 def id_generate()->str:
@@ -11,7 +12,15 @@ def id_generate()->str:
     return Crypt.code_generate(prefix=ID_PREFIX, length=ID_LEN)
 
 ##
-class User(Base):
+RoleAuth = flask_auth.Role({
+    'MANAGE_ROOM': 1,
+    'MANAGE_USERS': 2,
+    'MANAGE_INVOICE': 4,
+    'MANAGE_RESERVERS': 8
+})
+
+##
+class User(Base, flask_auth.UserAuth):
     __tablename__ = 'User'
 
     DEFAULT_id = id_generate

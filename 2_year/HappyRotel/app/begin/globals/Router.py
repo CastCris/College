@@ -10,6 +10,13 @@ ROUTER_FILE_REGEX = "^.*.py$"
 REGISTER_IGNORE = []
 REGISTER_FUNC_NAME = "register_app"
 
+PATH_TEMPLATES = "/template"
+PATH_STATIC = "/static"
+
+PATH_IGNORE = [ PATH_TEMPLATES, PATH_STATIC ]
+PATH_IGNORED = lambda request_path: True in [ request_path.startswith(path) for path in PATH_IGNORE ]
+
+##
 def register(app:object, folder:str=DIR_PATH)->None:
     folder_path = os.path.abspath(folder)
     

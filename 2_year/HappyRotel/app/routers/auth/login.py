@@ -37,7 +37,7 @@ def register_app(app:object)->None:
         response_captcha = Captcha.verify(forms_captcha, 'img')
         if not response_captcha.json["valid_captcha"]:
             return flask.jsonify({
-                'message': response["message"]
+                'message': response_captcha.json["message"]
             })
 
         ##
@@ -72,14 +72,11 @@ def register_app(app:object)->None:
         token = model_get(token_auth, "token")[0]
 
         ##
-        response_token = flask.make_response({
+        response = flask.make_response({
             "href_link": "/"
         })
-        Cookie.define(response=response_token, name="token_auth", value=token, max_age=60*60*24*7)
+        Cookie.define(response=response, name="token_auth", value=token, max_age=60*60*24*7)
 
-        response = Response.merge(response_token, response_captcha)
-        token_auth.token_wrap()
-
-        print(response.headers)
+        Response.merge_cookies(response, response_captcha)
 
         return response
