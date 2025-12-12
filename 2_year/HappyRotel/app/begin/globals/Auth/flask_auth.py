@@ -1,8 +1,9 @@
 from begin.xtensions import flask
+from begin.globals import Crypt
+import string
 
 ##
 class Token():
-    from begin.globals import Crypt
     import string
 
     ##
@@ -25,17 +26,12 @@ class Token():
         self = args[0]
         return self.FUNC(chars=self.CHARS, length=self.LENGTH)
 
-
-class TokenAuth(Token):
-    from begin.globals import Crypt
-    import string
-
-    ##
-    FUNC = Crypt.code_generate()
-    CHARS = string.ascii_letters + string.digits
-    LENGTH  =32
-    VALIDITY = 60*60*24*7
-
+tokenAuth = Token(
+    Crypt.code_generate,
+    string.ascii_letters + string.digits,
+    32,
+    validity = 60*60*24*7
+)
 
 ##
 class Role():
@@ -59,11 +55,8 @@ RoleUser = Role({
 
 ##
 class UserAuth():
-    TOKEN_FACTORY = TokenAuth
     ATTRIBUTES = {
         "permissions_attr_name": "permissions",
-        "token": TOKEN_FACTORY.generate,
-
         "UserAuth_initialized": True
     }
 
@@ -73,10 +66,6 @@ class UserAuth():
             return
 
         for name, value in UserAuth.ATTRIBUTES.items():
-            if callable(value):
-                setattr(self, name, value())
-                continue
-
             setattr(self, name, value)
 
         if getattr(self, getattr(self, "permissions_attr_name"), None) is None:
@@ -90,13 +79,13 @@ class UserAuth():
         return wrapper
 
     ##
-    @UserAuth
     @property
+    @UserAuth
     def permissions(self)->int:
         return getattr(self, getattr(self, "permissions_attr_name"))
 
-    @UserAuth
     @property
+    @UserAuth
     def permissions_set(self, value)->int:
         setattr(self, getattr(self, "permissions_attr_name"), value)
 
@@ -134,15 +123,35 @@ class UserAuth():
         return self.authorized_by_tags(*args)
 
 ##
-def login_required(func)->None|object:
-    def wrapper():
-        from begin.globals import Cookie
-
-        ##
-        if not Cookie.valid("token_auth") or Cookie.get("token_auth") is None:
+def login_required(func)->object:
+    def login_required():
+        if flask.session.get("user_email", None) is None:
             response = flask.make_response(flask.redirect("/"))
-            Cookie.delete_all(response)
             return response
 
-        token_auth = Coookie.get("token_auth")
-        print('token_auth: ', token_auth)
+        return func()
+    return login_required
+
+def permission_required(func, permissions:int|Role|list)->object:
+    def permission_required():
+        from database.session import session_query
+
+        if flask.session.get("user_email", None) is None:
+            return 'You don\'t have permission to access this page'
+
+        user_email = flask.session.get("user_email")
+        user = session_query(User, 
+
+
+
+def login(func)->object:
+    def login():
+        response = func()
+        response_json = response.json
+
+        if not response_json.get("approved", None):
+            return response
+
+        flask.session["user_email"] = response_json["user_email"]
+        return response
+    return login

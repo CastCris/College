@@ -1,4 +1,9 @@
 from begin.xtensions import flask
+from begin.globals import flask_auth
+
+##
+class FormsLogin():
+    pass
 
 ##
 def register_app(app:object)->None:
@@ -9,6 +14,7 @@ def register_app(app:object)->None:
         return flask.render_template('login.html')
 
     @app.route("/login/auth", methods=['POST'])
+    @flask_auth.login
     def login_auth()->None:
         from begin.globals import Messages, Cookie, Captcha, Crypt, Response
         from database.methods import User, UserInfos, Token, TokenType
@@ -66,17 +72,10 @@ def register_app(app:object)->None:
             })
 
         ##
-        auth_token_id = session_query(TokenType.id, tag="Auth")[0][0]
-        token_auth = session_insert(Token, tokenType_id=auth_token_id)
-
-        token = model_get(token_auth, "token")[0]
-
-        ##
         response = flask.make_response({
-            "href_link": "/"
+            "href_link": "/",
+            "approved": True
         })
-        Cookie.define(response=response, name="token_auth", value=token, max_age=60*60*24*7)
-
         Response.merge_cookies(response, response_captcha)
 
         return response
