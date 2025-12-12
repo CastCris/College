@@ -1,6 +1,8 @@
 from begin.xtensions import flask
 from begin.globals import Crypt
+
 import string
+import datetime
 
 ##
 class Token():
@@ -30,7 +32,7 @@ tokenAuth = Token(
     Crypt.code_generate,
     string.ascii_letters + string.digits,
     32,
-    validity = 60*60*24*7
+    validity = datetime.timedelta(days=7)
 )
 
 ##
@@ -57,6 +59,10 @@ RoleUser = Role({
 class UserAuth():
     ATTRIBUTES = {
         "permissions_attr_name": "permissions",
+
+        "token_attr_name": "token_auth",
+        "token_auth": tokenAuth.generate,
+
         "UserAuth_initialized": True
     }
 
@@ -66,6 +72,9 @@ class UserAuth():
             return
 
         for name, value in UserAuth.ATTRIBUTES.items():
+            if callable(value):
+                setattr(self, name, value())
+
             setattr(self, name, value)
 
         if getattr(self, getattr(self, "permissions_attr_name"), None) is None:
@@ -84,10 +93,15 @@ class UserAuth():
     def permissions(self)->int:
         return getattr(self, getattr(self, "permissions_attr_name"))
 
-    @property
     @UserAuth
     def permissions_set(self, value)->int:
         setattr(self, getattr(self, "permissions_attr_name"), value)
+    
+    ##
+    @property
+    @UserAuth
+    def token_auth(self)->str:
+        return getattr(self, getattr(self, "token_attr_name"))
 
     ##
     @UserAuth
@@ -122,36 +136,31 @@ class UserAuth():
 
         return self.authorized_by_tags(*args)
 
-##
+## Decorator functions
 def login_required(func)->object:
     def login_required():
-        if flask.session.get("user_email", None) is None:
+        from database.session import session_query
+
+        ##
+        token_auth = flask.sesion.get("token_auth", None)
+        user = session_query(User, token_auth=token_auth)
+
+        if token_auth is None
             response = flask.make_response(flask.redirect("/"))
             return response
 
         return func()
     return login_required
 
+def login(user)->object:
+    flask.session["token_auth"] = user.token_auth
+
+
 def permission_required(func, permissions:int|Role|list)->object:
     def permission_required():
         from database.session import session_query
 
-        if flask.session.get("user_email", None) is None:
+        if flask.session.get("token_auth", None) is None:
             return 'You don\'t have permission to access this page'
 
-        user_email = flask.session.get("user_email")
-        user = session_query(User, 
-
-
-
-def login(func)->object:
-    def login():
-        response = func()
-        response_json = response.json
-
-        if not response_json.get("approved", None):
-            return response
-
-        flask.session["user_email"] = response_json["user_email"]
-        return response
-    return login
+        token_auth = flask.session.get("token_auth")
