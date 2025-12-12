@@ -8,7 +8,7 @@ def app_up_credentials(app:object)->None:
 
 def flask_app(__context__:str, **kwargs)->None:
     from begin.globals import Init, Config, Cookie
-    from begin.xtensions import flask
+    from begin.xtensions import flask, flask_session
 
     import os
 
@@ -27,3 +27,4 @@ def flask_app(__context__:str, **kwargs)->None:
     # app_up_credentials()
 
     app.run(debug=True, host='0.0.0.0', port=5000)
+    flask_session.Session(app)

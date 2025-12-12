@@ -1,11 +1,21 @@
-def define(response:object, name:str, value:int|str, max_age:int=60*60*24)->None:
-    from begin.globals.Config import serializer
+def define(response:object, name:str, value:int|str, **kwargs)->None:
+    from begin.xtensions import flask
+    from begin.globals.Config import Config
+    
+    import itsdangerous
 
     ##
-    value_serializer = value
-    cookie_value_dumps = serializer.dumps(value_serializer)
+    sid = flask.session.get("sid")
+    serializer = itsdangerous.URLSafeSerializer(Config.SECRET_KEY + sid)
 
-    response.set_cookie(name, cookie_value_dumps, secure=True, httponly=True, max_age=max_age)
+    cookie_value_dumps = serializer.dumps(value)
+    response.set_cookie(
+        key=name
+        , value = cookie_value_dumps
+        , secure = True
+        , httponly = True
+        , **kwargs
+    )
 
 def define_from_string(response:object, cookies_str:str)->None:
     from http.cookies import SimpleCookie
@@ -53,14 +63,18 @@ def delete_all(response:object)->None:
 
 ##
 def get(cookie_name:str)->object|None:
-    from begin.globals.Config import serializer
+    from begin.globals.Config import Config
+    from begin.xtensions import flask
 
-    import flask
+    import itsdangerous
 
     ##
     cookie = flask.request.cookies.get(cookie_name, None)
     if cookie is None:
         return None
+
+    sid = flask.session.get("sid")
+    serializer = itsdangerous.URLSafeSerializer(Config.SECRET_KEY + sid)
 
     data = serializer.loads(cookie)
     return data
@@ -74,5 +88,5 @@ def valid(cookie_name:str)->bool:
         data = get(cookie_name)
         return True
 
-    except (BadSignature, IndexError):
+    except BadSignature:
         return False
