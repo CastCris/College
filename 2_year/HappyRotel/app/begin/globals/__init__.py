@@ -3,7 +3,7 @@ from .Auth import *
 from . import Captcha
 from . import Class
 
-from .Config import Config
+from .Config import Config, r
 from . import Cookie
 from . import Crypt
 from . import Init

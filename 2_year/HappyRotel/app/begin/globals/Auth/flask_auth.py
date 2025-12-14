@@ -1,39 +1,67 @@
-from begin.xtensions import flask
+from begin.xtensions import flask, datetime, string
 from begin.globals import Crypt
 
-import string
-import datetime
+from sqlalchemy.orm import DeclarativeMeta
+from functools import wraps
+
+##
+LOAD_USER = None
 
 ##
 class Token():
-    import string
-
-    ##
-    FUNC = Crypt.code_generate()
+    FUNC = staticmethod(Crypt.code_generate)
     CHARS = string.ascii_letters
     LENGTH = 16
     VALIDITY = None
 
     ##
-    def __init__(self, func, chars:str, length:int, validity:int)->None:
-        self.FUNC = func
-        self.CHARS = chars
-        self.length = length
-        self.validity = validity
+    def __init__(self, func=None, chars:str=[], length:int=0, validity:int=None)->None:
+        self.FUNC = staticmethod(func) if func else self.FUNC
+        self.CHARS = chars or self.CHARS
+        self.LENGTH = length or self.LENGTH
+        self.VALIDITY = validity or self.VALIDITY
 
-    def generate(*args)->str:
-        if not args:
-            return Token.FUNC(chars=Token.CHARS, length=Token.LENGTH)
 
-        self = args[0]
+    def generate(self)->str:
         return self.FUNC(chars=self.CHARS, length=self.LENGTH)
 
-tokenAuth = Token(
-    Crypt.code_generate,
-    string.ascii_letters + string.digits,
-    32,
-    validity = datetime.timedelta(days=7)
-)
+class TokenAuth():
+    FUNC = staticmethod(Crypt.code_generate)
+    CHARS = string.ascii_letters + string.digits
+    LENGTH = 32
+    VALIDITY = 60*60*24*7
+
+    PREFIX = "token:auth"
+
+    ##
+    def __init__(self, **kwargs)->None:
+        super().__init__(**kwargs)
+
+    def generate(self, pk_user:str)->str:
+        from begin.globals.Config import r
+
+        ##
+        token = self.FUNC(chars=self.CHARS, length=self.LENGTH)
+
+        key = f"{self.PREFIX}:{token}"
+        r.hset(key, mapping=pk_user)
+        r.expire(key, self.VALIDITY)
+
+        return token
+
+    def auth(self, token:str)->bool:
+        from begin.globals.Config import r
+
+        ##
+        return True if r.hgetall(f"{self.PREFIX}:{token}") else False
+
+    def get(self, token:str)->str:
+        from begin.globals.Config import r
+
+        ##
+        return r.hgetall(f"{self.PREFIX}:{token}")
+
+tokenAuth = TokenAuth()
 
 ##
 class Role():
@@ -59,10 +87,6 @@ RoleUser = Role({
 class UserAuth():
     ATTRIBUTES = {
         "permissions_attr_name": "permissions",
-
-        "token_attr_name": "token_auth",
-        "token_auth": tokenAuth.generate,
-
         "UserAuth_initialized": True
     }
 
@@ -81,9 +105,10 @@ class UserAuth():
             setattr(self, getattr(self, "permissions_attr_name"), 0)
 
     def UserAuth(func)->object|None:
-        def wrapper():
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
             self.UserAuth_init()
-            return func()
+            return func(self, *args, **kwargs)
 
         return wrapper
 
@@ -98,24 +123,18 @@ class UserAuth():
         setattr(self, getattr(self, "permissions_attr_name"), value)
     
     ##
-    @property
-    @UserAuth
-    def token_auth(self)->str:
-        return getattr(self, getattr(self, "token_attr_name"))
-
-    ##
     @UserAuth
     def authorized_by_role(self, role:Role)->bool:
         permissions_role = sum(list(role.tags.values()))
         return (self.permissions & permissions_role) == permissions_role
 
     @UserAuth
-    def authorized_by_tags(self, *tags)->bool:
+    def authorized_by_tags(self, role:Role, *tags)->bool:
         for tag in tags:
-            if not tag in self.role.tags:
-                continue
+            if not tag in role.tags:
+                return False
 
-            permission_tag = self.role.get_tag_value(tag)
+            permission_tag = role.get_tag_value(tag)
             if (self.permissions & permission_tag ) != permission_tag:
                 return False
 
@@ -123,44 +142,79 @@ class UserAuth():
 
     @UserAuth
     def authorized_by_int(self, permissions_int:int)->bool:
+        # print('self.permissions: ', self.permissions)
         return (self.permissions & permissions_int) == permissions_int
 
 
     @UserAuth
     def authorized(self, *args)->bool:
-        if len(args) == 1 and type(args) == int:
+        if len(args) == 1 and type(args[0]) == int:
             return self.authorized_by_int(*args)
 
-        if len(args) == 1 and type(args) == Role:
+        if len(args) == 1 and type(args[0]) == Role:
             return self.authorized_by_role(*args)
 
         return self.authorized_by_tags(*args)
 
-## Decorator functions
+## 
+def load_user(user)->dict:
+    from database.session import model_get
+
+    kwargs = {
+        key: model_get(user, key)[0] for key in user.__table__.primary_key.columns.keys()
+    }
+    return kwargs
+
+def login(user:DeclarativeMeta)->bool:
+    if flask.session.get("token_auth"):
+        return False
+
+    pks_user = load_user(user)
+    token = tokenAuth.generate(pks_user)
+    flask.session["token_auth"] = token
+    return True
+
+
 def login_required(func)->object:
-    def login_required():
-        from database.session import session_query
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        token_auth = flask.session.get("token_auth", None)
+        # print('token_auth: ', token_auth)
+        if not tokenAuth.auth(token_auth):
+            flask.session["token_auth"] = None
+            flask.abort(403)
 
-        ##
-        token_auth = flask.sesion.get("token_auth", None)
-        user = session_query(User, token_auth=token_auth)
-
-        if token_auth is None
-            response = flask.make_response(flask.redirect("/"))
-            return response
-
-        return func()
-    return login_required
-
-def login(user)->object:
-    flask.session["token_auth"] = user.token_auth
+        pkUser = tokenAuth.get(token_auth)
+        return func(pkUser, *args, **kwargs)
+    return wrapper
 
 
-def permission_required(func, permissions:int|Role|list)->object:
-    def permission_required():
-        from database.session import session_query
+def permissions_required(*permissions:int|Role|str)->object:
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            from database.session import session_query
+            from database.methods import User
 
-        if flask.session.get("token_auth", None) is None:
-            return 'You don\'t have permission to access this page'
+            ##
+            token_auth = flask.session.get("token_auth", None)
+            # print('permissions: ', permissions)
+            if not tokenAuth.auth(token_auth):
+                flask.session["token_auth"] = None
+                response = flask.make_response(flask.redirect("/login/display"))
+                return response
 
-        token_auth = flask.session.get("token_auth")
+            pkUser = tokenAuth.get(token_auth)
+            user = session_query(User, **pkUser)
+            # print('user: ', user, pkUser)
+            if user is None or not len(user):
+                flask.session["token_auth"] = None
+                response = flask.make_response(flask.redirect("/login/display"))
+                return response
+
+            if not user[0].authorized(*permissions):
+                flask.abort(403)
+
+            return func(pkUser, *args, **kwargs)
+        return wrapper
+    return decorator
