@@ -43,8 +43,8 @@ def _database_drop_tables(engine:object)->None:
 
 # def _database_init(dbms:str, _database_create:object)->None:
 def _database_init(dbms:str, _database_create:object)->list:
-    import os
-    import time
+    from begin.xtensions import os, time
+    from begin.globals import Config
 
     ##
     global engine
@@ -55,12 +55,7 @@ def _database_init(dbms:str, _database_create:object)->list:
     global session
 
     ##
-    DB_USER = os.environ.get("HAPPYROTEL_DB_USER", '')
-    DB_PASSWORD = os.environ.get("HAPPYROTEL_DB_PASSWORD", '')
-    DB_DATABASE = os.environ.get("HAPPYROTEL_DB_DATABASE", '')
-    DB_HOST = os.environ.get("HAPPYROTEL_DB_HOST", '')
-    
-    url = f"{dbms}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}"
+    url = f"{dbms}://{Config.DB_USER}:{Config.DB_PASSWORD}@{Config.DB_HOST}/{Config.DB_DATABASE}"
 
     for _ in range(20):
         try:

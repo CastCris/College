@@ -14,7 +14,7 @@
     <div id="message_logs"></div>
     <header>
         <div class="client_reception">
-            {% if "token_auth" in request.cookies %}
+            {% if session.get("token_auth") %}
             <h2>Hello {{ Cookie.get("user_name") }}</h2>
             {% else %}
             <h2> Hello Guested! </h2>
@@ -22,7 +22,7 @@
         </div>
 
         <div class="client_auth">
-            {% if "token_auth" in request.cookies %}
+            {% if session.get("token_auth") %}
             <a href="{{ url_for("logout_auth") }}">
                 <h2>Logout</h2>
             </a>

@@ -40,11 +40,23 @@ services:
       HAPPYROTEL_DB_DATABASE: "happyRotel"
       HAPPYROTEL_DB_HOST: "postgres"
 
+      HAPPYROTEL_REDIS_HOST: "redis"
+      HAPPYROTEL_REDIS_PORT: "6379"
+
     ports:
       - "5000:5000"
 
     depends_on:
       - postgres
 
+  redis:
+    image: redis:7
+    container_name: "happyRotel_redis"
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
 volumes:
   postgres_data: {}
+  redis_data: {}

@@ -176,32 +176,46 @@ class Seeds():
         PREDEFINED_UserInfos = {
             "id": [
                 Crypt.code_generate(prefix="userInfos_", length=32)
+                , Crypt.code_generate(prefix="userInfos_", length=32)
+                , Crypt.code_generate(prefix="userInfos_", length=32)
             ],
 
             "name": [
                 "Richard"
+                , "Abreu"
+                , "Generic"
             ],
 
             "email": [
                 "richard@gmail.com"
+                , "abreu@gmail.com"
+                , "genericEmployer@gmail.com"
             ]
         }
 
         PREDEFINED_User = {
             "id": [
                 Crypt.code_generate(prefix="user_", length=32)
+                , Crypt.code_generate(prefix="user_", length=32)
+                , Crypt.code_generate(prefix="user_", length=32)
             ],
 
             "userInfos_id": [
                 PREDEFINED_UserInfos["id"][0]
+                , PREDEFINED_UserInfos["id"][1]
+                , PREDEFINED_UserInfos["id"][2]
             ],
 
             "password": [
                 "admin"
+                , "admin"
+                , "admin"
             ],
 
             "permissions": [ 
                 sum([1, 2, 4, 8])
+                , 0
+                , 12
             ]
         }
 

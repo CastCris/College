@@ -91,6 +91,10 @@ class Login():
             content="User password incorrect",
             type=Error.js_class
         )
+        user_already_logged = Message(
+            content="User already logged",
+            type=Error.js_class
+        )
 
     class Request(Request):
         pass
