@@ -152,6 +152,26 @@ class Image():
 
 ## Flask application
 ## Generation
+from begin.xtensions import flask_wtf, wtforms as wtf
+from wtforms.validators import InputRequired
+
+filter_str = lambda value: value.strip() if value else None
+
+class FormCaptchaIMG(flask_wtf.FlaskForm):
+    captcha = wtf.StringField(
+        'captcha'
+        , id='form_captcha'
+        , validators=[InputRequired()]
+        , filters=[filter_str]
+    )
+
+    submit = wtf.SubmitField(
+        label=None
+        , name="generate"
+    )
+
+
+##
 def generate_img()->object:
     from begin.xtensions import flask
     from begin.globals import Cookie, Crypt

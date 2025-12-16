@@ -7,23 +7,21 @@
 <!-- -->
 {% block content_main_1 %}
 <form id="login_form_user">
-    <label>User Email</label>
-    <input autocomplete="off" type="text" name="user_email" required>
-
-    <label>User password</label>
-    <input autocomplete="off" type="text" name="user_password" required>
+    {% for field in form_login %}
+        {{ field.label }}
+        {{ field }}
+    {% endfor %}
 </form>
 {% endblock %}
 
 {% block content_main_2 %}
 <form id="login_form_captcha">
-    <div class="captcha">
-        <label>Captcha</label>
-        <img id="login_form_captcha_image">
-
-        <input autocomplete="off" type="text" name="captcha" required>
-
-        <button id="login_form_captcha_button_generate">Generate</button>
+    <div class="captchaIMG">
+        <img id="login_form_captcha_img">
+        {% for field in form_captcha %}
+        {{ field.label }}
+        {{ field }}
+        {% endfor %}
     </div>
 
     <button id="login_form_button_submit">Submit!</button>

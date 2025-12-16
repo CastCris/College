@@ -19,6 +19,14 @@ services:
     ports:
       - "2601:5432"
     
+  #
+  redis:
+    image: redis:7
+    container_name: "happyRotel_redis"
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
   #
   app:
@@ -48,14 +56,7 @@ services:
 
     depends_on:
       - postgres
-
-  redis:
-    image: redis:7
-    container_name: "happyRotel_redis"
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+      - redis
 
 volumes:
   postgres_data: {}
