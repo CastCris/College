@@ -7,21 +7,23 @@
 <!-- -->
 {% block content_main_1 %}
 <form id="login_form_user">
-    {% for field in form_login %}
-        {{ field.label }}
-        {{ field }}
-    {% endfor %}
+    {{ form_login.hidden_tag() }}
+
+    {{ form_login.userEmail.label }} 
+    {{ form_login.userEmail(maxlength=255) }}
+
+    {{ form_login.userPassword.label }}
+    {{ form_login.userPassword(maxlength=30) }}
 </form>
 {% endblock %}
 
 {% block content_main_2 %}
 <form id="login_form_captcha">
     <div class="captchaIMG">
-        <img id="login_form_captcha_img">
-        {% for field in form_captcha %}
-        {{ field.label }}
-        {{ field }}
-        {% endfor %}
+        <img id="login_form_captcha_image">
+        {{ form_login.captcha.label }}
+        {{ form_login.captcha }}
+        <button id="login_form_captcha_button_generate">Generate</button>
     </div>
 
     <button id="login_form_button_submit">Submit!</button>

@@ -1,26 +1,22 @@
 from begin.xtensions import flask, flask_wtf, wtforms as wtf
 from wtforms.validators import InputRequired, length
 
-##
-filter_strip = lambda value: str.strip(filter_strip) if value else None
-    
+from begin.globals import Forms, Captcha
 
-class FormLogin(flask_wtf.FlaskForm):
+##
+
+class FormLogin(Captcha.FormCaptcha):
     userEmail = wtf.EmailField(
-            'User Email'
-            , id='login_form_user_email'
-            , validators=[InputRequired(), length(255)]
-            , filters=[filter_strip]
-            )
+        'User Email'
+        , validators=[InputRequired(), length(max=255)]
+        , filters=[Forms.filter_str]
+    )
 
     userPassword = wtf.PasswordField(
-            'User Password'
-            , id='login_form_user_password'
-            , validators=[InputRequired(), length(155)]
-            , filters=[filter_strip]
-            )
-
-    submit = wtf.SubmitField()
+        'User Password'
+        , validators=[InputRequired(), length(max=30)]
+        , filters=[Forms.filter_str]
+    )
 
 
 ##
@@ -33,28 +29,29 @@ def register_app(app:object)->None:
 
         ##
         form_login = FormLogin()
-        form_captcha = Captcha.FormCaptchaIMG()
-
-        return flask.render_template('login.html', form_login=form_login, form_captcha=form_captcha)
+        return flask.render_template('login.html', form_login=form_login)
 
     @app.route("/login/auth", methods=['POST'])
     def login_auth()->None:
-        from begin.globals import Messages, Cookie, Captcha, Crypt, Response, flask_auth
-        from database.methods import User, UserInfos, Token, TokenType
-        from database.session import session_insert, session_query, model_get
+        from begin.globals import Messages, Cookie, Captcha, Response, flask_auth
+        from database.methods import User, UserInfos
+        from database.session import session_query, model_get
 
-        ## Forms check
-        if flask.request.method != 'POST':
-            return flask.jsonify({
-                'message': Messages.Request.Error.invalid_method.json
-            })
-
+        ##
         form_login = FormLogin()
-        form_captcha = FormCaptcha()
-        if not form_login.validate_on_submit() or not form_captcha.validate_on_submit():
+        if not form_login.validate_on_submit():
+            form_errors = Forms.forms_errors(form_login)
             return flask.jsonify({
-                'message': Messages.Login.Error.Request.invalid_fields.json
+                'message': Messages.Message(
+                    content = form_errors[0]
+                    , type =  Messages.Login.Error.js_class
+                ).json
             })
+
+        ##
+        forms_captcha = form_login.captcha.data
+        forms_userEmail = form_login.userEmail.data
+        forms_userPassword = form_login.userPassword.data
 
         ## Captcha
         response_captcha = Captcha.verify(forms_captcha, 'img')
@@ -64,7 +61,7 @@ def register_app(app:object)->None:
             })
 
         ## User validation
-        userInfos = session_query(UserInfos, email=forms_user_email)
+        userInfos = session_query(UserInfos, email=forms_userEmail)
         if userInfos is None:
             return flask.jsonify({
                 'message': Messages.Request.Error.internal.json
@@ -83,7 +80,7 @@ def register_app(app:object)->None:
             })
 
 
-        if not user[0].password_auth(forms_user_password):
+        if not user[0].password_auth(forms_userPassword):
             return flask.jsonify({
                 'message': Messages.Login.Error.invalid_user_password.json
             })

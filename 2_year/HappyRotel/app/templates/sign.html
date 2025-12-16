@@ -7,26 +7,31 @@
 <!-- -->
 {% block content_main_1 %}
 <form id="sign_form_user">
-    <label>User Name</label>
-    <input autocomplete="off" type="text" name="user_name">
+    {{ form_sign.hidden_tag() }}
 
-    <label>User password</label>
-    <input autocomplete="off" type="text" name="user_password">
+    {{ form_sign.userName.label }}
+    {{ form_sign.userName }}
 
-    <label>User password check</label>
-    <input autocomplete="off" type="text" name="user password_checl">
+    {{ form_sign.userEmail.label }}
+    {{ form_sign.userEmail }}
+
+    {{ form_sign.userPassword.label }}
+    {{ form_sign.userPassword }}
+
+    {{ form_sign.userPasswordCheck.label }}
+    {{ form_sign.userPasswordCheck }}
 </form>
 {% endblock %}
 
 {% block content_main_2 %}
 <form id="sign_form_captcha">
     <div class="captcha">
-        <label>Captcha</label>
-        <img id="sign_form_captcha_IMG">
+        <img id="sign_form_captcha_image">
 
-        <input autocomplete="off" type="text" name="catpcha">
+        {{ form_sign.captcha.label }}
+        {{ form_sign.captcha }}
 
-        <button id="sign_form_catpcha_IMG_button_generate">Generate</button>
+        <button id="sign_form_catpcha_button_generate">Generate</button>
     </div>
 
     <button id="sign_form_button_submit">Submit!</button>

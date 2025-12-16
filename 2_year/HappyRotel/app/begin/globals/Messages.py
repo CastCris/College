@@ -104,4 +104,5 @@ class Login():
 
 ## Sign
 class Sign():
-    pass
+    class Error(Error):
+        pass
