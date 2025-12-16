@@ -187,6 +187,17 @@ def logout()->None:
     tokenAuth.remove(token_auth)
     flask.session["token_auth"] = None
 
+
+def logout_required(func)->object:
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        token_auth = flask.session.get("token_auth")
+        if token_auth:
+            flask.abort(403)
+
+        return func(*args, **kwargs)
+    return wrapper
+
 def login_required(func)->object:
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -198,7 +209,6 @@ def login_required(func)->object:
         pkUser = tokenAuth.get(token_auth)
         return func(pkUser, *args, **kwargs)
     return wrapper
-
 
 def permissions_required(*permissions:int|Role|str)->object:
     def decorator(func):

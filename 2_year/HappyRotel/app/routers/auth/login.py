@@ -1,7 +1,7 @@
 from begin.xtensions import flask, flask_wtf, wtforms as wtf
 from wtforms.validators import InputRequired, length
 
-from begin.globals import Forms, CaptchaFlask
+from begin.globals import flask_auth, Forms, CaptchaFlask
 
 ##
 
@@ -24,6 +24,7 @@ def register_app(app:object)->None:
 
     ##
     @app.route("/login/display")
+    @flask_auth.logout_required
     def login_display()->object:
         from begin.globals import Captcha
 
@@ -32,6 +33,7 @@ def register_app(app:object)->None:
         return flask.render_template('login.html', form_login=form_login)
 
     @app.route("/login/auth", methods=['POST'])
+    @flask_auth.logout_required
     def login_auth()->None:
         from begin.globals import Messages, Cookie, Captcha, Response, flask_auth
         from database.methods import User, UserInfos
@@ -59,12 +61,10 @@ def register_app(app:object)->None:
             return flask.jsonify({
                 'message': Messages.Request.Error.internal.json
             })
-
         if not len(userInfos):
             return flask.jsonify({
                 'message': Messages.Login.Error.user_not_found.json
             })
-
 
         user = session_query(User, userInfos_id=userInfos[0].id) 
         if user is None:

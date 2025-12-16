@@ -1,7 +1,7 @@
 from begin.xtensions import flask, flask_wtf, wtforms as wtf
 from wtforms.validators import InputRequired, length, ValidationError
 
-from begin.globals import Forms, CaptchaFlask
+from begin.globals import flask_auth, Forms, CaptchaFlask
 
 ##
 class FormSign(CaptchaFlask.FlaskFormCaptchaIMG):
@@ -40,11 +40,13 @@ class FormSign(CaptchaFlask.FlaskFormCaptchaIMG):
 def register_app(app:object)->None:
 
     @app.route("/sign/display")
+    @flask_auth.logout_required
     def sign_display()->object:
         form_sign = FormSign()
         return flask.render_template('sign.html', form_sign=form_sign)
 
     @app.route("/sign/auth", methods=['POST'])
+    @flask_auth.logout_required
     def sign_auth()->object:
         from begin.globals import Messages, Captcha, Response
         from database.methods import User, UserInfos
@@ -62,13 +64,29 @@ def register_app(app:object)->None:
             })
 
         ##
-        userName = form_sign.userName
-        userEmaill = form_sign.userEmail
-        userPassword = form_sign.userPassword
-
-        captcha = form_sign.captcha
+        userName = form_sign.userName.data
+        userEmail = form_sign.userEmail.data
+        userPassword = form_sign.userPassword.data
 
         ##
         userInfos = session_query(UserInfos, email=userEmail)
+        if userInfos is None:
+            return flask.jsonify({
+                'message': Messages.Sign.Request.Error.internal.json
+            })
+
+        if userInfos:
+            return flask.jsonify({
+                'message': Messages.Sign.Error.user_already_exists.json
+            })
+
+        ##
+        userInfos = session_insert(UserInfos, name=userName, email=userEmail)
+        user = session_insert(User, userInfos_id=model_get(userInfos, "id")[0], password=userPassword, permissions=0)
+
+        response = flask.make_response(flask.jsonify({
+            'href_link': flask.url_for("login_display")
+            })
+        )
         
-        return '{}'
+        return response

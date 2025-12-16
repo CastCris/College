@@ -105,4 +105,10 @@ class Login():
 ## Sign
 class Sign():
     class Error(Error):
+        user_already_exists = Message(
+            content = 'This user already exists',
+            type = Error.js_class
+        )
+
+    class Request(Request):
         pass
