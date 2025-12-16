@@ -32,34 +32,39 @@ class TokenAuth():
     VALIDITY = 60*60*24*7
 
     PREFIX = "token:auth"
+    KEY_GENERATE = lambda self, token: f"{self.PREFIX}:{token}"
 
     ##
     def __init__(self, **kwargs)->None:
         super().__init__(**kwargs)
 
     def generate(self, pk_user:str)->str:
-        from begin.globals.Config import r
+        from begin.globals import r
 
         ##
         token = self.FUNC(chars=self.CHARS, length=self.LENGTH)
 
-        key = f"{self.PREFIX}:{token}"
+        key = self.KEY_GENERATE(token)
         r.hset(key, mapping=pk_user)
         r.expire(key, self.VALIDITY)
 
         return token
 
+    def remove(self, token:str)->None:
+        from begin.globals import r
+
+        ##
+        r.delete(self.KEY_GENERATE(token))
+
     def auth(self, token:str)->bool:
         from begin.globals.Config import r
 
-        ##
         return True if r.hgetall(f"{self.PREFIX}:{token}") else False
 
     def get(self, token:str)->str:
         from begin.globals.Config import r
 
-        ##
-        return r.hgetall(f"{self.PREFIX}:{token}")
+        return r.hgetall(self.KEY_GENERATE(token))
 
 tokenAuth = TokenAuth()
 
@@ -174,12 +179,18 @@ def login(user:DeclarativeMeta)->bool:
     flask.session["token_auth"] = token
     return True
 
+def logout()->None:
+    if not flask.session.get("token_auth"):
+        return
+
+    token_auth = flask.session.get("token_auth")
+    tokenAuth.remove(token_auth)
+    flask.session["token_auth"] = None
 
 def login_required(func)->object:
     @wraps(func)
     def wrapper(*args, **kwargs):
         token_auth = flask.session.get("token_auth", None)
-        # print('token_auth: ', token_auth)
         if not tokenAuth.auth(token_auth):
             flask.session["token_auth"] = None
             flask.abort(403)
@@ -201,7 +212,7 @@ def permissions_required(*permissions:int|Role|str)->object:
             # print('permissions: ', permissions)
             if not tokenAuth.auth(token_auth):
                 flask.session["token_auth"] = None
-                response = flask.make_response(flask.redirect("/login/display"))
+                flask.abort(403)
                 return response
 
             pkUser = tokenAuth.get(token_auth)

@@ -1,11 +1,11 @@
 from begin.xtensions import flask, flask_wtf, wtforms as wtf
 from wtforms.validators import InputRequired, length
 
-from begin.globals import Forms, Captcha
+from begin.globals import Forms, CaptchaFlask
 
 ##
 
-class FormLogin(Captcha.FormCaptcha):
+class FormLogin(CaptchaFlask.FlaskFormCaptchaIMG):
     userEmail = wtf.EmailField(
         'User Email'
         , validators=[InputRequired(), length(max=255)]
@@ -53,13 +53,6 @@ def register_app(app:object)->None:
         forms_userEmail = form_login.userEmail.data
         forms_userPassword = form_login.userPassword.data
 
-        ## Captcha
-        response_captcha = Captcha.verify(forms_captcha, 'img')
-        if not response_captcha.json["valid_captcha"]:
-            return flask.jsonify({
-                'message': response_captcha.json["message"]
-            })
-
         ## User validation
         userInfos = session_query(UserInfos, email=forms_userEmail)
         if userInfos is None:
@@ -97,6 +90,5 @@ def register_app(app:object)->None:
             "href_link": "/",
         })
         Cookie.define(response, "user_name", model_get(userInfos[0], "cipher_name")[0], max_age=60*60*24*7)
-        Response.merge_cookies(response, response_captcha)
 
         return response

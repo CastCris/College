@@ -40,6 +40,7 @@ def register_app(app:object)->None:
     def before_request()->object|None:
         client_generate_sid()
 
+        print(flask.session.get("csrf_token"))
         response_cookies_check = client_cookies_check()
         if response_cookies_check:
             return response_cookies_check

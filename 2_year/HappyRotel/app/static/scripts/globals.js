@@ -51,7 +51,16 @@ export function fieldSetData(...fieldSet){
 
 // Captcha
 export function captcha_generate_IMG(img){
-    fetch('/captcha/generate/img')
+    csrf_token = document.getElementById("csrf_token");
+
+    fetch('/captcha/generate/img', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
+
+        body: JSON.stringify({
+            'csrf_token': csrf_token.value
+        })
+    })
     .then(response => response.blob())
     .then(blob => {
         const url = URL.createObjectURL(blob);

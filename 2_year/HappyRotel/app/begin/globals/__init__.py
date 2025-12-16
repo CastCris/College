@@ -1,6 +1,7 @@
 from .Auth import *
 
 from . import Captcha
+from . import CaptchaFlask
 from . import Class
 
 from .Config import Config, r

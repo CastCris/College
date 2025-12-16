@@ -150,80 +150,33 @@ class Image():
 
         return img_lined.convert("RGB")
 
-## Flask application
-## Generation
-from begin.xtensions import flask_wtf, wtforms as wtf
-from wtforms.validators import InputRequired, length
+## Redis Implementation
+KEY_GENERATE = lambda token_type, csrf_token: f"captcha:{token_type.upper()}:{csrf_token}"
 
-filter_str = lambda value: value.strip() if value else None
-
-class FormCaptcha(flask_wtf.FlaskForm):
-    captcha = wtf.StringField(
-        'Captcha'
-        , validators=[InputRequired(), length(max=50)]
-        , filters=[filter_str]
-    )
-
-##
-def generate_img()->object:
-    from begin.xtensions import flask
-    from begin.globals import Cookie, Crypt
-
-    from io import BytesIO
-    import json
+def token_save(token:str, token_type:str, csrf_token:str)->None:
+    from begin.globals import Crypt, r
 
     ##
-    captcha_instance = Image()
-    captcha_token = generate_code_img()
-    captcha_img = captcha_instance.generate(captcha_token)
-    # captcha_img = captcha_instance.generate('gggggg999')
+    key = KEY_GENERATE(token_type, csrf_token)
+    validity = 60*5
 
-    print('token: ', captcha_token)
+    r.set(key, Crypt.argon2_crypt(token))
+    r.expire(key, validity)
 
-    img_io = BytesIO()
-    captcha_img.save(img_io, 'PNG')
-    img_io.seek(0)
+def token_auth(token_input:str, token_type:str, csrf_token:str)->bool:
+    from begin.globals import Crypt
 
-    #
-    captcha_token_hashed = Crypt.argon2_crypt(captcha_token)
+    token = token_get(token_type, csrf_token)
+    return Crypt.argon2_auth(token, token_input)
 
-    response = flask.make_response(flask.send_file(img_io, mimetype="image/png", download_name="captcha.png"))
-    Cookie.define(response=response, name="captcha_IMG", value=captcha_token_hashed, max_age=5*60)
+def token_get(token_type:str, csrf_token:str)->str|None:
+    from begin.globals import r
 
-    return response
+    key = KEY_GENERATE(token_type, csrf_token)
+    return r.get(key)
 
-def generate(type:str)->object:
-    type = type.upper()
+def token_del(token_type:str, csrf_token:str)->None:
+    from begin.globals import r
 
-    if type == "IMG":
-        return generate_img()
-
-    return flask.jsonify({
-        Messages.Captcha.Error.invalid_type.json
-    })
-
-# Validation
-def verify(token_input:str, token_type:str)->object:
-    from begin.xtensions import flask
-    from begin.globals import Cookie, Messages, Crypt
-
-    ##
-    if Cookie.get(f"captcha_{token_type.upper()}") is None:
-        return flask.jsonify({
-            "valid_captcha": False,
-            "message": Messages.Captcha.Error.not_requested.json
-        })
-
-    captcha_token = Cookie.get(f"captcha_{token_type.upper()}")
-    valid = Crypt.argon2_auth(captcha_token, token_input)
-    msg = Messages.Captcha.Error.invalid.json if not valid else Messages.Captcha.Success.ok.json
-
-    response = flask.make_response(flask.jsonify({
-        "valid_captcha": valid,
-        "message": msg
-    }))
-    
-    if valid:
-        Cookie.delete(response=response, name=f"captcha_{token_type.upper()}")
-
-    return response
+    key = KEY_GENERATE(token_type, csrf_token)
+    r.delete(key)

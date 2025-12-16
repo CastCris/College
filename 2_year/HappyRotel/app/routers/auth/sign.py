@@ -1,10 +1,10 @@
 from begin.xtensions import flask, flask_wtf, wtforms as wtf
 from wtforms.validators import InputRequired, length, ValidationError
 
-from begin.globals import Forms, Captcha
+from begin.globals import Forms, CaptchaFlask
 
 ##
-class FormSign(Captcha.FormCaptcha):
+class FormSign(CaptchaFlask.FlaskFormCaptchaIMG):
     userName = wtf.StringField(
         'User Name'
         , validators=[InputRequired(), length(max=255)]
@@ -29,7 +29,7 @@ class FormSign(Captcha.FormCaptcha):
     )
 
     ##
-    def validate_userPasswordCheck(self, forms)->None|object:
+    def validate_userPasswordCheck(self, field)->None|object:
         print(self.userPassword.data, self.userPasswordCheck.data)
         if self.userPassword.data == self.userPasswordCheck.data:
             return
@@ -50,16 +50,25 @@ def register_app(app:object)->None:
         from database.methods import User, UserInfos
         from database.session import session_insert, session_query, model_get
 
-        ##
+        ## Validation
         form_sign = FormSign()
         if not form_sign.validate_on_submit():
             form_errors = Forms.forms_errors(form_sign)
-            print(form_errors)
             return flask.jsonify({
                 'message': Messages.Message(
                     content = form_errors[0],
                     type = Messages.Sign.Error.js_class
                 ).json
             })
+
+        ##
+        userName = form_sign.userName
+        userEmaill = form_sign.userEmail
+        userPassword = form_sign.userPassword
+
+        captcha = form_sign.captcha
+
+        ##
+        userInfos = session_query(UserInfos, email=userEmail)
         
         return '{}'

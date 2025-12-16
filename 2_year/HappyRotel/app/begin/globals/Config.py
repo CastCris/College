@@ -33,3 +33,4 @@ r = redis.Redis(
     , port = int(Config.REDIS_PORT)
     , decode_responses = True
 )
+r.flushdb()
