@@ -17,14 +17,14 @@ PATH_IGNORE = [ PATH_TEMPLATES, PATH_STATIC ]
 PATH_IGNORED = lambda request_path: True in [ request_path.startswith(path) for path in PATH_IGNORE ]
 
 ##
-def register(app:object, folder:str=DIR_PATH)->None:
+def register(app:object, folder:str=DIR_PATH, **kwargs)->None:
     folder_path = os.path.abspath(folder)
     
     for file in os.listdir(folder_path):
         file_path = f"{folder_path}/{file}"
 
         if not os.path.isfile(file_path):
-            register(app, file_path)
+            register(app, file_path, **kwargs)
             continue
 
         if not re.search(ROUTER_FILE_REGEX, file) or file in REGISTER_IGNORE:
@@ -40,8 +40,8 @@ def register(app:object, folder:str=DIR_PATH)->None:
         module = importlib.util.module_from_spec(module_spec)
         module_spec.loader.exec_module(module)
 
-        # print(module_name)
-        module.__dict__[REGISTER_FUNC_NAME](app)
+        # print(module_name, kwargs)
+        module.__dict__[REGISTER_FUNC_NAME](app, **kwargs)
 
 def exists(app:object, path:str)->bool:
     path_splited = path.split('/')

@@ -1,10 +1,18 @@
 def app_up_credentials(app:object)->None:
     from database import session, methods
     from begin.globals import Seeds, Router
-    
+    from begin.globals.flask_auth import ManagerUser
+
+    from database.methods import User
+
     ##
+    managerUser = ManagerUser(User)
+
     Seeds.cultivate()
-    Router.register(app)
+    Router.register(
+        app
+        , managerUser = managerUser
+    )
 
 def flask_app(__context__:str, **kwargs)->None:
     from begin.globals import Init, Config, Cookie

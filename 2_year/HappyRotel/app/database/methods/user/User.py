@@ -12,14 +12,6 @@ def id_generate()->str:
     return Crypt.code_generate(prefix=ID_PREFIX, length=ID_LEN)
 
 ##
-roleUser = flask_auth.Role({
-    'MANAGE_ROOM': 1,
-    'MANAGE_USERS': 2,
-    'MANAGE_INVOICE': 4,
-    'MANAGE_RESERVERS': 8
-})
-
-##
 class User(Base, flask_auth.UserAuth):
     __tablename__ = 'User'
 

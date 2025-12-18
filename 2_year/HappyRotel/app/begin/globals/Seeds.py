@@ -117,15 +117,10 @@ class Seeds():
     
     ## User
     class UserPermission():
-        TAGS = {
-            'MANAGE_ROOM': 1,
-            'MANAGE_USERS': 2,
-            'MANAGE_INVOICE': 4,
-            'MANAGE_RESERVERS': 8
-        }
-
         def init()->None:
-            for i in Seeds.UserPermission.TAGS.items():
+            from begin.globals import roleAdmin
+
+            for i in roleAdmin.permissions.items():
                 session_insert_SQL(UserPermission, tag=i[0], value=i[1])
 
     class UserInfos():
