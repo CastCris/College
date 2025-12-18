@@ -8,19 +8,20 @@ roleEmployer= flask_auth.Role({
     })
 
 ##
-def register_app(app:object)->None:
+def register_app(app:object, **kwargs)->None:
+    managerUser = kwargs.get("managerUser")
 
     @app.route("/login/required")
-    @flask_auth.login_required
-    def login_required(userPk)->object:
-        return f"You have permission to access this page! This is your id:{userPk}"
+    @managerUser.required_login
+    def login_required(pkUser)->object:
+        return f"You have permission to access this page! This is your id:{pkUser}"
 
     @app.route("/permission/employer/int")
-    @flask_auth.permissions_required(12)
-    def permission_employer_int(userPk)->object:
-        return f"You have permission to access this page! This is your id:{userPk}"
+    @managerUser.required_permission(12)
+    def permission_employer_int(pkUser)->object:
+        return f"You have permission to access this page! This is your id:{pkUser}"
 
     @app.route("/permission/employer/role")
-    @flask_auth.permissions_required(roleEmployer)
-    def permission_employer_role(userPk)->object:
-        return f"You have permission to access this page! This is your id:{userPk}"
+    @managerUser.required_permission(roleEmployer)
+    def permission_employer_role(pkUser)->object:
+        return f"You have permission to access this page! This is your id:{pkUser}"

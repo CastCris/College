@@ -37,16 +37,17 @@ class FormSign(CaptchaFlask.FlaskFormCaptchaIMG):
         raise ValidationError('The password not match')
 
 ##
-def register_app(app:object)->None:
+def register_app(app:object, **kwargs)->None:
+    managerUser = kwargs.get("managerUser")
 
     @app.route("/sign/display")
-    @flask_auth.logout_required
+    @managerUser.required_logout
     def sign_display()->object:
         form_sign = FormSign()
         return flask.render_template('sign.html', form_sign=form_sign)
 
     @app.route("/sign/auth", methods=['POST'])
-    @flask_auth.logout_required
+    @managerUser.required_logout
     def sign_auth()->object:
         from begin.globals import Messages, Captcha, Response
         from database.methods import User, UserInfos

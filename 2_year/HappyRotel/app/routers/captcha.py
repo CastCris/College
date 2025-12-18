@@ -1,7 +1,7 @@
 from begin.xtensions import flask
 
 ##
-def register_app(app:object)->None:
+def register_app(app:object, **kwargs)->None:
 
     @app.route("/captcha/generate/<token_type>", methods=['POST'])
     def captcha_generate(token_type:str)->object:

@@ -1,7 +1,7 @@
 from begin.xtensions import flask
 
 ##
-def register_app(app:object)->None:
+def register_app(app:object, **kwargs)->None:
 
     @app.route('/')
     def index()->None:

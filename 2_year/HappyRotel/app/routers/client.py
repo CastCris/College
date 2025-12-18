@@ -34,7 +34,7 @@ def client_cookies_check()->object|None:
         return response
 
 ##
-def register_app(app:object)->None:
+def register_app(app:object, **kwargs)->None:
 
     @app.before_request
     def before_request()->object|None:

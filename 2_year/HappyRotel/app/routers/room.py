@@ -2,7 +2,7 @@ from begin.xtensions import flask
 from database import *
 
 ##
-def register_app(app:object)->None:
+def register_app(app:object, **kwargs)->None:
 
     @app.route('/rooms/load')
     def rooms_load()->object:
