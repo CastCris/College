@@ -8,13 +8,13 @@ from begin.globals import flask_auth, Forms, CaptchaFlask
 class FormLogin(CaptchaFlask.FlaskFormCaptchaIMG):
     userEmail = wtf.EmailField(
         'User Email'
-        , validators=[CaptchaFlask.captcha, InputRequired(), length(max=255)]
+        , validators=[InputRequired(), length(max=255)]
         , filters=[Forms.filter_str]
     )
 
     userPassword = wtf.PasswordField(
         'User Password'
-        , validators=[CaptchaFlask.captcha, InputRequired(), length(max=30)]
+        , validators=[InputRequired(), length(max=30)]
         , filters=[Forms.filter_str]
     )
 
@@ -55,7 +55,7 @@ def register_app(app:object, **kwargs)->None:
 
         ##
         form_login = FormLogin()
-        return flask.render_template('login.html', form_login=form_login)
+        return flask.render_template('auth/login.html', form_login=form_login)
 
     @app.route("/login/auth", methods=['POST'])
     @managerUser.required_logout
@@ -68,7 +68,7 @@ def register_app(app:object, **kwargs)->None:
         form_login = FormLogin()
         if not form_login.validate_on_submit():
             form_errors = Forms.forms_errors(form_login)
-            print(form_errors)
+            print('form_errors: ', form_errors)
             return flask.jsonify({
                 'message': Messages.Message(
                     content = form_errors[0]
@@ -85,7 +85,7 @@ def register_app(app:object, **kwargs)->None:
 
         ##
         response = flask.make_response({
-            "href_link": "/",
+            "href_link": flask.url_for("index"),
         })
         Cookie.define(response, "user_name", model_get(userInfos, "cipher_name")[0], max_age=60*60*24*7)
 

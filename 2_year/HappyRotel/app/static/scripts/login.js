@@ -54,7 +54,15 @@ BUTT_SUBMIT.addEventListener('click', (e) => {
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data);
+        const message = data["message"];
+        const href_link = data["href_link"];
+
+        if(href_link != undefined){
+            window.location.href = href_link;
+            return;
+        }
+
+        page.LOGS.INSERT(message);
     });
 
 });

@@ -1,5 +1,5 @@
 from begin.xtensions import flask, flask_wtf, wtforms as wtf
-from wtforms.validators import InputRequired, length, ValidationError
+from wtforms.validators import InputRequired, length, StopValidation
 
 from begin.globals import flask_auth, Forms, CaptchaFlask
 
@@ -29,13 +29,51 @@ class FormSign(CaptchaFlask.FlaskFormCaptchaIMG):
     )
 
     ##
-    def validate_userPasswordCheck(self, field)->None|object:
-        print(self.userPassword.data, self.userPasswordCheck.data)
+    def validate_userPasswordCheck(self, field)->None:
         if self.userPassword.data == self.userPasswordCheck.data:
             return
 
-        raise ValidationError('The password not match')
+        raise StopValidation('The password not match')
 
+    def validate_userEmail(self, field)->None:
+        from database.methods import UserInfos
+        from database.session import session_query
+
+        ##
+        self.validate_userPasswordCheck(self.userPasswordCheck)
+        
+        userInfos = session_query(UserInfos, email=field.data)
+        print('userInfos: ', userInfos, field.data)
+        if userInfos is None:
+            raise StopValidation("Internal server error")
+
+        if userInfos:
+            raise StopValidation("This user already exists")
+
+    def validate(self, extra_validators=None)->bool:
+        from database.methods import UserInfos, User
+        from database.session import session_insert, session_query, model_get
+
+        if not super().validate(extra_validators):
+            return False
+
+        ##
+        self.validate_userEmail(self.userEmail)
+
+        userInfos = session_insert(
+            UserInfos
+            , email=self.userEmail.data
+            , name=self.userName.data
+        )
+
+        user = session_insert(
+            User
+            , userInfos_id=model_get(userInfos, "id")[0]
+            , password=self.userPassword.data
+            , permissions=0
+        )
+
+        return True
 ##
 def register_app(app:object, **kwargs)->None:
     managerUser = kwargs.get("managerUser")
@@ -44,7 +82,7 @@ def register_app(app:object, **kwargs)->None:
     @managerUser.required_logout
     def sign_display()->object:
         form_sign = FormSign()
-        return flask.render_template('sign.html', form_sign=form_sign)
+        return flask.render_template('auth/sign.html', form_sign=form_sign)
 
     @app.route("/sign/auth", methods=['POST'])
     @managerUser.required_logout
@@ -65,26 +103,6 @@ def register_app(app:object, **kwargs)->None:
             })
 
         ##
-        userName = form_sign.userName.data
-        userEmail = form_sign.userEmail.data
-        userPassword = form_sign.userPassword.data
-
-        ##
-        userInfos = session_query(UserInfos, email=userEmail)
-        if userInfos is None:
-            return flask.jsonify({
-                'message': Messages.Sign.Request.Error.internal.json
-            })
-
-        if userInfos:
-            return flask.jsonify({
-                'message': Messages.Sign.Error.user_already_exists.json
-            })
-
-        ##
-        userInfos = session_insert(UserInfos, name=userName, email=userEmail)
-        user = session_insert(User, userInfos_id=model_get(userInfos, "id")[0], password=userPassword, permissions=0)
-
         response = flask.make_response(flask.jsonify({
             'href_link': flask.url_for("login_display")
             })

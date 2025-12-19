@@ -189,6 +189,11 @@ export class MessageLogs{
                 <p class="${message_class}">${message}</p>
         `
         };
+
+        this.INSERT = (message_obj) => {
+            this.CLEAN();
+            this.ADD(message_obj["type"], message_obj["content"]);
+        }
     }
 }
 
@@ -255,6 +260,7 @@ export class Element {
 export class Page{
     constructor(){
         this.OBJECTS = [];
+        this.LOGS = new MessageLogs();
     }
 
     elements_add(...elements){
@@ -267,7 +273,7 @@ export class Page{
             i.init()
     }
 
-    elemen_createt(tag, args){
+    element_createt(tag, args){
         const new_element = document.createElement(tag);
         args = args || {};
 
