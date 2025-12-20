@@ -13,4 +13,4 @@ from . import Init
 from . import Messages
 from . import Response
 from . import Router
-from . import Seeds
+from .Seeds import Seeds

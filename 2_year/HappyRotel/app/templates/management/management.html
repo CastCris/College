@@ -1,0 +1,30 @@
+{% extends "layouts/layout_1.html" %}
+
+{% block page_style %}
+<link rel="stylesheet" href="{{ url_for("static", filename="/style/managementRooms.css") }}">
+{% endblock %}
+
+{% block page_javascript %}
+<script type="module" src="{{ url_for("static", filename="/scripts/managementRooms.js") }}"></script>
+{% endblock %}
+
+{% block content_main %}
+<div class="management">
+    {% for topic in topics.keys() %}
+    <div class="management_item">
+        <h2>{{ topic }}</h2>
+
+        {% for item in topics[topic] %}
+        <ul class="management_node" id="management_node_{{ item.tag }}">
+            {% for item_key in item.keys() %}
+            <li>
+                <p><b>{{ item_key }}:</b> {{ item[item_key] }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+        <hr>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

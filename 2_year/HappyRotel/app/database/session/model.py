@@ -1,10 +1,11 @@
 from begin.globals import Messages
 
+from sqlalchemy import inspect, text
+from sqlalchemy.orm import DeclarativeMeta
+import re
+
 from .crypt import *
 from .session import session
-
-from sqlalchemy import inspect, text
-import re
 
 ##
 FIELD_CIPHER = lambda model: [ i for i in model.__dict__.keys() if re.search("^cipher_.*", i) ] if model else []
@@ -355,3 +356,13 @@ def model_from_name(table_name:str)->object | None:
 
 def model_is_mapped(model:object)->bool:
     return hasattr(model, '__tablename__')
+
+
+def model_from_tuple(model:DeclarativeMeta, attr:tuple)->DeclarativeMeta:
+    kwargs = {
+        column.name: value 
+        for column, value in zip(model.__table__.columns, attr)
+    }
+    # print('model_from_tuple: ', kwargs)
+
+    return model(**kwargs)

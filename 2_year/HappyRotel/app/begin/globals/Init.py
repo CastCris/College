@@ -10,7 +10,9 @@ def app_up_credentials(app:object)->None:
     managerUser = ManagerUser(User)
     CaptchaFlask.InitApp(app)
 
+    Seeds = Seeds()
     Seeds.cultivate()
+
     Router.register(
         app
         , managerUser = managerUser

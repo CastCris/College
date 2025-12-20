@@ -1,4 +1,4 @@
-/* PostgreSQL – Modelo convertido do brModelo */
+/* brModelo_logicalModel - PostgreSQL */
 
 CREATE TABLE "User" (
     "id" CHAR(32) PRIMARY KEY,
@@ -8,8 +8,8 @@ CREATE TABLE "User" (
 );
 
 CREATE TABLE "UserInfos" (
-    "dek" CHAR(80),
     "id" CHAR(32) PRIMARY KEY,
+    "dek" CHAR(80),
     "hashed_name" CHAR(44),
     "hashed_email" CHAR(44) UNIQUE,
     "cipher_name" VARCHAR(255),
@@ -33,9 +33,10 @@ CREATE TABLE "Invoice" (
 
 CREATE TABLE "Room" (
     "id" CHAR(32) PRIMARY KEY,
-    "roomInfos_id" CHAR(32),
+    "roomLocation_id" CHAR(32),
     "roomType_id" CHAR(32),
-    "status_value" INTEGER
+    "status_value" INTEGER,
+    "tag" VARCHAR(255) UNIQUE
 );
 
 CREATE TABLE "InvoiceStatus" (
@@ -67,15 +68,6 @@ CREATE TABLE "RoomType" (
     "price" SMALLINT
 );
 
-CREATE TABLE "RoomInfos" (
-    "dek" CHAR(80),
-    "id" CHAR(32) PRIMARY KEY,
-    "hashed_tag" CHAR(44) UNIQUE,
-    "hashed_location" CHAR(44),
-    "cipher_tag" VARCHAR(255),
-    "cipher_location" VARCHAR(255)
-);
-
 CREATE TABLE "RoomStatus" (
     "name" VARCHAR(255) UNIQUE,
     "value" INTEGER,
@@ -103,66 +95,67 @@ CREATE TABLE "ReserveStatus" (
     "tag" VARCHAR(155)
 );
 
-CREATE TABLE "Token" (
-    "id" CHAR(32) PRIMARY KEY,
-    "token" VARCHAR(255),
-    "tokenType_id" CHAR(32),
-    "emission_date" TIMESTAMP
-);
-
-CREATE TABLE "TokenType" (
+CREATE TABLE "RoomLocation" (
     "id" CHAR(32) PRIMARY KEY,
     "tag" VARCHAR(155) UNIQUE,
-    "validity" INTERVAL
+    "tag_prefix" VARCHAR(5),
+    "tag_suffix" VARCHAR(5)
 );
 
-/* ---------- FOREIGN KEYS ---------- */
+-- Foreign Keys
 
-ALTER TABLE "User" ADD CONSTRAINT "FK_User_3"
-    FOREIGN KEY ("userInfos_id")
-    REFERENCES "UserInfos" ("id");
+ALTER TABLE "User"
+ADD CONSTRAINT "FK_User_3"
+FOREIGN KEY ("userInfos_id")
+REFERENCES "UserInfos" ("id");
 
-ALTER TABLE "Invoice" ADD CONSTRAINT "FK_Invoice_1"
-    FOREIGN KEY ("status_id")
-    REFERENCES "InvoiceStatus" ("id");
+ALTER TABLE "Invoice"
+ADD CONSTRAINT "FK_Invoice_1"
+FOREIGN KEY ("status_id")
+REFERENCES "InvoiceStatus" ("id");
 
-ALTER TABLE "Invoice" ADD CONSTRAINT "FK_Invoice_3"
-    FOREIGN KEY ("reserveCandidate_id")
-    REFERENCES "ReserveCandidate" ("id");
+ALTER TABLE "Invoice"
+ADD CONSTRAINT "FK_Invoice_3"
+FOREIGN KEY ("reserveCandidate_id")
+REFERENCES "ReserveCandidate" ("id");
 
-ALTER TABLE "Room" ADD CONSTRAINT "FK_Room_2"
-    FOREIGN KEY ("roomInfos_id")
-    REFERENCES "RoomInfos" ("id");
+ALTER TABLE "Room"
+ADD CONSTRAINT "FK_Room_2"
+FOREIGN KEY ("roomType_id")
+REFERENCES "RoomType" ("id");
 
-ALTER TABLE "Room" ADD CONSTRAINT "FK_Room_3"
-    FOREIGN KEY ("roomType_id")
-    REFERENCES "RoomType" ("id");
+ALTER TABLE "Room"
+ADD CONSTRAINT "FK_Room_3"
+FOREIGN KEY ("roomLocation_id")
+REFERENCES "RoomLocation" ("id");
 
-ALTER TABLE "InvoiceItem" ADD CONSTRAINT "FK_InvoiceItem_2"
-    FOREIGN KEY ("invoice_id")
-    REFERENCES "Invoice" ("id");
+ALTER TABLE "InvoiceItem"
+ADD CONSTRAINT "FK_InvoiceItem_2"
+FOREIGN KEY ("invoice_id")
+REFERENCES "Invoice" ("id");
 
-ALTER TABLE "InvoiceItem" ADD CONSTRAINT "FK_InvoiceItem_3"
-    FOREIGN KEY ("service_id")
-    REFERENCES "Service" ("id");
+ALTER TABLE "InvoiceItem"
+ADD CONSTRAINT "FK_InvoiceItem_3"
+FOREIGN KEY ("service_id")
+REFERENCES "Service" ("id");
 
-ALTER TABLE "ReserveCandidate" ADD CONSTRAINT "FK_ReserveCandidate_1"
-    FOREIGN KEY ("room_id")
-    REFERENCES "Room" ("id");
+ALTER TABLE "ReserveCandidate"
+ADD CONSTRAINT "FK_ReserveCandidate_1"
+FOREIGN KEY ("room_id")
+REFERENCES "Room" ("id");
 
-ALTER TABLE "ReserveCandidate" ADD CONSTRAINT "FK_ReserveCandidate_3"
-    FOREIGN KEY ("reserve_id")
-    REFERENCES "Reserve" ("id");
+ALTER TABLE "ReserveCandidate"
+ADD CONSTRAINT "FK_ReserveCandidate_3"
+FOREIGN KEY ("reserve_id")
+REFERENCES "Reserve" ("id");
 
-ALTER TABLE "ReserveCandidate" ADD CONSTRAINT "FK_ReserveCandidate_4"
-    FOREIGN KEY ("user_id")
-    REFERENCES "User" ("id");
+ALTER TABLE "ReserveCandidate"
+ADD CONSTRAINT "FK_ReserveCandidate_4"
+FOREIGN KEY ("user_id")
+REFERENCES "User" ("id");
 
-ALTER TABLE "Reserve" ADD CONSTRAINT "FK_Reserve_2"
-    FOREIGN KEY ("reserveStatus_id")
-    REFERENCES "ReserveStatus" ("id");
-
-ALTER TABLE "Token" ADD CONSTRAINT "FK_Token_2"
-    FOREIGN KEY ("tokenType_id")
-    REFERENCES "TokenType" ("id");
+ALTER TABLE "Reserve"
+ADD CONSTRAINT "FK_Reserve_2"
+FOREIGN KEY ("reserveStatus_id")
+REFERENCES "ReserveStatus" ("id");
 
