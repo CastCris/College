@@ -4,7 +4,6 @@ from wtforms.validators import InputRequired, length, StopValidation
 from begin.globals import flask_auth, Forms, CaptchaFlask
 
 ##
-
 class FormLogin(CaptchaFlask.FlaskFormCaptchaIMG):
     userEmail = wtf.EmailField(
         'User Email'

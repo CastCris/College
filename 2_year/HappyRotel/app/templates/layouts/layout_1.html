@@ -21,19 +21,37 @@
             {% endif %}
         </div>
 
-        <div class="client_auth">
-            {% if session.get("token_auth") %}
-            <a href="{{ url_for("logout_auth") }}">
-                <h2>Logout</h2>
-            </a>
-            {% else %}
-            <a href="{{ url_for("login_display") }}">
-                <h2>Login</h2>
-            </a>
+        <div class="client_options">
+            <div class="client_auth">
+                {% if session.get("token_auth") %}
+                <a href="{{ url_for("logout_auth") }}">
+                    <h2>Logout</h2>
+                </a>
+                {% else %}
+                <a href="{{ url_for("login_display") }}">
+                    <h2>Login</h2>
+                </a>
 
-            <a href="{{ url_for("sign_display") }}">
-                <h2>Sign</h2>
-            </a>
+                <a href="{{ url_for("sign_display") }}">
+                    <h2>Sign</h2>
+                </a>
+                {% endif %}
+            </div>
+
+            {% if session.get("token_auth") %}
+            <div class="client_menu">
+                <img src="{{ url_for("static", filename="assets/icons/menu/menu.png") }}" width="250px">
+
+                <ul class="cleint_menu_options">
+                    <li>
+                        <a href="{{ url_for("management_display") }}">
+                            <h2>
+                                Management
+                            </h2>
+                        </a>
+                    </li>
+                </ul>
+            </div>
             {% endif %}
         </div>
     </header>
