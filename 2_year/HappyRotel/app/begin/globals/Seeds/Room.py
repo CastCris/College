@@ -15,11 +15,11 @@ class RoomStatus():
         from database.methods import RoomStatus
 
         ##
-        for name, attr in self.STATUS.items():
+        for tag, attr in self.STATUS.items():
             value = attr[0]
             positive = attr[1]
 
-            session_insert(RoomStatus, name=name, value=value, positive=positive)
+            session_insert(RoomStatus, tag=tag, value=value, positive=positive)
 
 class RoomType():
     DEPEND_ON = []
@@ -105,7 +105,7 @@ class Room():
                     SELECT value FROM \"RoomStatus\"
                     ORDER BY RANDOM()
                     LIMIT (floor(random() * (
-                        SELECT COUNT(name) FROM \"RoomStatus\"
+                        SELECT COUNT(tag) FROM \"RoomStatus\"
                     )) + 1)::int
                 ) t;
                 """

@@ -20,7 +20,6 @@ class Room(Base):
     ##
     def __init__(self, **kwargs)->None:
         super().__init__(**kwargs)
-        print('ABCD')
         self.tag_generate()
 
     def tag_generate(self)->str:
@@ -42,6 +41,7 @@ class Room(Base):
 
         ##
         room  = model_get_columns_value(self)
+        print('room_json: ', room)
 
         room_type = model_get_columns_value(
             session_query(RoomType, id=room["roomType_id"])[0]
@@ -52,7 +52,7 @@ class Room(Base):
         )
 
         room_status = session_SQL(f"""
-        SELECT rs.name FROM \"Room\" as r
+        SELECT rs.tag FROM \"Room\" as r
         LEFT JOIN \"RoomStatus\" AS rs ON 
             (
             (( r.status_value & rs.value ) = rs.value AND rs.positive = TRUE)
@@ -75,4 +75,3 @@ class Room(Base):
 
             'status': room_status
         }
-    

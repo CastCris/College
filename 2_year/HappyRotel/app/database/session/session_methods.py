@@ -1,10 +1,11 @@
 from begin.globals import Messages
+from sqlalchemy.orm import DeclarativeMeta
 
 from .model import *
 from .session import session
 
 ##
-def session_SQL(stmt:str, **kwargs)->tuple or None:
+def session_SQL(stmt:str, **kwargs)->tuple[DeclarativeMeta] or None:
     from sqlalchemy import text
 
     ##
@@ -20,7 +21,7 @@ def session_SQL(stmt:str, **kwargs)->tuple or None:
         return None
 
 
-def session_insert(model:object, **kwargs)->object:
+def session_insert(model:DeclarativeMeta, **kwargs)->DeclarativeMeta:
     try:
         instance = model_create(model, **kwargs)
 
@@ -35,7 +36,7 @@ def session_insert(model:object, **kwargs)->object:
 
         return None
 
-def session_insert_SQL(model:object, **kwargs)->None:
+def session_insert_SQL(model:DeclarativeMeta, **kwargs)->None:
     try:
         args = model_create_SQL(model, **kwargs)
         session.execute(args['stmt'], args['model_args'])
@@ -46,7 +47,7 @@ def session_insert_SQL(model:object, **kwargs)->None:
         session.rollback()
 
 
-def session_update(instances:tuple, **kwargs)->None:
+def session_update(instances:tuple[DeclarativeMeta], **kwargs)->None:
     try:
         for i in instances:
             model_update(i, **kwargs)
@@ -57,7 +58,7 @@ def session_update(instances:tuple, **kwargs)->None:
         session.rollback()
         Messages.Error.print('session_update', e)
 
-def session_delete(instances:tuple)->None:
+def session_delete(instances:tuple[DeclarativeMeta])->None:
     try:
         for i in instances:
             session.delete(i)
@@ -123,6 +124,29 @@ def session_query(*columns, **kwargs)->tuple|None:
         Messages.Error.print('session_query', e) 
 
         return None
+
+def session_query_SQL(model:DeclarativeMeta, stmt:str, **kwargs)->tuple[DeclarativeMeta]|None:
+    try:
+        result_row = session_SQL(stmt).all()
+        result_orm = []
+        for row in result_row:
+            row_dict = row._mapping
+            print(model_get_PK(model))
+            pkModel = { column_name: row_dict[column_name] for column_name in model_get_PK(model) if column_name in row_dict.keys() }
+
+            if not pkModel:
+                result_orm.append(model(**row_dict))
+                continue
+
+            result_orm.append(session_query(model, **pkModel)[0])
+        return result_orm
+
+    except Exception as e:
+        Messages.Error.print('session_query_SQL', e)
+        session.rollback()
+
+        return None
+
 
 ##
 def get_model(model_name:str)->object|None:

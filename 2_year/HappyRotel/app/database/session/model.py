@@ -178,6 +178,41 @@ def model_create_SQL(model:object, **kwargs)->dict|None:
         return None
 
 
+def model_from_name(table_name:str)->object | None:
+    from .session import Base, metadata
+
+    ##
+    table = metadata.tables.get(table_name, None)
+    for i in metadata.tables.keys():
+        if table_name:
+            break
+
+        if table_name.lowercase() == i.lowercase() :
+            table = metadata.tables[i]
+            break
+
+    for i in Base.registry.mappers:
+        if i.local_table.name == table.name:
+            return i.class_
+
+    return table
+
+def model_from_tuple(model:DeclarativeMeta, attr:tuple)->DeclarativeMeta:
+    kwargs = {
+        column.name: value 
+        for column, value in zip(model.__table__.columns, attr)
+    }
+    # print('model_from_tuple: ', kwargs)
+
+    return model(**kwargs)
+
+def model_get_PK(model:object)->list:
+    return model.__table__.primary_key.columns.keys()
+
+def model_is_mapped(model:object)->bool:
+    return hasattr(model, '__tablename__')
+
+# instance
 def model_update(instance:object, **kwargs)->None:
     try:
         model = type(instance)
@@ -333,36 +368,3 @@ def model_get_columns_value(instance:object)->dict:
         columns_value[attr_name] = value
 
     return columns_value
-
-
-def model_from_name(table_name:str)->object | None:
-    from .session import Base, metadata
-
-    ##
-    table = metadata.tables.get(table_name, None)
-    for i in metadata.tables.keys():
-        if table_name:
-            break
-
-        if table_name.lowercase() == i.lowercase() :
-            table = metadata.tables[i]
-            break
-
-    for i in Base.registry.mappers:
-        if i.local_table.name == table.name:
-            return i.class_
-
-    return table
-
-def model_is_mapped(model:object)->bool:
-    return hasattr(model, '__tablename__')
-
-
-def model_from_tuple(model:DeclarativeMeta, attr:tuple)->DeclarativeMeta:
-    kwargs = {
-        column.name: value 
-        for column, value in zip(model.__table__.columns, attr)
-    }
-    # print('model_from_tuple: ', kwargs)
-
-    return model(**kwargs)

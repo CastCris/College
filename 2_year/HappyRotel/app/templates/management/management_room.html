@@ -1,0 +1,27 @@
+{% extends "layouts/layout_1.html" %}
+
+{% block content_main %}
+<form id="managementRoom_forms">
+    {{ formsRoom.hidden_tag() }}
+
+    <p>{{ roomJson["tag"] }}</p>
+
+    {{ formsRoom.roomType.label }}
+    {{ formsRoom.roomType }}
+
+    <p>{{ roomJson["price"] }}</p>
+    <p>{{ roomJson["capactiy"] }}</p>
+    <p>{{ roomJson["description"] }}</p>
+
+    {{ formsRoom.roomLocation.label }}
+    {{ formsRoom.roomLocation }}
+
+    <fieldset>
+        <legend>{{ formsRoom.roomStatus.label }}</legend>
+        {% for field in formsRoom.roomStatus %}
+        {{ field.label }}
+        {{ field() }}
+        {% endfor %}
+    </fieldset>
+</form>
+{% endblock %}

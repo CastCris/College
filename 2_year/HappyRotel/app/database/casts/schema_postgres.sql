@@ -8,8 +8,8 @@ CREATE TABLE "User" (
 );
 
 CREATE TABLE "UserInfos" (
-    "id" CHAR(32) PRIMARY KEY,
     "dek" CHAR(80),
+    "id" CHAR(32) PRIMARY KEY,
     "hashed_name" CHAR(44),
     "hashed_email" CHAR(44) UNIQUE,
     "cipher_name" VARCHAR(255),
@@ -32,11 +32,13 @@ CREATE TABLE "Invoice" (
 );
 
 CREATE TABLE "Room" (
+    "dek" CHAR(80),
     "id" CHAR(32) PRIMARY KEY,
     "roomLocation_id" CHAR(32),
     "roomType_id" CHAR(32),
     "status_value" INTEGER,
-    "tag" VARCHAR(255) UNIQUE
+    "hashed_tag" CHAR(44) UNIQUE,
+    "cipher_tag" VARCHAR(255)
 );
 
 CREATE TABLE "InvoiceStatus" (
@@ -69,7 +71,7 @@ CREATE TABLE "RoomType" (
 );
 
 CREATE TABLE "RoomStatus" (
-    "name" VARCHAR(255) UNIQUE,
+    "tag" VARCHAR(255) UNIQUE,
     "value" INTEGER,
     "positive" BOOLEAN,
     PRIMARY KEY ("positive", "value")
