@@ -41,7 +41,7 @@ class Room(Base):
 
         ##
         room  = model_get_columns_value(self)
-        print('room_json: ', room)
+        # print('room_json: ', room)
 
         room_type = model_get_columns_value(
             session_query(RoomType, id=room["roomType_id"])[0]

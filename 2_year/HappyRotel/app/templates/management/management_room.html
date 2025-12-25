@@ -1,10 +1,14 @@
 {% extends "layouts/layout_1.html" %}
 
+{% block page_javascript %}
+<script type="module" src="{{ url_for("static", filename="scripts/management/management_room.js") }}" defer></script>
+{% endblock %}
+
 {% block content_main %}
-<form id="managementRoom_forms">
+<form id="formsRoom">
     {{ formsRoom.hidden_tag() }}
 
-    <p>{{ roomJson["tag"] }}</p>
+    <h1>{{ roomJson["tag"] }}</h1>
 
     {{ formsRoom.roomType.label }}
     {{ formsRoom.roomType }}
@@ -17,11 +21,19 @@
     {{ formsRoom.roomLocation }}
 
     <fieldset>
+        {{ formsRoom.roomStatus.hidden_tag() }}
+
         <legend>{{ formsRoom.roomStatus.label }}</legend>
         {% for field in formsRoom.roomStatus %}
+        {% if not field.label.text.startswith("CSRF") %}
+
         {{ field.label }}
         {{ field() }}
+
+        {% endif %}
         {% endfor %}
     </fieldset>
+
+    <button id="formsRoom_button_submit">Submit</button>
 </form>
 {% endblock %}

@@ -1,12 +1,12 @@
 {% extends "layouts/layout_2.html" %}
 
 {% block page_javascript %}
-<script src="{{ url_for("static", filename="scripts/login.js") }}" type="module"></script>
+<script src="{{ url_for("static", filename="scripts/login.js") }}" type="module" defer></script>
 {% endblock %}
 
 <!-- -->
 {% block content_main_1 %}
-<form id="login_form_user">
+<form id="form_user">
     {{ form_login.hidden_tag() }}
 
     {{ form_login.userEmail.label }} 
@@ -18,14 +18,14 @@
 {% endblock %}
 
 {% block content_main_2 %}
-<form id="login_form_captcha">
+<form id="form_captcha">
     <div class="captchaIMG">
-        <img id="login_form_captcha_image">
+        <img id="form_captcha_image">
         {{ form_login.captchaToken.label }}
         {{ form_login.captchaToken }}
-        <button id="login_form_captcha_button_generate">Generate</button>
+        <button id="form_captcha_button_generate">Generate</button>
     </div>
 
-    <button id="login_form_button_submit">Submit!</button>
+    <button id="form_button_submit">Submit!</button>
 </form>
 {% endblock %}

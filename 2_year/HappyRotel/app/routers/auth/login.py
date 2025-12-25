@@ -1,7 +1,7 @@
 from begin.xtensions import flask, flask_wtf, wtforms as wtf
 from wtforms.validators import InputRequired, length, StopValidation
 
-from begin.globals import flask_auth, Forms, CaptchaFlask
+from begin.globals import flask_auth, Forms, CaptchaFlask, CookieSession
 
 ##
 class FormLogin(CaptchaFlask.FlaskFormCaptchaIMG):
@@ -59,7 +59,7 @@ def register_app(app:object, **kwargs)->None:
     @app.route("/login/auth", methods=['POST'])
     @managerUser.required_logout
     def login_auth()->None:
-        from begin.globals import Messages, Cookie, Captcha, Response, flask_auth
+        from begin.globals import Messages, Captcha, Response, flask_auth
         from database.methods import User, UserInfos
         from database.session import session_query, model_get
 
@@ -86,6 +86,11 @@ def register_app(app:object, **kwargs)->None:
         response = flask.make_response({
             "href_link": flask.url_for("index"),
         })
-        Cookie.define(response, "user_name", model_get(userInfos, "cipher_name")[0], max_age=60*60*24*7)
+        CookieSession.define(
+            response
+            , key = "user_name"
+            , value = model_get(userInfos, "cipher_name")[0]
+            , max_age=60*60*24*7
+        )
 
         return response

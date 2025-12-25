@@ -1,38 +1,4 @@
 // Validations
-export function forms_validation(...forms){
-    const logs = new MessageLogs();
-    const formData = new FormData();
-
-    for(const i of forms){
-        const form_data = new FormData(i);
-        const fields_required =  document.querySelectorAll(`#${i.id} [required]`) || [];
-        // console.log(form_data, fields_required);
-
-        for(const j of fields_required){
-            const field = form_data.get(j.name)
-            const field_type = typeof field;
-
-            if(field_type == "string" && field.trim())
-                continue;
-
-            if(field_type == "object" && field instanceof File && field.size)
-                continue;
-
-            logs.CLEAN();
-            logs.ADD(logs.MESSAGE_ERROR_CLASS, "Please, fill all required fields");
-
-            j.focus()
-
-            return null;
-        }
-
-        form_data.forEach((value, key) => {
-            formData.append(key, value);
-        });
-    }
-
-    return formData;
-}
 
 export function fieldSetData(...fieldSet){
     const data = {};
@@ -50,23 +16,22 @@ export function fieldSetData(...fieldSet){
 
 
 // Captcha
-export function captcha_generate_IMG(img){
-    csrf_token = document.getElementById("csrf_token");
 
-    fetch('/captcha/generate/img', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json; charset=utf-8'},
-
-        body: JSON.stringify({
-            'csrf_token': csrf_token.value
-        })
-    })
-    .then(response => response.blob())
-    .then(blob => {
-        const url = URL.createObjectURL(blob);
-        img.src = url;
-    });
+// Internal
+/*
+function instanceMethods(instance){
+    return Object.getOwnPropertyNames(instance.__proto__).filter(
+        funcName => funcName != "constructor"
+    )
 }
+
+function instanceAttributes(instance){
+    return Object.getOwnPropertyNames(instance)
+
+function instanceProperties(instance){
+    return [ ...(instanceMethods(instance)), ...(instanceAttributes(instance)) ]
+}
+*/
 
 // Layouts / Message 
 export class Layout_1{
@@ -207,74 +172,105 @@ class EventListener {
 
 export class Element {
     constructor(page, args){
-        this.ID = args["id"];
-        this.EVENT_LISTENERS = args["eventsLiteners"] || [];
+        this._object = args["object"] || null;
+        this._objectId = args["id"];
+        this._eventListeners = args["eventListeners"] || [];
 
+        this.init();
         page.elements_add(this);
-        this.OBJECT = args["object"];
+
+        return new Proxy(this, {
+            get: (target, property, receiver) => {
+                const attr_target = Reflect.get(target, property, receiver);
+                const attr_object = this._object[property];
+
+                if(attr_target && typeof attr_target == "function")
+                    return attr_target.bind(target);
+                else if(attr_target)
+                    return attr_target;
+
+                if(attr_object && typeof attr_object == "function")
+                    return attr_object.bind(this._object(property));
+                else if(attr_object)
+                    return attr_object;
+            },
+
+            set: (target, property, value) => {
+                if(property in target){
+                    Reflect.set(target, property, value);
+                    return true;
+                }
+
+                target._object[property] = value;
+                return true
+            }
+        });
     }
 
-    //
+    // Replace HTMLElement methods
     addEventListener(type, func){
-        this.EVENT_LISTENERS.push(new EventListener({
+        this._eventListeners.push(new EventListener({
             type: type,
             func: func
         }));
 
-        if(!this.OBJECT)
+        if(!this._object)
             return;
 
-        this.OBJECT.addEventListener(type, func);
+        this._object.addEventListener(type, func);
+    }
+
+    // getter / setter
+    get raw(){
+        return this._object;
     }
 
     //
     init(){
-        this.OBJECT = document.getElementById(this.ID);
-        if(!this.OBJECT)
+        this._object = document.getElementById(this._objectId);
+        console.log(this._object, this._objectId);
+        if(!this._object)
             return;
 
-        for(const i of this.EVENT_LISTENERS){
-            // console.log(this.OBJECT, i.TYPE, i.FUNC);
-            this.OBJECT.addEventListener(i.TYPE, i.FUNC);
+        for(const i of this._eventListeners){
+            // console.log(this._object, i.TYPE, i.FUNC);
+            this._object.addEventListener(i.TYPE, i.FUNC);
         }
     }
 
-    set(field_name, field_value){
-        this.OBJECT[field_name] = field_value;
+    copy(){
+        const elementCopy = new Element(this.page, this._objectId, {
+            "eventListeners": this._eventListeners
+        });
+
+        return elementCopy;
     }
 
-    get(field_name){
-        return this.OBJECT[field_name];
-    }
-
-    get_object(){
-        return this.OBJECT;
-    }
-
-    run(func_name, ...args){
-        args = args || [];
-        return this.OBJECT[func_name](...args);
+    remove(){
+        delete this.page.OBJECTS[this.id]
     }
 }
 
 export class Page{
     constructor(){
-        this.OBJECTS = [];
+        this.OBJECTS = {};
         this.LOGS = new MessageLogs();
     }
 
     elements_add(...elements){
         for(const i of elements)
-            this.OBJECTS.push(i);
+            this.OBJECTS[i.id] = i;
     }
 
     elements_init(){
-        for(const i of this.OBJECTS)
+        for(const i of Object.values(this.OBJECTS))
             i.init()
     }
 
-    element_createt(tag, args){
-        const new_element = document.createElement(tag);
+    element_create(id, args){
+        const new_element = new Element(this, id, {
+            "object": document.createElement(id)
+        });
         args = args || {};
 
         for(const i in args){
@@ -282,5 +278,64 @@ export class Page{
         }
 
         return new_element;
+    }
+
+    element_remove(id){
+        this.OBJECTS[id].remove();
+    }
+
+    //
+    forms_validation(...forms){
+        const logs = new MessageLogs();
+        const formData = new FormData();
+
+        for(const i of forms){
+            const form_raw = i.raw;
+            const form_data = new FormData(form_raw);
+            const fields_required =  document.querySelectorAll(`#${form_raw.id} [required]`) || [];
+            // console.log(form_data, fields_required);
+
+            for(const j of fields_required){
+                const field = form_data.get(j.name)
+                const field_type = typeof field;
+
+                if(field_type == "string" && field.trim())
+                    continue;
+
+                if(field_type == "object" && field instanceof File && field.size)
+                    continue;
+
+                logs.CLEAN();
+                logs.ADD(logs.MESSAGE_ERROR_CLASS, "Please, fill all required fields");
+
+                j.focus()
+
+                return null;
+            }
+
+            form_data.forEach((value, key) => {
+                formData.append(key, value);
+            });
+        }
+
+        return formData;
+    }
+
+    captcha_generate_IMG(img_source){
+        csrf_token = document.getElementById("csrf_token");
+
+        fetch('/captcha/generate/img', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json; charset=utf-8'},
+
+            body: JSON.stringify({
+                'csrf_token': csrf_token.value
+            })
+        })
+        .then(response => response.blob())
+        .then(blob => {
+            const url = URL.createObjectURL(blob);
+            img_source.src = url;
+        });
     }
 }

@@ -1,5 +1,5 @@
 from database.session import Base
-from begin.globals import flask_auth
+from begin.globals.flask_auth import UserAuth
 
 ##
 def id_generate()->str:
@@ -12,7 +12,7 @@ def id_generate()->str:
     return Crypt.code_generate(prefix=ID_PREFIX, length=ID_LEN)
 
 ##
-class User(Base, flask_auth.UserAuth):
+class User(Base, UserAuth):
     __tablename__ = 'User'
 
     DEFAULT_id = id_generate

@@ -5,3 +5,7 @@ forms_errors = lambda *forms: [
     for form in forms
     for tag, errors in form.errors.items()
 ]
+
+def add_fields():
+    # I have make this function after
+    pass

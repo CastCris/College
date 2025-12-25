@@ -8,23 +8,23 @@ let timeout_captcha_generate = null;
 
 //
 const FORMS_USER = new global.Element(page, {
-    'id': "login_form_user"
+    'id': "form_user"
 });
 const FORMS_CAPTCHA = new global.Element(page, {
-    'id': "login_form_captcha"
+    'id': "form_captcha"
 });
 
 
 const IMG_CAPTCHA = new global.Element(page, {
-    'id': "login_form_captcha_image"
+    'id': "form_captcha_image"
 });
 
 
 const BUTT_CAPTCHA_GENERATE = new global.Element(page, {
-    'id': "login_form_captcha_button_generate"
+    'id': "form_captcha_button_generate"
 });
 const BUTT_SUBMIT = new global.Element(page, {
-    'id': "login_form_button_submit"
+    'id': "form_button_submit"
 });
 
 //
@@ -34,7 +34,7 @@ BUTT_CAPTCHA_GENERATE.addEventListener('click', (e) => {
     //
     clearTimeout(timeout_captcha_generate);
     timeout_captcha_generate = setTimeout(() => {
-        global.captcha_generate_IMG(IMG_CAPTCHA.get_object());
+        page.captcha_generate_IMG(IMG_CAPTCHA);
     }, 200);
 });
 
@@ -42,7 +42,7 @@ BUTT_SUBMIT.addEventListener('click', (e) => {
     e.preventDefault();
 
     //
-    const forms = global.forms_validation(FORMS_USER.get_object(), FORMS_CAPTCHA.get_object());
+    const forms = page.forms_validation(FORMS_USER, FORMS_CAPTCHA);
     if(!forms)
         return;
 
@@ -68,7 +68,4 @@ BUTT_SUBMIT.addEventListener('click', (e) => {
 });
 
 //
-page.elements_init(Object.keys(window));
-
-//
-global.captcha_generate_IMG(IMG_CAPTCHA.get_object());
+page.captcha_generate_IMG(IMG_CAPTCHA);

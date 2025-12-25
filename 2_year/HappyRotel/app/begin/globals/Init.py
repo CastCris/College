@@ -1,6 +1,6 @@
 def app_up_credentials(app:object)->None:
     from begin.xtensions import flask_session
-    from begin.globals import Seeds, Router, CaptchaFlask, Config
+    from begin.globals import Seeds, Router, CaptchaFlask, Config, CookieSession
     from begin.globals.flask_auth import ManagerUser
 
     from database import session, methods
@@ -8,7 +8,9 @@ def app_up_credentials(app:object)->None:
 
     ##
     managerUser = ManagerUser(User)
+
     CaptchaFlask.InitApp(app)
+    CookieSession.InitApp(app)
 
     Seeds = Seeds()
     Seeds.cultivate()
@@ -19,7 +21,7 @@ def app_up_credentials(app:object)->None:
     )
 
 def flask_app(__context__:str, **kwargs)->None:
-    from begin.globals import Init, Config, Cookie, CaptchaFlask
+    from begin.globals import Init, Config, CookieSession, CaptchaFlask
     from begin.xtensions import flask, flask_session
 
     import os
@@ -28,7 +30,7 @@ def flask_app(__context__:str, **kwargs)->None:
     app = flask.Flask(__context__, **kwargs)
     app.config.from_object(Config)
 
-    app.jinja_env.globals["Cookie"] = Cookie
+    app.jinja_env.globals["load_cookie"] = CookieSession.get
 
     ##
     # If DEBUG flask options is enable, let this statement

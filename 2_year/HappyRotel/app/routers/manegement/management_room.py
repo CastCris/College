@@ -40,9 +40,13 @@ class FormRoomStatus(flask_wtf.FlaskForm):
             self._fields[field_name] = field_bound
             setattr(self, field_name, field_bound)
 
-        # print('_field: ', self._fields)
-
 class FormRoom(flask_wtf.FlaskForm):
+    roomTag = wtf.HiddenField(
+        'Room Tag'
+        , validators=[InputRequired(), length(max=10)]
+        , filters=[Forms.filter_str]
+    )
+
     roomType = wtf.SelectField(
         'Room Type'
     )
@@ -69,6 +73,8 @@ class FormRoom(flask_wtf.FlaskForm):
             (model_get(roomLocation, "tag")[0]) for roomLocation in roomLocations
         ]
 
+        self.roomTag = kwargs.get('roomTag', None)
+
 
 ##
 def register_app(app:object, **kwargs)->None:
@@ -84,18 +90,19 @@ def register_app(app:object, **kwargs)->None:
         room = session_query(Room, tag=room_tag)
         if room is None:
             flask.abort(500)
-
         if not room:
             flask.abort(404)
+        
+        roomJson = room[0].load_json()
 
         ##
-        formsRoom = FormRoom()
-        return flask.render_template('management/management_room.html', formsRoom=formsRoom, roomJson=room[0].load_json())
+        formsRoom = FormRoom(roomTag=roomJson['tag'])
+        return flask.render_template('management/management_room.html', formsRoom=formsRoom, roomJson=roomJson)
 
     @app.route("/management/room/<room_tag>/auth", methods=['POST'])
     @managerUser.required_permission(roleAdmin)
     def management_room_auth(pkUser, room_tag:str)->object:
-        from begin.globals import Messsages
+        from begin.globals import Messages
 
         from database.methods import Room
         from database.session import session_update
@@ -105,10 +112,7 @@ def register_app(app:object, **kwargs)->None:
         if not formsRoom.validate_on_submit():
             forms_errors = Forms.forms_errors(formsRoom)
             return flask.jsonify({
-                    'message': Messages.Message(
-                        content=forms_errors[0]
-                        , type=Messsages.Error.js_class
-                    )
+                    'message': Messages.MError(forms_errors[0]).json
                 })
 
         print('Hello!')

@@ -108,6 +108,25 @@ class ManagerUser():
         self.token_delete(token_auth)
         self.client_token_auth_delete()
 
+
+    def session_finish(self)->None:
+        from begin.xtensions import flask
+
+        ##
+        if self.client_logoutted:
+            return
+
+        flask.flash('', 'session_expired')
+
+    @property
+    def session_valid(self)->bool:
+        token_auth = self.client_token_auth
+        if self.token_auth(token_auth):
+             return True
+
+        self.session_finish()
+        return False
+
     ##
     def required_login(self, func)->callable:
         @wraps(func)

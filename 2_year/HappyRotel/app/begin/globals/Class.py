@@ -1,11 +1,32 @@
-def init_from_kwargs(obj:object, **kwargs)->None:
-    model = type("Model", (obj.__class__, ), {})
+class Class():
+    class ClassPropertyDescriptor(object):
+        def __init__(self, fget=None, fset=None)->None:
+            self.fget = fget
+            self.fset = fset
 
-    for i in kwargs.keys():
-        if not i in model.__dict__:
-            continue
+        def __get__(self, obj, objClass=None)->object:
+            if objClass is None:
+                objCLass = type(obj)
 
-        setattr(obj, i, kwargs[i])
+            return self.fget.__get__(obj, objClass)()
 
-def get_attrs(obj:object)->dict:
-    return { i[0]: i[1] for i in obj.__dict__.items() if not i[0].startswith('_') }
+        def __set__(self, obj, value)->object:
+            if not self.fset:
+                raise AttributeError('Setter function not defined')
+
+            objClass = type(obj)
+            return self.fset.__get__(obj, objClass)(value)
+
+        def setter(self, func)->object:
+            if not isinstance(func, (classmethod, staticmethod)):
+                func = classmethod(func)
+
+            self.fset = func
+            return self
+
+    @classmethod
+    def property(cls, func)->ClassPropertyDescriptor:
+        if not isinstance(func, (classmethod, staticmethod)):
+            func = classmethod(func)
+
+        return cls.ClassPropertyDescriptor(func)

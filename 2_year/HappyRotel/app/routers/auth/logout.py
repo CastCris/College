@@ -1,5 +1,5 @@
 from begin.xtensions import flask
-from begin.globals import flask_auth
+from begin.globals import flask_auth, CookieSession
 
 ##
 def register_app(app:object, **kwargs)->None:
@@ -8,13 +8,8 @@ def register_app(app:object, **kwargs)->None:
     @app.route("/logout/auth")
     @managerUser.required_login
     def logout_auth(pkUser)->object:
-        from begin.globals import Cookie
-
-        ##
         response = flask.make_response(flask.redirect("/"))
-        for i in flask.request.cookies.keys():
-            Cookie.delete(response, i)
+        CookieSession.delete_all(response)
     
         managerUser.logout()
-
         return response

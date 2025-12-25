@@ -1,15 +1,13 @@
-from begin.globals import Captcha
+from begin.globals import Captcha, Forms
 from begin.xtensions import flask_wtf, wtforms as wtf
 from wtforms.validators import InputRequired, length, StopValidation
 
 ##
-filter_str = lambda value: value.strip() if value else None
-
 class FlaskFormCaptchaIMG(flask_wtf.FlaskForm):
     captchaToken = wtf.StringField(
         'Captcha'
         , validators=[InputRequired(), length(max=50)]
-        , filters=[filter_str]
+        , filters=[Forms.filter_str]
     )
 
     def validate(self, extra_validators=None)->bool:

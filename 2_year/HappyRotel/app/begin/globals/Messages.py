@@ -14,6 +14,11 @@ class Message():
             "type": self.type
         }
 
+class MError(Message):
+    def __init__(self, content:str)->None:
+        self.content=content
+        self.type = Error.js_class
+
 ## Error & Succcess
 class Error():
     js_class="log_message_erro"

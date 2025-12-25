@@ -15,7 +15,7 @@
     <header>
         <div class="client_reception">
             {% if session.get("token_auth") %}
-            <h2>Hello {{ Cookie.get("user_name") }}</h2>
+            <h2>Hello {{ load_cookie("user_name") }}</h2>
             {% else %}
             <h2> Hello Guested! </h2>
             {% endif %}
@@ -55,6 +55,29 @@
             {% endif %}
         </div>
     </header>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    {% for category, message in message %}
+
+    {% if category == "Cookie_session_deleted" %}
+    <div class="message_session_expired">
+        <h2>Look that you session expired...</h2>
+        <p>
+            Liked to login again?
+            <a href="{{ url_for("login_display") }}">Click Here!</a>
+        </p>
+
+        <p>
+            Back to home page
+            <a href="{{ url_for("index") }}">Home Page</a>
+        </p>
+    </div>
+    {% endif %}
+
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
 
     <main>
         {% block content_main %}{% endblock %}

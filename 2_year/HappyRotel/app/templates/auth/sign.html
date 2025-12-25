@@ -1,12 +1,12 @@
 {% extends "layouts/layout_2.html" %}
 
 {% block page_javascript %}
-<script src="{{ url_for("static", filename="scripts/sign.js") }}" type="module"></script>
+<script src="{{ url_for("static", filename="scripts/sign.js") }}" type="module" defer></script>
 {% endblock %}
 
 <!-- -->
 {% block content_main_1 %}
-<form id="sign_form_user">
+<form id="form_user">
     {{ form_sign.hidden_tag() }}
 
     {{ form_sign.userName.label }}
@@ -24,16 +24,16 @@
 {% endblock %}
 
 {% block content_main_2 %}
-<form id="sign_form_captcha">
+<form id="form_captcha">
     <div class="captcha">
-        <img id="sign_form_captcha_image">
+        <img id="form_captcha_image">
 
         {{ form_sign.captchaToken.label }}
         {{ form_sign.captchaToken }}
 
-        <button id="sign_form_captcha_button_generate">Generate</button>
+        <button id="form_captcha_button_generate">Generate</button>
     </div>
 
-    <button id="sign_form_button_submit">Submit!</button>
+    <button id="form_button_submit">Submit!</button>
 </form>
 {% endblock %}
