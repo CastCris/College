@@ -30,15 +30,11 @@ class Config:
 
     ## Addictional features(default values)
     ## CookieSession
-    COOKIE_IGNORE = [ 'session' ]
-    COOKIE_REQUEST_IGNORE = [ '/static' ]
-
-    COOKIE_SID_NAME = 'sid'
-    COOKIE_FLASH_ABLE = True
-    COOKIE_FLASH_NAME = 'session_delete'
+    COOKIE_TEMPLATE = True
+    COOKIE_TEMPLATE_NAME = 'session_deleted.html'
 
     ## ManagerUser
-    ## pass
+    USER_TABLE = 'User'
 
 r = redis.Redis(
     host = Config.REDIS_HOST

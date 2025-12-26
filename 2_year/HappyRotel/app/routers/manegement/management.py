@@ -1,12 +1,10 @@
 from begin.xtensions import flask
-from begin.globals import roleAdmin, roleEmployer
+from begin.globals import roleAdmin, roleEmployer, ManagerUser
 
 ##
 def register_app(app:object, **kwargs)->None:
-    managerUser = kwargs.get("managerUser")
-
     @app.route("/management/display")
-    @managerUser.required_login
+    @ManagerUser.required_login
     def management_display(pkUser:dict)->object:
         from begin.globals import roleEmployer
         from database.methods import (
@@ -38,7 +36,7 @@ def register_app(app:object, **kwargs)->None:
         return flask.render_template('/management/management.html', topics=topics_json)
 
     @app.route("/management/item/<item_type>/<item_tag>")
-    @managerUser.required_permission(roleEmployer)
+    @ManagerUser.required_permission(roleEmployer)
     def management_item_display(pkUser, item_type:str, item_tag:str)->object:
         from database.methods import Room
         from database.session import session_query, model_get, model_from_name

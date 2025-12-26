@@ -1,10 +1,10 @@
 from begin.xtensions import flask, flask_wtf, wtforms as wtf
 from wtforms.validators import InputRequired, length, StopValidation
 
-from begin.globals import flask_auth, Forms, CaptchaFlask, CookieSession
+from begin.globals import flask_auth, Forms, CaptchaFlask, CookieSession, ManagerUser
 
 ##
-class FormLogin(CaptchaFlask.FlaskFormCaptchaIMG):
+class FormLogin(CaptchaFlask.FormIMG):
     userEmail = wtf.EmailField(
         'User Email'
         , validators=[InputRequired(), length(max=255)]
@@ -44,11 +44,8 @@ class FormLogin(CaptchaFlask.FlaskFormCaptchaIMG):
 
 ##
 def register_app(app:object, **kwargs)->None:
-    managerUser = kwargs.get("managerUser")
-
-    ##
     @app.route("/login/display")
-    @managerUser.required_logout
+    @ManagerUser.required_logout
     def login_display()->object:
         from begin.globals import Captcha
 
@@ -57,7 +54,7 @@ def register_app(app:object, **kwargs)->None:
         return flask.render_template('auth/login.html', form_login=form_login)
 
     @app.route("/login/auth", methods=['POST'])
-    @managerUser.required_logout
+    @ManagerUser.required_logout
     def login_auth()->None:
         from begin.globals import Messages, Captcha, Response, flask_auth
         from database.methods import User, UserInfos
@@ -80,7 +77,7 @@ def register_app(app:object, **kwargs)->None:
         userInfos = session_query(UserInfos, email=forms_userEmail)[0]
         user = session_query(User, userInfos_id=model_get(userInfos, "id"))[0]
 
-        login = managerUser.login(user)
+        login = ManagerUser.login(user)
 
         ##
         response = flask.make_response({

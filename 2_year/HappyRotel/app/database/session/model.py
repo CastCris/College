@@ -19,7 +19,7 @@ STMT_VALUES = lambda parameters: " VALUES (" + ', '.join([ ':' + str(i) for i in
 
 ##
 op_comp = {
-    'lt': lambda column, value: column < value,
+    'GK5F415E22lt': lambda column, value: column < value,
     'lte': lambda column, value: column <= value,
 
     'gt': lambda column, value: column > value,
@@ -182,29 +182,40 @@ def model_from_name(table_name:str)->object | None:
     from .session import Base, metadata
 
     ##
-    table = metadata.tables.get(table_name, None)
-    for i in metadata.tables.keys():
-        if table_name:
-            break
+    try:
+        table = metadata.tables.get(table_name, None)
+        for i in metadata.tables.keys():
+            if table_name:
+                break
 
-        if table_name.lowercase() == i.lowercase() :
-            table = metadata.tables[i]
-            break
+            if table_name.lower() == i.lower() :
+                table = metadata.tables[i]
+                break
 
-    for i in Base.registry.mappers:
-        if i.local_table.name == table.name:
-            return i.class_
+        for i in Base.registry.mappers:
+            if i.local_table.name == table.name:
+                return i.class_
 
-    return table
+        return table
+
+    except Exception as e:
+        Messages.Error.print('model_from_name', e)
+        session.rollback()
+
+        return None
 
 def model_from_tuple(model:DeclarativeMeta, attr:tuple)->DeclarativeMeta:
-    kwargs = {
-        column.name: value 
-        for column, value in zip(model.__table__.columns, attr)
-    }
-    # print('model_from_tuple: ', kwargs)
+    try:
+        kwargs = {
+            column.name: value 
+            for column, value in zip(model.__table__.columns, attr)
+        }
+        # print('model_from_tuple: ', kwargs)
 
-    return model(**kwargs)
+        return model(**kwargs)
+
+    except Exception as e:
+        Messages.Error.print('model_from_name', e)
 
 def model_get_PK(model:object)->list:
     return model.__table__.primary_key.columns.keys()
@@ -213,7 +224,7 @@ def model_is_mapped(model:object)->bool:
     return hasattr(model, '__tablename__')
 
 # instance
-def model_update(instance:object, **kwargs)->None:
+def instance_update(instance:object, **kwargs)->None:
     try:
         model = type(instance)
         model_args = model_args_filter(model, **kwargs, dek=getattr(instance, "dek", None))
@@ -227,7 +238,7 @@ def model_update(instance:object, **kwargs)->None:
         Messages.Error.print('model_update', e)
         session.rollback()
 
-def model_get(instance:object, *args)->tuple|None:
+def instance_get(instance:object, *args)->tuple|None:
     try:
         model = type(instance)
 
@@ -261,7 +272,7 @@ def model_get(instance:object, *args)->tuple|None:
 
         return None
 
-def model_unwrap(instance:object)->dict|None:
+def instane_unwrap(instance:object)->dict|None:
     try:
         model = type(instance)
 
@@ -286,16 +297,34 @@ def model_unwrap(instance:object)->dict|None:
 
         return None
 
+def instance_get_columns_value(instance:DeclarativeMeta)->dict:
+    columns_value = {}
 
-def model_get_columns(instance:object)->tuple:
-    model = inspect(instance).mapper.class_
+    field_hashed = FIELD_HASHED(type(instance))
+    field_cipher = FIELD_CIPHER(type(instance))
+
+    for i in mapper.columns:
+        name = i.key
+        if name in field_hashed:
+            continue
+
+        attr_name = name
+        if name.startswith('cipher_'):
+            _, attr_name = name.split('cipher_')
+        
+        value = model_get(instance, name)[0]
+
+        columns_value[attr_name] = value
+
+    return columns_value
+
+
+def model_get_columns(model:DeclarativeMeta)->tuple:
     columns = [ i for i in model.__table__.columns]
-
     return tuple(columns)
 
-def model_get_columns_name(instance:object)->tuple:
-    model = inspect(instance).mapper.class_
-    columns = model_get_columns(instance)
+def model_get_columns_name(model:DeclarativeMeta)->tuple:
+    columns = model_get_columns(model)
 
     #
     field_cipher = FIELD_CIPHER(model)
@@ -322,9 +351,8 @@ def model_get_columns_name(instance:object)->tuple:
 
     return tuple(columns_name)
 
-def model_get_columns_type(instance:object)->dict:
-    model = inspect(instance)
-    columns = model_get_columns(instance)
+def model_get_columns_type(model:DeclarativeMeta)->dict:
+    columns = model_get_columns(model)
     
     columns_type = {}
     columns_type_set = set()
@@ -346,25 +374,3 @@ def model_get_columns_type(instance:object)->dict:
         columns_type_set.add(attr_name)
 
     return columns_type
-
-def model_get_columns_value(instance:object)->dict:
-    mapper = inspect(instance).mapper
-    columns_value = {}
-
-    field_hashed = FIELD_HASHED(type(instance))
-    field_cipher = FIELD_CIPHER(type(instance))
-
-    for i in mapper.columns:
-        name = i.key
-        if name in field_hashed:
-            continue
-
-        attr_name = name
-        if name.startswith('cipher_'):
-            _, attr_name = name.split('cipher_')
-        
-        value = model_get(instance, name)[0]
-
-        columns_value[attr_name] = value
-
-    return columns_value

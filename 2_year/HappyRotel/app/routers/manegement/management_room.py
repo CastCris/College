@@ -1,7 +1,7 @@
 from begin.xtensions import flask, flask_wtf, wtforms as wtf
 from wtforms.validators import InputRequired, length, StopValidation
 
-from begin.globals import flask_auth, Forms, roleAdmin
+from begin.globals import flask_auth, Forms, roleAdmin, ManagerUser
 
 ##
 class FormRoomStatus(flask_wtf.FlaskForm):
@@ -78,10 +78,8 @@ class FormRoom(flask_wtf.FlaskForm):
 
 ##
 def register_app(app:object, **kwargs)->None:
-    managerUser = kwargs["managerUser"]
-
     @app.route("/management/room/<room_tag>/display")
-    @managerUser.required_permission(roleAdmin)
+    @ManagerUser.required_permission(roleAdmin)
     def management_room_display(pkUser, room_tag:str)->object:
         from database.methods import Room
         from database.session import session_query
@@ -100,7 +98,7 @@ def register_app(app:object, **kwargs)->None:
         return flask.render_template('management/management_room.html', formsRoom=formsRoom, roomJson=roomJson)
 
     @app.route("/management/room/<room_tag>/auth", methods=['POST'])
-    @managerUser.required_permission(roleAdmin)
+    @ManagerUser.required_permission(roleAdmin)
     def management_room_auth(pkUser, room_tag:str)->object:
         from begin.globals import Messages
 

@@ -1,10 +1,10 @@
 from begin.xtensions import flask, flask_wtf, wtforms as wtf
 from wtforms.validators import InputRequired, length, StopValidation
 
-from begin.globals import flask_auth, Forms, CaptchaFlask
+from begin.globals import flask_auth, Forms, CaptchaFlask, ManagerUser
 
 ##
-class FormSign(CaptchaFlask.FlaskFormCaptchaIMG):
+class FormSign(CaptchaFlask.FormIMG):
     userName = wtf.StringField(
         'User Name'
         , validators=[InputRequired(), length(max=255)]
@@ -75,17 +75,15 @@ class FormSign(CaptchaFlask.FlaskFormCaptchaIMG):
 
         return True
 ##
-def register_app(app:object, **kwargs)->None:
-    managerUser = kwargs.get("managerUser")
-
+def register_app(app:object)->None:
     @app.route("/sign/display")
-    @managerUser.required_logout
+    @ManagerUser.required_logout
     def sign_display()->object:
         form_sign = FormSign()
         return flask.render_template('auth/sign.html', form_sign=form_sign)
 
     @app.route("/sign/auth", methods=['POST'])
-    @managerUser.required_logout
+    @ManagerUser.required_logout
     def sign_auth()->object:
         from begin.globals import Messages, Captcha, Response
         from database.methods import User, UserInfos

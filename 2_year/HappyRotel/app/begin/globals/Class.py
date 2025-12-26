@@ -1,3 +1,4 @@
+
 class Class():
     class ClassPropertyDescriptor(object):
         def __init__(self, fget=None, fset=None)->None:

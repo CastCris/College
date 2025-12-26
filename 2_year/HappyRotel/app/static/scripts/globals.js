@@ -324,12 +324,13 @@ export class Page{
     captcha_generate_IMG(img_source){
         csrf_token = document.getElementById("csrf_token");
 
-        fetch('/captcha/generate/img', {
+        fetch('/captcha/generate', {
             method: 'POST',
             headers: {'Content-Type': 'application/json; charset=utf-8'},
 
             body: JSON.stringify({
-                'csrf_token': csrf_token.value
+                'csrf_token': csrf_token.value,
+                'captchaType': 'img'
             })
         })
         .then(response => response.blob())

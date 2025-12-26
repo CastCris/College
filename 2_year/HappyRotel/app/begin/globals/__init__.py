@@ -1,11 +1,13 @@
-from . import Captcha
-from . import CaptchaFlask
 from .Class import Class
+from .Config import Config, r
 
-from . import flask_auth
+##
+from .Captcha import Captcha
+from .CaptchaFlask import CaptchaFlask
+
+from .flask_auth import ManagerUser, UserAuth
 from .Roles import *
 
-from .Config import Config, r
 from .CookieSession import CookieSession
 from . import Crypt
 from . import Init

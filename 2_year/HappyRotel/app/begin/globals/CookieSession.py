@@ -127,8 +127,13 @@ class CookieSession(CookieSecure):
     COOKIE_IGNORE_REQUEST_PATH = [ '/static' ]
 
     COOKIE_SID_NAME = 'sid'
-    COOKIE_FLASH_ABLE = True
-    COOKIE_FLASH_NAME = 'session_delete'
+
+    ## Redirect user actions when session is deleted
+    COOKIE_FLASH = True
+    COOKIE_FLASH_NAME = 'CookieSession_deleted'
+
+    COOKIE_TEMPLATE = False
+    COOKIE_TEMPLATE_NAME = 'CookieSession_deleted.html'
 
     ## Init 
     @classmethod
@@ -138,8 +143,8 @@ class CookieSession(CookieSecure):
                 continue
 
             # print(attr_name)
-            value = getattr(app.config, attr_name, getattr(cls, attr_name))
-            setattr(cls, attr_name, value)
+            attr_value = app.config.get(attr_name, None) or getattr(cls, attr_name)
+            setattr(cls, attr_name, attr_value)
 
         cls.register_app(app)
 
@@ -150,12 +155,25 @@ class CookieSession(CookieSecure):
             from begin.xtensions import flask
 
             # print('AA', flask.request.referrer, cls.client_valid)
+            print('session : ', flask.session.keys())
             if cls.client_valid:
                 return
 
-            response = flask.make_response(flask.redirect(flask.request.referrer))
-            cls.delete_all(response)
-            return response
+            if cls.COOKIE_TEMPLATE:
+                response = flask.make_response(flask.render_template(cls.COOKIE_TEMPLATE_NAME))
+                cls.delete_all(response)
+
+                return response
+
+
+            if cls.COOKIE_FLASH:
+                redirect_path = flask.request.referrer or '/'
+                response = flask.make_response(flask.redirect(redirect_path))
+                cls.delete_all(response)
+
+                flask.flash('Cookie session deleted', cls.COOKIE_FLASH_NAME)
+                # print('flash!', flask.session.get('_flashes'))
+                return response
 
 
     ## Cookie methods

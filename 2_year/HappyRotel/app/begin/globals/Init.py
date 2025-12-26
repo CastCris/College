@@ -7,18 +7,15 @@ def app_up_credentials(app:object)->None:
     from database.methods import User
 
     ##
-    managerUser = ManagerUser(User)
-
+    ManagerUser.InitApp(app)
     CaptchaFlask.InitApp(app)
     CookieSession.InitApp(app)
 
     Seeds = Seeds()
     Seeds.cultivate()
 
-    Router.register(
-        app
-        , managerUser = managerUser
-    )
+    print(ManagerUser)
+    Router.register(app)
 
 def flask_app(__context__:str, **kwargs)->None:
     from begin.globals import Init, Config, CookieSession, CaptchaFlask
