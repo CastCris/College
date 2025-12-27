@@ -1,35 +1,20 @@
-from functools import wraps
-from sqlalchemy import event
 from sqlalchemy.orm import DeclarativeMeta
 
-from database.methods import User
-
+from functools import wraps
 from .Role import Role
 
 ##
 class UserAuth():
-    UAUTH_PERMISSION_COLUMN_NAME = "permission"
+    UAUTH_PERMISSION_COLUMN_NAME = "permissions"
 
     ##
-    def __init_subclass__(cls, **kwargs)->None:
+    @classmethod
+    def initialize(cls, table_orm:DeclarativeMeta)->None:
         from database.session import model_get_columns_name
 
-        if getattr(cls, "UAUTH_INITIALIZED", None):
-            return
-
-        print('userAuth: ', isinstance(cls, DeclarativeMeta), vars(cls))
-        if not cls.UAUTH_PERMISSION_COLUMN_NAME in model_get_columns_name(cls):
-            raise AttributeError(f'UserAuth: The table {cls.__name__} require the {cls.UAUTH_PERMISSION_COLUMN_NAME} column. Put this column before continue')
-
-        setattr(cls, cls.UAUTH_INITIALIZED, True)
-
-    def UserAuth(func)->object|None:
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            UserAuth.UserAuth_init()
-            return func(*args, **kwargs)
-
-        return wrapper
+        print('UserAuth: ', cls.UAUTH_PERMISSION_COLUMN_NAME, model_get_columns_name(table_orm))
+        if not cls.UAUTH_PERMISSION_COLUMN_NAME in model_get_columns_name(table_orm):
+            raise AttributeError(f'UserAuth: The table {table_orm.__tablename__} doen\'t have {cls.UAUTH_PERMISSION_COLUMN_NAME} column. Please, resolve it before continue')
 
     ##
     @property

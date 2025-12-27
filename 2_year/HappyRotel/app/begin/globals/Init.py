@@ -1,10 +1,9 @@
 def app_up_credentials(app:object)->None:
+    import database
+
     from begin.xtensions import flask_session
     from begin.globals import Seeds, Router, CaptchaFlask, Config, CookieSession
     from begin.globals.flask_auth import ManagerUser
-
-    from database import session, methods
-    from database.methods import User
 
     ##
     ManagerUser.InitApp(app)

@@ -3,8 +3,6 @@ from functools import wraps
 
 ##
 class CookieSecure():
-
-    ## Cookie methods
     @classmethod
     def cookie_encrypt(cls, cookie_value:str)->str|None:
         return cookie_value
@@ -155,7 +153,7 @@ class CookieSession(CookieSecure):
             from begin.xtensions import flask
 
             # print('AA', flask.request.referrer, cls.client_valid)
-            print('session : ', flask.session.keys())
+            print('session: ', flask.session.keys())
             if cls.client_valid:
                 return
 

@@ -43,7 +43,7 @@ class PredefinedUser():
             userInfos = session_insert(UserInfos, name=name, email=email)
             user = session_insert(
                 User
-                , userInfos_id=model_get(userInfos, "id")[0]
+                , userInfos_id=instance_get(userInfos, "id")[0]
                 , permissions=permissions
                 , password = password
             )

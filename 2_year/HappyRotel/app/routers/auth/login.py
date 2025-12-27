@@ -30,7 +30,7 @@ class FormLogin(CaptchaFlask.FormIMG):
 
     def validate_userPassword(self, field)->None:
         from database.methods import User, UserInfos
-        from database.session import session_query, model_get
+        from database.session import session_query
 
         ##
         self.validate_userEmail(self.userEmail)
@@ -58,7 +58,7 @@ def register_app(app:object, **kwargs)->None:
     def login_auth()->None:
         from begin.globals import Messages, Captcha, Response, flask_auth
         from database.methods import User, UserInfos
-        from database.session import session_query, model_get
+        from database.session import session_query, instance_get
 
         ##
         form_login = FormLogin()
@@ -75,7 +75,7 @@ def register_app(app:object, **kwargs)->None:
         ##
         forms_userEmail = form_login.userEmail.data
         userInfos = session_query(UserInfos, email=forms_userEmail)[0]
-        user = session_query(User, userInfos_id=model_get(userInfos, "id"))[0]
+        user = session_query(User, userInfos_id=instance_get(userInfos, "id"))[0]
 
         login = ManagerUser.login(user)
 
@@ -86,7 +86,7 @@ def register_app(app:object, **kwargs)->None:
         CookieSession.define(
             response
             , key = "user_name"
-            , value = model_get(userInfos, "cipher_name")[0]
+            , value = instance_get(userInfos, "cipher_name")[0]
             , max_age=60*60*24*7
         )
 

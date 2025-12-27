@@ -6,6 +6,7 @@ from functools import wraps
 
 from .Token import Token
 from .Role import Role
+from .UserAuth import UserAuth
 
 ##
 class ManagerUser():
@@ -45,13 +46,16 @@ class ManagerUser():
         if cls.USER_TABLE_ORM is None:
             raise ValueError('ManagerUser: Please, provide a valid orm table name')
 
+        ##
+        UserAuth.initialize(cls.USER_TABLE_ORM)
+
     ##
     @staticmethod
     def load_user(user:DeclarativeMeta)->dict:
-        from database.session import model_get
+        from database.session import instance_get
 
         kwargs = {
-            key: model_get(user, key)[0] for key in user.__table__.primary_key.columns.keys()
+            key: instance_get(user, key)[0] for key in user.__table__.primary_key.columns.keys()
         }
         return kwargs
     

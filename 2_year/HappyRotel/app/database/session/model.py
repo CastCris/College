@@ -223,100 +223,6 @@ def model_get_PK(model:object)->list:
 def model_is_mapped(model:object)->bool:
     return hasattr(model, '__tablename__')
 
-# instance
-def instance_update(instance:object, **kwargs)->None:
-    try:
-        model = type(instance)
-        model_args = model_args_filter(model, **kwargs, dek=getattr(instance, "dek", None))
-
-        for i in model_args.keys():
-            setattr(instance, i, model_args[i])
-
-        session.commit()
-
-    except Exception as e:
-        Messages.Error.print('model_update', e)
-        session.rollback()
-
-def instance_get(instance:object, *args)->tuple|None:
-    try:
-        model = type(instance)
-
-        field_cipher = FIELD_CIPHER(model)
-        field_hashed = FIELD_HASHED(model)
-        
-        #
-        values = []
-
-        for i in args:
-            dek_wrap = getattr(instance, "dek", None)
-            dek = dek_decrypt(dek_wrap) if not dek_wrap is None else None
-
-            value = getattr(instance, i, None)
-            if value is None:
-                continue
-
-            if not dek is None and i in field_cipher:
-                values.append(clm_decrypt_dek(value, dek))
-                continue
-
-            values.append(value)
-
-        if not len(values):
-            values = [ None ]
-
-        return tuple(values)
-
-    except Exception as e:
-        Messages.Error.print("model_get", e)
-
-        return None
-
-def instane_unwrap(instance:object)->dict|None:
-    try:
-        model = type(instance)
-
-        field_cipher = FIELD_CIPHER(model)
-        field_hashed = FIELD_HASHED(model)
-
-        instance_unwrap = {}
-
-        #
-        for i in instance.__dict__.keys():
-            if i == '_sa_instance_state' or i == 'dek':
-                continue
-
-            key_name = i if not i in field_cipher else i.split('cipher_')[1]
-            instance_unwrap[key_name] = model_get(instance, i)[0]
-
-        return instance_unwrap
-
-    except Exception as e:
-        Messages.Error.print('model_unwrap', e)
-        session.rollback()
-
-        return None
-
-def instance_get_columns_value(instance:DeclarativeMeta)->dict:
-    columns_value = {}
-
-    field_hashed = FIELD_HASHED(type(instance))
-    field_cipher = FIELD_CIPHER(type(instance))
-
-    for i in mapper.columns:
-        name = i.key
-        if name in field_hashed:
-            continue
-
-        attr_name = name
-        if name.startswith('cipher_'):
-            _, attr_name = name.split('cipher_')
-        
-        value = model_get(instance, name)[0]
-
-        columns_value[attr_name] = value
-
-    return columns_value
 
 
 def model_get_columns(model:DeclarativeMeta)->tuple:
@@ -374,3 +280,103 @@ def model_get_columns_type(model:DeclarativeMeta)->dict:
         columns_type_set.add(attr_name)
 
     return columns_type
+
+# instance
+def model_from_instance(instance:DeclarativeMeta):
+    model = inspect(instance).mapper
+    return model
+
+def instance_update(instance:DeclarativeMeta, **kwargs)->None:
+    try:
+        model = type(instance)
+        model_args = model_args_filter(model, **kwargs, dek=getattr(instance, "dek", None))
+
+        for i in model_args.keys():
+            setattr(instance, i, model_args[i])
+
+        session.commit()
+
+    except Exception as e:
+        Messages.Error.print('instance_update', e)
+        session.rollback()
+
+def instance_get(instance:DeclarativeMeta, *args)->tuple|None:
+    try:
+        model = type(instance)
+
+        field_cipher = FIELD_CIPHER(model)
+        field_hashed = FIELD_HASHED(model)
+        
+        #
+        values = []
+
+        for i in args:
+            dek_wrap = getattr(instance, "dek", None)
+            dek = dek_decrypt(dek_wrap) if not dek_wrap is None else None
+
+            value = getattr(instance, i, None)
+            if value is None:
+                continue
+
+            if not dek is None and i in field_cipher:
+                values.append(clm_decrypt_dek(value, dek))
+                continue
+
+            values.append(value)
+
+        if not len(values):
+            values = [ None ]
+
+        return tuple(values)
+
+    except Exception as e:
+        Messages.Error.print("instance_get", e)
+
+        return None
+
+def instane_unwrap(instance:DeclarativeMeta)->dict|None:
+    try:
+        model = type(instance)
+
+        field_cipher = FIELD_CIPHER(model)
+        field_hashed = FIELD_HASHED(model)
+
+        instance_unwrap = {}
+
+        #
+        for i in instance.__dict__.keys():
+            if i == '_sa_instance_state' or i == 'dek':
+                continue
+
+            key_name = i if not i in field_cipher else i.split('cipher_')[1]
+            instance_unwrap[key_name] = instance_get(instance, i)[0]
+
+        return instance_unwrap
+
+    except Exception as e:
+        Messages.Error.print('model_unwrap', e)
+        session.rollback()
+
+        return None
+
+def instance_get_columns_value(instance:DeclarativeMeta)->dict:
+    mapper = model_from_instance(instance)
+    columns_value = {}
+
+    field_hashed = FIELD_HASHED(type(instance))
+    field_cipher = FIELD_CIPHER(type(instance))
+
+    for i in mapper.columns:
+        name = i.key
+        if name in field_hashed:
+            continue
+
+        attr_name = name
+        if name.startswith('cipher_'):
+            _, attr_name = name.split('cipher_')
+        
+        value = instance_get(instance, name)[0]
+
+        columns_value[attr_name] = value
+
+    return columns_value

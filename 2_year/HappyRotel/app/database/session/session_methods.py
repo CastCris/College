@@ -50,7 +50,7 @@ def session_insert_SQL(model:DeclarativeMeta, **kwargs)->None:
 def session_update(instances:tuple[DeclarativeMeta], **kwargs)->None:
     try:
         for i in instances:
-            model_update(i, **kwargs)
+            instance_update(i, **kwargs)
 
         session.commit()
 

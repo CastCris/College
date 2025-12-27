@@ -23,31 +23,31 @@ class Room(Base):
         self.tag_generate()
 
     def tag_generate(self)->str:
-        from database.session import session_query, model_get, model_update
+        from database.session import session_query, instance_get, instance_update
         from database.methods import RoomLocation
 
         ##
-        roomLocation_id = model_get(self, "roomLocation_id")[0]
+        roomLocation_id = instance_get(self, "roomLocation_id")[0]
         roomLocation = session_query(RoomLocation, id=roomLocation_id)[0]
 
-        model_update(
+        instance_update(
             self
             , tag=roomLocation.room_tag_generate()
         )
 
     def load_json(self)->dict:
-        from database.session import session_query, session_SQL, model_get_columns_value
+        from database.session import session_query, session_SQL, instance_get_columns_value
         from database.methods import RoomType, RoomLocation
 
         ##
-        room  = model_get_columns_value(self)
+        room  = instance_get_columns_value(self)
         # print('room_json: ', room)
 
-        room_type = model_get_columns_value(
+        room_type = instance_get_columns_value(
             session_query(RoomType, id=room["roomType_id"])[0]
         )
 
-        room_location = model_get_columns_value(
+        room_location = instance_get_columns_value(
             session_query(RoomLocation, id=room["roomLocation_id"])[0]
         )
 

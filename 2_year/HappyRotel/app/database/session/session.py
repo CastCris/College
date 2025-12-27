@@ -42,7 +42,7 @@ def _database_drop_tables(engine:object)->None:
     metadata.drop_all(engine)
 
 # def _database_init(dbms:str, _database_create:object)->None:
-def _database_init(dbms:str, _database_create:object)->list:
+def _database_init(dbms:str, _database_create:callable)->list:
     from begin.xtensions import os, time
     from begin.globals import Config
 
