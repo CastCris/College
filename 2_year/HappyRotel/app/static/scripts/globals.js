@@ -15,8 +15,6 @@ export function fieldSetData(...fieldSet){
 }
 
 
-// Captcha
-
 // Internal
 /*
 function instanceMethods(instance){

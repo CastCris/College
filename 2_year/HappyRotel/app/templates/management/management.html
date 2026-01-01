@@ -9,24 +9,31 @@
 {% endblock %}
 
 {% block content_main %}
-<div class="management">
-    {% for topic in topics.keys() %}
-    <div class="management_item">
-        <h2>{{ topic }}</h2>
-
-        {% for item in topics[topic] %}
-        <a href="{{ url_for("management_item_display", item_type=topic, item_tag=item.tag) }} ">
-            <ul class="management_node" id="management_node_{{ item.tag }}">
-                {% for item_key in item.keys() %}
-                <li>
-                    <p><b>{{ item_key }}:</b> {{ item[item_key] }}</p>
-                </li>
-                {% endfor %}
-            </ul>
-        </a>
-        <hr>
+<div class="topics_able">
+    <ul>
+        {% for topic in topics_able %}
+        <li>
+            <a href="{{ url_for("management_roomTopic_display", topic=topic) }}">
+                {{ topic }}
+            </a>
+        </li>
         {% endfor %}
-    </div>
+    </ul>
+</div>
+
+<div class="management">
+    <h2>{{ topic }}</h2>
+    {% for item in items %}
+    <a href="{{ url_for("management_itemTopic_tag_display", topic=topic, item_tag=item.tag) }} ">
+        <ul class="management_node" id="management_node_{{ item.tag }}">
+            {% for attr_name, attr_value in item.items() %}
+            <li>
+                <p><b>{{ attr_name }}:</b> {{ attr_value }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </a>
+    <hr>
     {% endfor %}
 </div>
 {% endblock %}

@@ -19,6 +19,11 @@ class MError(Message):
         self.content=content
         self.type = Error.js_class
 
+class MSuccess(Message):
+    def __init__(self, content:str)->None:
+        self.content = content
+        self.type = Success.js_class
+
 ## Error & Succcess
 class Error():
     js_class="log_message_erro"

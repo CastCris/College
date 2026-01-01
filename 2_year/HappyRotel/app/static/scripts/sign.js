@@ -66,4 +66,4 @@ BUTT_SUBMIT.addEventListener('click', (e) => {
 });
 
 //
-global.captcha_generate_IMG(IMG_CAPTCHA);
+page.captcha_generate_IMG(IMG_CAPTCHA);

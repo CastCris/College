@@ -2,6 +2,8 @@ from .Class import Class
 from .Config import Config, r
 
 ##
+from . import Globals
+
 from .Captcha import Captcha
 from .CaptchaFlask import CaptchaFlask
 

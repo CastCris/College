@@ -1,0 +1,33 @@
+{% extends "layouts/layout_1.html" %}
+
+{% block title %}RoomType Edit{% endblock %}
+
+{% block page_javascript %}
+<script type="module" src="{{ url_for("static", filename="scripts/management/management_roomType.js") }}"></script>
+{% endblock %}
+
+<!-- -->
+{% block content_main %}
+<form id="formsRoom">
+    {{ formsRoom.hidden_tag() }}
+
+    <h1>
+        <b>id</b>:
+        {{ roomJson["id"] }}
+    </h1>
+
+    {{ formsRoom.roomType_tag.label }}
+    {{ formsRoom.roomType_tag }}
+
+    {{ formsRoom.roomType_description.label }}
+    {{ formsRoom.roomType_description }}
+
+    {{ formsRoom.roomType_capacity.label }}
+    {{ formsRoom.roomType_capacity }}
+
+    {{ formsRoom.roomType_price.label }}
+    {{ formsRoom.roomType_price }}
+
+    <button id="formsRoom_button_submit">Submit!</button>
+</form>
+{% endblock %}

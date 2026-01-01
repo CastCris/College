@@ -8,14 +8,25 @@
 <form id="formsRoom">
     {{ formsRoom.hidden_tag() }}
 
-    <h1>{{ roomJson["tag"] }}</h1>
+    <h1>
+        <b>id</b>: {{ roomJson["id"] }}
+    </h1>
+    <h1>
+        <b>tag</b>: {{ roomJson["tag"] }}
+    </h1>
 
     {{ formsRoom.roomType.label }}
     {{ formsRoom.roomType }}
 
-    <p>{{ roomJson["price"] }}</p>
-    <p>{{ roomJson["capactiy"] }}</p>
-    <p>{{ roomJson["description"] }}</p>
+    <p>
+        <b>price</b>: {{ roomJson["price"] }}
+    </p>
+    <p>
+        <b>capacity</b>: {{ roomJson["capacity"] }}
+    </p>
+    <p>
+        <b>description</b>; {{ roomJson["description"] }}
+    </p>
 
     {{ formsRoom.roomLocation.label }}
     {{ formsRoom.roomLocation }}

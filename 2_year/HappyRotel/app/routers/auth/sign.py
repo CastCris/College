@@ -76,6 +76,7 @@ class FormSign(CaptchaFlask.FormIMG):
         return True
 ##
 def register_app(app:object)->None:
+
     @app.route("/sign/display")
     @ManagerUser.required_logout
     def sign_display()->object:

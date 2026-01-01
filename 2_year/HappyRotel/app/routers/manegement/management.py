@@ -1,58 +1,92 @@
 from begin.xtensions import flask
-from begin.globals import roleAdmin, roleEmployer, ManagerUser
+from begin.globals import roleAdmin, roleEmployer, ManagerUser, Globals
+
+##
+FIELDS_ABLE = [ 'room' ]
+FIELD_FROM_TOPIC = lambda topic: 'room' if topic.startswith('Room') else None
 
 ##
 def register_app(app:object, **kwargs)->None:
-    @app.route("/management/display")
+
+    ## Display
+    @app.route("/management")
     @ManagerUser.required_login
     def management_display(pkUser:dict)->object:
+        return flask.redirect(flask.url_for("management_topic_display", topic="Room"))
+
+    @app.route("/management/<topic>")
+    @ManagerUser.required_login
+    def management_topic_display(pkUser:dict, topic:str)->object:
+        if not topic in Globals.TOPICS_ABLE:
+            flask.abort(404)
+
+        field = FIELD_FROM_TOPIC(topic)
+        return flask.redirect(flask.url_for("management_field_display", field=field, topic=topic))
+
+    @app.route("/management/<field>/<topic>")
+    @ManagerUser.required_login
+    def management_field_display(pkUser:dict, field:str, topic:str)->object:
+        if not field in FIELDS_ABLE:
+            flask.abort(404)
+
+        if not topic in Globals.TOPICS_ABLE:
+            flask.abort(404)
+
+        if field == 'room':
+            return flask.redirect(flask.url_for("management_roomTopic_display", topic=topic))
+
+    @app.route("/management/room/<topic>/display")
+    @ManagerUser.required_permission(roleAdmin)
+    def management_roomTopic_display(pkUser:dict, topic:str)->object:
         from begin.globals import roleEmployer
-        from database.methods import (
-            User
-            , Room, RoomStatus, RoomType, RoomLocation
-        )
-        from database.session import session_query, session_query_SQL, model_from_name, model_from_tuple
+
+        from database.methods import Room, RoomType, RoomStatus
+        from database.session import session_SQL, session_query, model_from_name
 
         ##
-        user = session_query(User, **pkUser)[0]
-        topics_raw = {}
-        
-        if user.authorized(roleEmployer):
-            topics_raw["Room"] = session_query_SQL(
-                Room
-                , """
-                SELECT id FROM \"Room\"
-                ORDER BY RANDOM()
-                LIMIT 10
-                """
-            )
+        TOPICS_ABLE = [ 'Room', 'RoomType', 'RoomStatus', 'RoomLocation' ]
+        roomsJson = []
 
-        topics_json = {}
-        for topic, instances in topics_raw.items():
-            topics_json[topic] = []
-            for i in instances:
-                topics_json[topic].append(i.load_json())
+        if not topic in TOPICS_ABLE:
+            flask.abort(404)
 
-        return flask.render_template('/management/management.html', topics=topics_json)
+        ##
+        model = model_from_name(topic)
+        rooms_id = session_SQL(f"""
+        SELECT id FROM \"{topic}\"
+        ORDER BY RANDOM()
+        LIMIT 10
+        """).all()
 
-    @app.route("/management/item/<item_type>/<item_tag>")
-    @ManagerUser.required_permission(roleEmployer)
-    def management_item_display(pkUser, item_type:str, item_tag:str)->object:
+        rooms = [ session_query(model, id=room_id[0])[0] for room_id in rooms_id ]
+        roomsJson = [ room.load_json() for room in rooms ]
+
+        return flask.render_template('management/management.html', topic=topic, topics_able=TOPICS_ABLE, items=roomsJson)
+
+
+    ## Management item display
+    @app.route("/management/item/<topic>/tag/<item_tag>")
+    @ManagerUser.required_login
+    def management_itemTopic_tag_display(pkUser, topic:str, item_tag:str)->object:
+        if not topic in Globals.TOPICS_ABLE:
+            flask.abort(404)
+
+        field = FIELD_FROM_TOPIC(topic)
+        return flask.redirect(flask.url_for("management_itemField_tag_display", item_field=field, topic=topic, item_tag=item_tag))
+
+    @app.route("/management/item/<item_field>/<topic>/tag/<item_tag>")
+    @ManagerUser.required_login
+    def management_itemField_tag_display(pkUser, item_field:str, topic:str, item_tag:str)->object:
         from database.methods import Room
-        from database.session import session_query, model_get, model_from_name
+        from database.session import session_query, model_from_name
 
         ##
-        item_model = model_from_name(item_type)
-        if item_model is None:
+        if not item_field in FIELDS_ABLE:
             flask.abort(404)
 
-        item_instance = session_query(item_model, tag=item_tag)[0]
-        if item_instance is None:
-            flask.abort(500)
-
-        if not item_instance:
+        if not topic in Globals.TOPICS_ABLE:
             flask.abort(404)
 
         ##
-        if item_type == "Room":
-            return flask.redirect(flask.url_for("management_room_display", room_tag=item_tag))
+        if item_field == 'room':
+            return flask.redirect(flask.url_for("management_item_room_topic_tag_display", topic=topic, room_tag=item_tag))

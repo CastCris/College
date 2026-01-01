@@ -8,10 +8,15 @@ from .crypt import *
 from .session import session
 
 ##
-FIELD_CIPHER = lambda model: [ i for i in model.__dict__.keys() if re.search("^cipher_.*", i) ] if model else []
-FIELD_HASHED = lambda model: [ i for i in model.__dict__.keys() if re.search("^hashed_.*", i) ] if model else []
-FIELD_PHASHED = lambda model: [ i for i in model.__dict__.keys() if re.search("^phashed_.*", i) ] if model else []
-FIELD_DEFAULT = lambda model: [ i for i in model.__dict__.keys() if re.search("^DEFAULT_.*", i) ] if model else []
+FIELD_CIPHER = lambda model: [ i for i in vars(model) if re.search("^cipher_.*", i) ] if model else []
+FIELD_HASHED = lambda model: [ i for i in vars(model) if re.search("^hashed_.*", i) ] if model else []
+FIELD_PHASHED = lambda model: [ i for i in vars(model) if re.search("^phashed_.*", i) ] if model else []
+FIELD_DEFAULT = lambda model: [ i for i in vars(model) if re.search("^DEFAULT_.*", i) ] if model else []
+
+FIELD_METHOD_CREATE = lambda field_name: f"create_{field_name}"
+FIELD_METHOD_UPDATE = lambda field_name: f"update_{field_name}"
+
+FIELD_METHOD_EMPTY = lambda *args, **kwargs: None
 
 ##
 STMT_INSERT = lambda model, values: f" INSERT INTO \"{model.__tablename__}\" " + "(" + ', '.join([ '"' + str(i) + '"' for i in values ]) + ")"
@@ -43,7 +48,7 @@ op_comp_by_operator = {
 
 
 ##
-def model_args_filter(model:object, *args, **kwargs)->dict:
+def model_args_filter(model:DeclarativeMeta, *args, **kwargs)->dict:
     field_cipher = FIELD_CIPHER(model)
     field_hashed = FIELD_HASHED(model)
     field_phashed = FIELD_PHASHED(model)
@@ -60,7 +65,8 @@ def model_args_filter(model:object, *args, **kwargs)->dict:
         dek = dek_decrypt(dek_wrap)
         _, attr_name = i.split('cipher_')
 
-        if not attr_name in kwargs_copy.keys() or i in kwargs_copy.keys():
+        # if not attr_name in kwargs_copy.keys() or i in kwargs_copy.keys():
+        if not kwargs_copy.get(attr_name) or kwargs_copy.get(i):
             continue
 
         kwargs_copy[i] = clm_encrypt_dek(kwargs_copy[attr_name], dek)
@@ -68,7 +74,8 @@ def model_args_filter(model:object, *args, **kwargs)->dict:
     for i in field_hashed:
         _, attr_name = i.split('hashed_')
 
-        if not attr_name in kwargs_copy.keys() or i in kwargs_copy.keys():
+        # if not attr_name in kwargs_copy.keys() or i in kwargs_copy.keys():
+        if not kwargs_copy.get(attr_name) or kwargs_copy.get(i):
             continue
 
         kwargs_copy[i] = clm_encrypt_sha256(kwargs_copy[attr_name])
@@ -76,7 +83,8 @@ def model_args_filter(model:object, *args, **kwargs)->dict:
     for i in field_phashed:
         _, attr_name = i.split('phashed_')
 
-        if not attr_name in kwargs_copy.keys() or i in kwargs_copy.keys():
+        # if not attr_name in kwargs_copy.keys() or i in kwargs_copy.keys():
+        if not kwargs_copy.get(attr_name) or kwargs_copy.get(i):
             continue
 
         kwargs_copy[i] = clm_encrypt_phash(kwargs_copy[attr_name])
@@ -86,16 +94,18 @@ def model_args_filter(model:object, *args, **kwargs)->dict:
             break
 
         _, attr_name = i.split('DEFAULT_')
-        if attr_name in kwargs_copy.keys():
+        if kwargs_copy.get(attr_name):
             continue
 
         for j in field_cipher:
             if not re.search(f".*_{attr_name}$", j):
                 continue
 
-            kwargs_copy[attr_name] = model.__dict__[i]
+            # kwargs_copy[attr_name] = model.__dict__[i]
+            kwargs_copy[attr_name] = getattr(model, i)
             if callable(model.__dict__[i]): # Verifiy if default value is a function
-                kwargs_copy[attr_name] = model.__dict__[i]()
+                # kwargs_copy[attr_name] = model.__dict__[i]()
+                kwargs_copy[attr_name] = getattr(model, i)()
 
             break
 
@@ -103,23 +113,30 @@ def model_args_filter(model:object, *args, **kwargs)->dict:
             if not re.search(f".*_{attr_name}$", j):
                 continue
 
-            kwargs_copy[attr_name] = model.__dict__[i]
+            # kwargs_copy[attr_name] = model.__dict__[i]
+            kwargs_copy[attr_name] = getattr(model, i)
             if callable(model.__dict__[i]):
-                kwargs_copy[attr_name] = model.__dict__[i]()
+                # kwargs_copy[attr_name] = model.__dict__[i]()
+                kwargs_copy[attr_name] = getattr(model, i)()
 
             break
         
-        if not attr_name in model.__dict__.keys() or attr_name in kwargs_copy.keys():
+        print('model_args_filter: ', model, attr_name, kwargs_copy.get(attr_name))
+        # if not attr_name in model.__dict__.keys() or attr_name in kwargs_copy.keys():
+        # if not attr_name in model.__dict__.keys():
+        if not hasattr(model, attr_name):
             continue
 
-        kwargs_copy[attr_name] = model.__dict__[i]
+        kwargs_copy[attr_name] = getattr(model, i)
         if callable(model.__dict__[i]):
-            kwargs_copy[attr_name] = model.__dict__[i]()
+            # kwargs_copy[attr_name] = model.__dict__[i]()
+            kwargs_copy[attr_name] = getattr(model, i)()
 
 
     ##
     for i in list(kwargs_copy.keys()):
-        if i in model.__dict__.keys():
+        # if i in model.__dict__.keys():
+        if hasattr(model, i):
             continue
 
         del kwargs_copy[i]
@@ -127,17 +144,25 @@ def model_args_filter(model:object, *args, **kwargs)->dict:
     return kwargs_copy
 
 
-def model_create(model:object, **kwargs)->object|None:
+## Model create
+def model_create(model:DeclarativeMeta, **kwargs)->object|None:
     try:
         kwargs_copy = kwargs.copy()
-        if not "dek" in kwargs_copy.keys() and "dek" in model.__dict__.keys():
+        # if not "dek" in kwargs_copy.keys() and "dek" in model.__dict__.keys():
+        if not kwargs_copy.get("dek") and hasattr(model, "dek"):
             kwargs_copy["dek"] = dek_encrypt(dek_generate())
 
-        ##
-        print('kwargs_copy: ', kwargs_copy)
+        ## Create Instance
         model_args = model_args_filter(model, 'default_values', **kwargs_copy)
-        print('model_args: ', model_args)
         instance = model(**model_args)
+
+        print('kwargs_copy: ', kwargs_copy)
+        print('model_args: ', model_args)
+
+        ## Run create_ functions
+        for attr_name, attr_value in kwargs.items():
+            create_ = getattr(instance, FIELD_METHOD_CREATE(attr_name), FIELD_METHOD_EMPTY)
+            create_(attr_value)
 
         return instance
 
@@ -147,10 +172,11 @@ def model_create(model:object, **kwargs)->object|None:
 
         return None
 
-def model_create_SQL(model:object, **kwargs)->dict|None:
+def model_create_SQL(model:DeclarativeMeta, **kwargs)->dict|None:
     try:
         kwargs_copy = kwargs.copy()
-        if not "dek" in kwargs_copy.keys() and "dek" in model.__dict__.keys():
+        # if not "dek" in kwargs_copy.keys() and "dek" in model.__dict__.keys():
+        if not kwargs_copy.get("dek") and hasattr(model, "dek"):
             kwargs_copy["dek"] = dek_encrypt(dek_generate())
 
         ##
@@ -178,6 +204,7 @@ def model_create_SQL(model:object, **kwargs)->dict|None:
         return None
 
 
+## Get model
 def model_from_name(table_name:str)->object | None:
     from .session import Base, metadata
 
@@ -217,12 +244,20 @@ def model_from_tuple(model:DeclarativeMeta, attr:tuple)->DeclarativeMeta:
     except Exception as e:
         Messages.Error.print('model_from_name', e)
 
+def model_from_instance(instance:DeclarativeMeta):
+    model = inspect(instance).mapper.class_
+    return model
+
+def mapper_from_instance(instance:DeclarativeMeta):
+    mapper = inspect(instance).mapper
+    return mapper
+
+## Get model attributes
 def model_get_PK(model:object)->list:
     return model.__table__.primary_key.columns.keys()
 
 def model_is_mapped(model:object)->bool:
     return hasattr(model, '__tablename__')
-
 
 
 def model_get_columns(model:DeclarativeMeta)->tuple:
@@ -281,18 +316,23 @@ def model_get_columns_type(model:DeclarativeMeta)->dict:
 
     return columns_type
 
-# instance
-def model_from_instance(instance:DeclarativeMeta):
-    model = inspect(instance).mapper
-    return model
-
+# Instance methods
 def instance_update(instance:DeclarativeMeta, **kwargs)->None:
     try:
-        model = type(instance)
-        model_args = model_args_filter(model, **kwargs, dek=getattr(instance, "dek", None))
+        kwargs_copy = kwargs.copy()
+        for attr_name, attr_value in list(kwargs_copy.items()):
+            if instance_get(instance, attr_name)[0] == attr_value:
+                del kwargs_copy[attr_name]
 
-        for i in model_args.keys():
-            setattr(instance, i, model_args[i])
+        model = type(instance)
+        model_args = model_args_filter(model, **kwargs_copy, dek=getattr(instance, "dek", None))
+        for attr_name, attr_value in model_args.items():
+            setattr(instance, attr_name, attr_value)
+
+        ##
+        for attr_name, attr_value in kwargs_copy.items():
+            update_ = getattr(instance, FIELD_METHOD_UPDATE(attr_name), FIELD_METHOD_EMPTY)
+            update_(attr_value)
 
         session.commit()
 
@@ -300,6 +340,8 @@ def instance_update(instance:DeclarativeMeta, **kwargs)->None:
         Messages.Error.print('instance_update', e)
         session.rollback()
 
+
+## Instance get
 def instance_get(instance:DeclarativeMeta, *args)->tuple|None:
     try:
         model = type(instance)
@@ -334,33 +376,20 @@ def instance_get(instance:DeclarativeMeta, *args)->tuple|None:
 
         return None
 
-def instane_unwrap(instance:DeclarativeMeta)->dict|None:
-    try:
-        model = type(instance)
+def instance_get_columns(instance:DeclarativeMeta)->tuple:
+    mapper = mapper_from_instance(instance)
+    return model_get_columns()
 
-        field_cipher = FIELD_CIPHER(model)
-        field_hashed = FIELD_HASHED(model)
+def instance_get_columns_name(instance:DeclarativeMeta)->tuple:
+    mapper = mapper_from_instance(instance)
+    return model_get_columns_name(mapper)
 
-        instance_unwrap = {}
-
-        #
-        for i in instance.__dict__.keys():
-            if i == '_sa_instance_state' or i == 'dek':
-                continue
-
-            key_name = i if not i in field_cipher else i.split('cipher_')[1]
-            instance_unwrap[key_name] = instance_get(instance, i)[0]
-
-        return instance_unwrap
-
-    except Exception as e:
-        Messages.Error.print('model_unwrap', e)
-        session.rollback()
-
-        return None
+def instance_get_columns_type(instance:DeclarativeMeta)->tuple:
+    mapper = model_from_instance(instance)
+    return model_get_columns_type(mapper)
 
 def instance_get_columns_value(instance:DeclarativeMeta)->dict:
-    mapper = model_from_instance(instance)
+    mapper = mapper_from_instance(instance)
     columns_value = {}
 
     field_hashed = FIELD_HASHED(type(instance))
@@ -380,3 +409,28 @@ def instance_get_columns_value(instance:DeclarativeMeta)->dict:
         columns_value[attr_name] = value
 
     return columns_value
+
+def instane_unwrap(instance:DeclarativeMeta)->dict|None:
+    try:
+        model = type(instance)
+
+        field_cipher = FIELD_CIPHER(model)
+        field_hashed = FIELD_HASHED(model)
+
+        instance_unwrap = {}
+
+        #
+        for i in vars(instance):
+            if i == '_sa_instance_state' or i == 'dek':
+                continue
+
+            key_name = i if not i in field_cipher else i.split('cipher_')[1]
+            instance_unwrap[key_name] = instance_get(instance, i)[0]
+
+        return instance_unwrap
+
+    except Exception as e:
+        Messages.Error.print('model_unwrap', e)
+        session.rollback()
+
+        return None

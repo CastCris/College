@@ -1,4 +1,5 @@
 from database.session import Base
+from sqlalchemy.orm import DeclarativeMeta
 
 ##
 def id_generate()->str:
@@ -10,6 +11,15 @@ def id_generate()->str:
 
     return Crypt.code_generate(prefix=ID_PREFIX, length=ID_LEN)
 
+def tag_generate(roomLocation_id:str)->str:
+    from database.session import session_query, instance_get
+    from database.methods import RoomLocation
+
+    ##
+    roomLocation = session_query(RoomLocation, id=roomLocation_id)[0]
+    return roomLocation.room_tag_generate()
+
+
 ##
 class Room(Base):
     __tablename__ = 'Room'
@@ -18,30 +28,37 @@ class Room(Base):
     DEFAULT_status_value = 0
 
     ##
-    def __init__(self, **kwargs)->None:
-        super().__init__(**kwargs)
-        self.tag_generate()
+    SQL_GET_STATUS = lambda self, room_id: f"""
+    SELECT rs.tag FROM \"Room\" as r
+    LEFT JOIN \"RoomStatus\" AS rs ON
+    (( rs.value & r.status_value ) = rs.value AND rs.positive )
+    OR
+    (( rs.value & r.status_value ) <> rs.value AND NOT rs.positive )
+    WHERE r.id = '{room_id}'
+    """
 
-    def tag_generate(self)->str:
-        from database.session import session_query, instance_get, instance_update
-        from database.methods import RoomLocation
+    ##
+    def create_roomLocation_id(self, attr_value)->None:
+        from database.session import instance_update
 
-        ##
-        roomLocation_id = instance_get(self, "roomLocation_id")[0]
-        roomLocation = session_query(RoomLocation, id=roomLocation_id)[0]
+        tag = tag_generate(attr_value)
+        instance_update(self, tag=tag)
 
-        instance_update(
-            self
-            , tag=roomLocation.room_tag_generate()
-        )
+    ##
+    def update_roomLocation_id(self, attr_value)->None:
+        from database.session import instance_update, instance_get
 
+        tag = tag_generate(attr_value)
+        instance_update(self, tag=tag)
+
+    ##
     def load_json(self)->dict:
         from database.session import session_query, session_SQL, instance_get_columns_value
         from database.methods import RoomType, RoomLocation
 
         ##
         room  = instance_get_columns_value(self)
-        # print('room_json: ', room)
+        print('room_json: ', room)
 
         room_type = instance_get_columns_value(
             session_query(RoomType, id=room["roomType_id"])[0]
@@ -51,27 +68,25 @@ class Room(Base):
             session_query(RoomLocation, id=room["roomLocation_id"])[0]
         )
 
-        room_status = session_SQL(f"""
-        SELECT rs.tag FROM \"Room\" as r
-        LEFT JOIN \"RoomStatus\" AS rs ON 
-            (
-            (( r.status_value & rs.value ) = rs.value AND rs.positive = TRUE)
-            OR
-            (( r.status_value & rs.value ) <> rs.value AND rs.positive = FALSE)
-            )
-        WHERE r.id = '{room["id"]}'
-        """).all()[0][0]
-        # print('room_infos: ', room_infos)
+        room_status = self.get_status()
+        print('room_status: ', room_status)
 
         return {
-            'tag': room["tag"],
+            'id': room['id']
+            , 'tag': room["tag"]
 
-            'type': room_type["tag"],
-            'price': room_type['price'],
-            'capacity': room_type["capacity"],
-            'description': room_type["description"],
+            , 'type': room_type["tag"]
+            , 'price': room_type['price']
+            , 'capacity': room_type["capacity"]
+            , 'description': room_type["description"]
 
-            'location': room_location["tag"],
+            , 'location': room_location["tag"]
 
-            'status': room_status
+            , 'status': room_status
         }
+
+    def get_status(self)->tuple:
+        from database.session import session_SQL, instance_get
+
+        room_status = [ tag[0] for tag in session_SQL(self.SQL_GET_STATUS(instance_get(self, "id")[0])).all() ]
+        return room_status

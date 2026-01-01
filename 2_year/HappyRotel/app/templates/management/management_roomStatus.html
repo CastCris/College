@@ -1,0 +1,27 @@
+{% extends "layouts/layout_1.html" %}
+
+{% block title %}Room Location{% endblock %}
+
+{% block page_javascript %}
+<script type="module" src="{{ url_for("static", filename="scripts/management/management_roomStatus.js")}}"></script>
+{% endblock %}
+
+<!-- -->
+{% block content_main %}
+<form id="formsRoom">
+    {{ formsRoom.hidden_tag() }}
+
+    <h1>
+        <b>id</b>:
+        {{ roomJson["id"] }}
+    </h1>
+
+    {{ formsRoom.roomStatus_1_tag.label }}
+    {{ formsRoom.roomStatus_1_tag }}
+
+    {{ formsRoom.roomStatus_2_tag.label }}
+    {{ formsRoom.roomStatus_2_tag }}
+
+    <button id="formsRoom_button_submit">Submit</button>
+</form>
+{% endblock %}

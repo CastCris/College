@@ -1,1 +1,17 @@
-<h1>Session deleted!</h1>
+{% block content_main %}
+<h1>
+    You session has been deleted
+</h1>
+<h2>
+    Would like init a new session?
+    <a href="{{ url_for("login_display") }}">Login</a>
+    <br>
+
+    Create a new session?
+    <a href="{{ url_for("sign_display") }}">Sign</a>
+    <br>
+
+    Or back to home pag?
+    <a href="{{ url_for("index") }}">Home page</a>
+</h2>
+{% endblock %}

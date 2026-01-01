@@ -52,18 +52,34 @@ BUTT_SUBMIT.addEventListener('click', (e) => {
 
         body: JSON.stringify(Object.fromEntries(forms))
     })
-    .then(response => response.json())
-    .then(data => {
-        const message = data["message"];
-        const href_link = data["href_link"];
-
-        if(href_link != undefined){
-            window.location.href = href_link;
+    .then(response => {
+        console.log(response)
+        if(response.redirected){
+            /*
+            console.log(response, response.url);
+            window.location.href = response.url;
             return;
+            */
+            throw new Error("Redirected", {
+                cause: response.url
+            });
         }
 
+        return response.json()
+    })
+    .then(data => {
+        const message = data["message"];
         page.LOGS.INSERT(message);
+    })
+    .catch(err => {
+        if(err.message == "Redirected"){
+            window.location.href = err.cause
+            return
+        }
+
+        console.log(err);
     });
+
 
 });
 

@@ -32,7 +32,7 @@ def register_app(app:object, **kwargs)->None:
         ##
         roomsJson = []
         for room in rooms_chosen:
-            roomsJson .append(room.load_json())
+            roomsJson.append(room.load_json())
 
         return flask.jsonify({
             'rooms': roomsJson

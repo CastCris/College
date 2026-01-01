@@ -6,6 +6,9 @@ forms_errors = lambda *forms: [
     for tag, errors in form.errors.items()
 ]
 
-def add_fields():
-    # I have make this function after
-    pass
+# def add_field(forms, forms_data, field, field_name):
+def add_field(forms, field_name, field)->None:
+    if hasattr(forms, field_name):
+        return
+
+    setattr(forms, field_name, field)

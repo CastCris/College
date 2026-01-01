@@ -133,6 +133,8 @@ class CookieSession(CookieSecure):
     COOKIE_TEMPLATE = False
     COOKIE_TEMPLATE_NAME = 'CookieSession_deleted.html'
 
+    COOKIE_LAST_REQUESTED_PATH = 'last_requested_path'
+
     ## Init 
     @classmethod
     def InitApp(cls, app:object)->None:
@@ -161,6 +163,12 @@ class CookieSession(CookieSecure):
                 response = flask.make_response(flask.render_template(cls.COOKIE_TEMPLATE_NAME))
                 cls.delete_all(response)
 
+                cls.define(
+                    response
+                    , key=cls.COOKIE_LAST_REQUESTED_PATH
+                    , value=flask.request.path
+                    , max_age=60*10
+                )
                 return response
 
 
@@ -170,7 +178,12 @@ class CookieSession(CookieSecure):
                 cls.delete_all(response)
 
                 flask.flash('Cookie session deleted', cls.COOKIE_FLASH_NAME)
-                # print('flash!', flask.session.get('_flashes'))
+                cls.define(
+                    response
+                    , key="last_requeted_path"
+                    , value=flask.request.path
+                    , max_age=60*10
+                )
                 return response
 
 
@@ -238,3 +251,10 @@ class CookieSession(CookieSecure):
                 return False
 
         return True
+
+    @Class.property
+    def client_last_requested_path(cls)->str|None:
+        if not cls.validate(cls.COOKIE_LAST_REQUESTED_PATH):
+            return None
+
+        return cls.get(cls.COOKIE_LAST_REQUESTED_PATH)

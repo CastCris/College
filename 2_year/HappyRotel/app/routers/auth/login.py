@@ -1,7 +1,7 @@
 from begin.xtensions import flask, flask_wtf, wtforms as wtf
 from wtforms.validators import InputRequired, length, StopValidation
 
-from begin.globals import flask_auth, Forms, CaptchaFlask, CookieSession, ManagerUser
+from begin.globals import Forms, CaptchaFlask, CookieSession, ManagerUser
 
 ##
 class FormLogin(CaptchaFlask.FormIMG):
@@ -22,6 +22,7 @@ class FormLogin(CaptchaFlask.FormIMG):
         from database.session import session_query
 
         userInfos = session_query(UserInfos.id, email=field.data)
+        print('FormLogin userInfos: ', userInfos, field.data)
         if userInfos is None:
             raise StopValidation('Internal Server Error')
 
@@ -41,9 +42,9 @@ class FormLogin(CaptchaFlask.FormIMG):
         if not user.password_auth(field.data):
             raise StopValidation('Wrong user password')
 
-
 ##
 def register_app(app:object, **kwargs)->None:
+
     @app.route("/login/display")
     @ManagerUser.required_logout
     def login_display()->object:
@@ -56,7 +57,7 @@ def register_app(app:object, **kwargs)->None:
     @app.route("/login/auth", methods=['POST'])
     @ManagerUser.required_logout
     def login_auth()->None:
-        from begin.globals import Messages, Captcha, Response, flask_auth
+        from begin.globals import Messages, Captcha, CookieSession
         from database.methods import User, UserInfos
         from database.session import session_query, instance_get
 
@@ -80,9 +81,12 @@ def register_app(app:object, **kwargs)->None:
         login = ManagerUser.login(user)
 
         ##
+        """
         response = flask.make_response({
             "href_link": flask.url_for("index"),
         })
+        """
+        response = flask.make_response(flask.redirect('/'))
         CookieSession.define(
             response
             , key = "user_name"

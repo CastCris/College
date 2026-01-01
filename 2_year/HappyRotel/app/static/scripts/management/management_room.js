@@ -16,23 +16,21 @@ const BUTT_SUBMIT = new global.Element(page, {
 //
 BUTT_SUBMIT.addEventListener('click', (e) => {
     e.preventDefault();
-    console.log('AAA');
 
     const form_data = page.forms_validation(FORMS_ROOM);
     if(!form_data)
         return;
 
     console.log(form_data);
-    fetch(`/management/room/${form_data.get("roomTag")}/auth`, {
+    fetch(`/management/item/room/Room/${form_data.get("room_id")}/auth`, {
         method: 'POST'
-        , headers: { 'Content-Type': 'application/json; charset=utf-8' }
-        , body: JSON.stringify(Object.fromEntries(form_data))
+        //, headers: { 'Content-Type': 'application/json; charset=utf-8' }
+        //, body: JSON.stringify(Object.fromEntries(form_data))
+        , body: form_data
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data);
+        const message = data["message"];
+        page.LOGS.INSERT(message);
     });
 });
-
-//
-page.elements_init();
