@@ -16,6 +16,14 @@ class RoomLocation(Base):
     DEFAULT_id = id_generate
 
     ##
+    def load_json(self)->dict:
+        from database.session import instance_get_columns_value
+
+        json = instance_get_columns_value(self)
+
+        return json
+
+    ##
     def room_tag_generate(self)->str:
         from database.session import session_query
         from database.methods import Room
@@ -51,17 +59,3 @@ class RoomLocation(Base):
 
     def update_tag_suffix(self, attr_value)->None:
         self.room_tag_regenerate()
-
-    ##
-    def load_json(self)->dict:
-        from database.session import instance_get_columns_value
-
-        json = instance_get_columns_value(self)
-
-        return {
-            'id': json['id']
-
-            , 'tag': json['tag']
-            , 'tag_prefix': json['tag_prefix']
-            , 'tag_suffix': json['tag_suffix']
-        }

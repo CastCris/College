@@ -20,6 +20,13 @@ class User(Base, UserAuth):
     DEFAULT_id = id_generate
 
     ##
+    def load_json(self)->dict:
+        from database.session import instance_get_columns_value
+
+        json = instance_get_columns_value(self)
+        return json
+
+    ##
     def password_auth(self, password_input:str)->None:
         from database.session.crypt import clm_encrypt_phash_auth
         from database.session import instance_get
@@ -27,3 +34,4 @@ class User(Base, UserAuth):
         ##
         password = instance_get(self, "phashed_password")[0]
         return clm_encrypt_phash_auth(password, password_input)
+

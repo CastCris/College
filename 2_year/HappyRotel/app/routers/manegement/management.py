@@ -1,9 +1,8 @@
 from begin.xtensions import flask
-from begin.globals import roleAdmin, roleEmployer, ManagerUser, Globals
+from begin.globals import roleAdmin, ManagerUser, Globals
 
 ##
-FIELDS_ABLE = [ 'room' ]
-FIELD_FROM_TOPIC = lambda topic: 'room' if topic.startswith('Room') else None
+FIELD_FROM_TOPIC = lambda topic: 'room' if topic.startswith('Room') else 'user' if topic.startswith('User') else None
 
 ##
 def register_app(app:object, **kwargs)->None:
@@ -26,42 +25,42 @@ def register_app(app:object, **kwargs)->None:
     @app.route("/management/<field>/<topic>")
     @ManagerUser.required_login
     def management_field_display(pkUser:dict, field:str, topic:str)->object:
-        if not field in FIELDS_ABLE:
+        from database.session import session_SQL, session_query, model_from_name
+
+        ##
+        if not field in Globals.FIELD_TOPICS:
             flask.abort(404)
 
         if not topic in Globals.TOPICS_ABLE:
             flask.abort(404)
 
-        if field == 'room':
-            return flask.redirect(flask.url_for("management_roomTopic_display", topic=topic))
-
-    @app.route("/management/room/<topic>/display")
-    @ManagerUser.required_permission(roleAdmin)
-    def management_roomTopic_display(pkUser:dict, topic:str)->object:
-        from begin.globals import roleEmployer
-
-        from database.methods import Room, RoomType, RoomStatus
-        from database.session import session_SQL, session_query, model_from_name
+        ##
+        TOPICS_ABLE = Globals.FIELD_TOPICS[field]
 
         ##
-        TOPICS_ABLE = [ 'Room', 'RoomType', 'RoomStatus', 'RoomLocation' ]
-        roomsJson = []
-
+        instancesJson = []
         if not topic in TOPICS_ABLE:
             flask.abort(404)
 
         ##
         model = model_from_name(topic)
-        rooms_id = session_SQL(f"""
+        instances_id = session_SQL(f"""
         SELECT id FROM \"{topic}\"
         ORDER BY RANDOM()
         LIMIT 10
         """).all()
 
-        rooms = [ session_query(model, id=room_id[0])[0] for room_id in rooms_id ]
-        roomsJson = [ room.load_json() for room in rooms ]
+        instances = [ session_query(model, id=instance_id[0])[0] for instance_id in instances_id ]
+        instancesJson = [ instance.load_json() for instance in instances ]
 
-        return flask.render_template('management/management.html', topic=topic, topics_able=TOPICS_ABLE, items=roomsJson)
+        return flask.render_template(
+            'management/management.html'
+            , fields_able=Globals.FIELD_TOPICS
+            , topics_able=TOPICS_ABLE
+
+            , items=instancesJson
+            , topic=topic
+        )
 
 
     ## Management item display
@@ -81,7 +80,7 @@ def register_app(app:object, **kwargs)->None:
         from database.session import session_query, model_from_name
 
         ##
-        if not item_field in FIELDS_ABLE:
+        if not item_field in Globals.FIELD_TOPICS:
             flask.abort(404)
 
         if not topic in Globals.TOPICS_ABLE:

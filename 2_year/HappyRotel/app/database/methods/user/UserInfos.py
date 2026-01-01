@@ -15,3 +15,11 @@ class UserInfos(Base):
     __tablename__ = 'UserInfos'
 
     DEFAULT_id = id_generate
+
+    ##
+    def load_json(self)->dict:
+        from database.session import instance_get_columns_value
+
+        json = instance_get_columns_value(self)
+        return json
+

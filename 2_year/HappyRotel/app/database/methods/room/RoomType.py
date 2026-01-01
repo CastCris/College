@@ -21,11 +21,4 @@ class RoomType(Base):
         from database.session import instance_get_columns_value
 
         json = instance_get_columns_value(self)
-        return {
-            'id': json['id']
-            , 'tag': json['tag']
-            , 'description': json['description']
-
-            , 'capacity': json['capacity']
-            , 'price': json['price']
-        }
+        return json

@@ -1,7 +1,30 @@
-TOPICS_ABLE = [
-    'Room', 'RoomType', 'RoomStatus', 'RoomLocation'
-]
+## Field: topics
+FIELD_TOPICS = {
+    'room': [
+        'Room'
+        , 'RoomType'
+        , 'RoomStatus'
+        , 'RoomLocation'
+    ]
 
-TOPICS_ROOM_ABLE = [
-    'Room', 'RoomType', 'RoomStatus', 'RoomLocation'
-]
+    , 'user': [
+        'User'
+        , 'UserInfos'
+    ]
+
+    , 'invoice': [
+        'Invoice'
+        , 'InvoiceItem'
+        , 'InvoiceStatus'
+    ]
+
+    , 'reserve': [
+        'Reserve'
+        , 'ReserveCandidatea'
+        , 'ReserveStatus'
+    ]
+}
+
+TOPICS_ABLE = []
+for field, topics in FIELD_TOPICS.items():
+    TOPICS_ABLE.extend(topics)

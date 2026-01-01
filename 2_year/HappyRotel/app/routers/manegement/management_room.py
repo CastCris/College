@@ -434,7 +434,7 @@ def register_app(app:object, **kwargs)->None:
         from database.session import session_query, model_from_name
 
         ##
-        if not topic in Globals.TOPICS_ROOM_ABLE:
+        if not topic in Globals.FIELD_TOPICS['room']:
             flask.abort(404)
 
         model = model_from_name(topic)
@@ -453,7 +453,7 @@ def register_app(app:object, **kwargs)->None:
         from database.session import session_query, model_from_name
 
         ##
-        if not topic in Globals.TOPICS_ROOM_ABLE:
+        if not topic in Globals.FIELD_TOPICS['room']:
             flask.abort(404)
 
         ##
@@ -476,19 +476,19 @@ def register_app(app:object, **kwargs)->None:
 
         if topic == 'Room':
             forms_class = FormRoom
-            template_path = 'management/management_room.html'
+            template_path = 'management/room/management_room.html'
 
         if topic == 'RoomType':
             forms_class = FormRoomType
-            template_path = 'management/management_roomType.html'
+            template_path = 'management/room/management_roomType.html'
 
         if topic == 'RoomLocation':
             forms_class = FormRoomLocation
-            template_path = 'management/management_roomLocation.html'
+            template_path = 'management/room/management_roomLocation.html'
 
         if topic == 'RoomStatus':
             forms_class = FormRoomStatus
-            template_path = 'management/management_roomStatus.html'
+            template_path = 'management/room/management_roomStatus.html'
 
         ##
         room_instance = session_query(model, id=room_id)[0]

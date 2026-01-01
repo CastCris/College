@@ -9,11 +9,23 @@
 {% endblock %}
 
 {% block content_main %}
+<div class="fields_able">
+    <ul>
+        {% for field, topics in fields_able.items() %}
+        <li>
+            <a href="{{ url_for("management_field_display", field=field, topic=topics[0]) }}">
+                {{ field }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
 <div class="topics_able">
     <ul>
         {% for topic in topics_able %}
         <li>
-            <a href="{{ url_for("management_roomTopic_display", topic=topic) }}">
+            <a href="{{ url_for("management_topic_display", topic=topic) }}">
                 {{ topic }}
             </a>
         </li>
