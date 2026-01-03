@@ -1,0 +1,57 @@
+{% extends "layouts/layout_1.html" %}
+
+{% block title %}User{% endblock %}
+
+{% block page_javascript %}
+<script type="module" src="{{ url_for("static", filename="scripts/management/management_item.js") }}"></script>
+{% endblock %}
+
+{% block content_main %}
+<form id="formsItem">
+    {{ formsUser.hidden_tag() }}
+
+    <h1>
+        Id: {{ userJson["id"] }}
+    </h1>
+
+    <ul>
+        <li>
+            <b>Name</b>:
+            {{ userJson["name"] }}
+        </li>
+
+        <li>
+            <b>Email</b>:
+            {{ userJson["email"] }}
+        </li>
+
+        <li>
+            <b>User Infos id</b>:
+            <a href="{{ url_for("management_item_user_topic_id_display", topic="UserInfos", user_id=userJson["userInfos_id"] ) }}">
+                {{ userJson["userInfos_id"] }}
+            </a>
+        </li>
+
+        <li>
+            <b>User Permissions</b>:
+            {% for permission_id, permission_tag in userJson["permissions"].items() %}
+            <a href="{{ url_for("management_item_user_topic_id_display", topic="UserPermission" , user_id=permission_id) }}">
+                {{ permission_tag }}
+            </a>
+            <br>
+            {% endfor %}
+        </li>
+    </ul>
+
+    {{ formsUser.user_password.label }}
+    {{ formsUser.user_password }}
+
+    {{ formsUser.user_password_check.label }}
+    {{ formsUser.user_password_check }}
+
+    {{ formsUser.user_permissions.label }}
+    {{ formsUser.user_permissions }}
+
+    <input type="submit">Submit</input>
+</form>
+{% endblock %}

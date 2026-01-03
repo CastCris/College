@@ -36,7 +36,7 @@
 <div class="management">
     <h2>{{ topic }}</h2>
     {% for item in items %}
-    <a href="{{ url_for("management_itemTopic_tag_display", topic=topic, item_tag=item.tag) }} ">
+    <a href="{{ url_for("management_itemTopic_arg_display", topic=topic, item_arg=item.id ) }} ">
         <ul class="management_node" id="management_node_{{ item.tag }}">
             {% for attr_name, attr_value in item.items() %}
             <li>

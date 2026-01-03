@@ -320,7 +320,7 @@ export class Page{
     }
 
     captcha_generate_IMG(img_source){
-        csrf_token = document.getElementById("csrf_token");
+        const csrf_token = document.getElementById("csrf_token");
 
         fetch('/captcha/generate', {
             method: 'POST',

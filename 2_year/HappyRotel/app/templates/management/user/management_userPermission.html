@@ -1,0 +1,22 @@
+{% extends "layouts/layout_1.html" %}
+
+{% block title %}User{% endblock %}
+
+{% block page_javascript %}
+<script type="module" src="{{ url_for("static", filename="scripts/management/management_item.js") }}"></script>
+{% endblock %}
+
+{% block content_main %}
+<form id="formsItem">
+    {{ formsUser.hidden_tag() }}
+
+    <h1>
+        Id: {{ userJson["id"] }}
+    </h1>
+
+    {{ formsUser.userPermission_tag.label }}
+    {{ formsUser.userPermission_tag }}
+
+    <input type="submit">Submit</input>
+</form>
+{% endblock %}

@@ -64,18 +64,25 @@ def register_app(app:object, **kwargs)->None:
 
 
     ## Management item display
-    @app.route("/management/item/<topic>/tag/<item_tag>")
+    @app.route("/management/item/<topic>/<item_arg>")
     @ManagerUser.required_login
-    def management_itemTopic_tag_display(pkUser, topic:str, item_tag:str)->object:
+    def management_itemTopic_arg_display(pkUser, topic:str, item_arg:str)->object:
         if not topic in Globals.TOPICS_ABLE:
             flask.abort(404)
 
         field = FIELD_FROM_TOPIC(topic)
-        return flask.redirect(flask.url_for("management_itemField_tag_display", item_field=field, topic=topic, item_tag=item_tag))
+        return flask.redirect(
+            flask.url_for(
+                "management_itemField_arg_display"
+                , item_field=field
+                , topic=topic
+                , item_arg=item_arg
+                )
+        )
 
-    @app.route("/management/item/<item_field>/<topic>/tag/<item_tag>")
+    @app.route("/management/item/<item_field>/<topic>/<item_arg>")
     @ManagerUser.required_login
-    def management_itemField_tag_display(pkUser, item_field:str, topic:str, item_tag:str)->object:
+    def management_itemField_arg_display(pkUser, item_field:str, topic:str, item_arg:str)->object:
         from database.methods import Room
         from database.session import session_query, model_from_name
 
@@ -88,4 +95,19 @@ def register_app(app:object, **kwargs)->None:
 
         ##
         if item_field == 'room':
-            return flask.redirect(flask.url_for("management_item_room_topic_tag_display", topic=topic, room_tag=item_tag))
+            return flask.redirect(
+                flask.url_for(
+                    "management_item_room_topic_id_display"
+                    , topic=topic
+                    , room_id=item_arg
+                )
+            )
+
+        if item_field == 'user':
+            return flask.redirect(
+                flask.url_for(
+                    "management_item_user_topic_id_display"
+                    , topic=topic
+                    , user_id=item_arg
+                )
+            )

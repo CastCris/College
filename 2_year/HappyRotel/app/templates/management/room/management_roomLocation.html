@@ -3,12 +3,12 @@
 {% block title %}Room Location{% endblock %}
 
 {% block page_javascript %}
-<script type="module" src="{{ url_for("static", filename="scripts/management/management_roomLocation.js")}}"></script>
+<script type="module" src="{{ url_for("static", filename="scripts/management/management_item.js")}}"></script>
 {% endblock %}
 
 <!-- -->
 {% block content_main %}
-<form id="formsRoom">
+<form id="formsItem">
     {{ formsRoom.hidden_tag() }}
 
     <h1>
@@ -25,6 +25,6 @@
     {{ formsRoom.roomLocation_tagSuffix.label }}
     {{ formsRoom.roomLocation_tagSuffix }}
 
-    <button id="formsRoom_button_submit">Submit</button>
+    <input type="submit">Submit</input>
 </form>
 {% endblock %}

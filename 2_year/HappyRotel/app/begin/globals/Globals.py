@@ -10,6 +10,7 @@ FIELD_TOPICS = {
     , 'user': [
         'User'
         , 'UserInfos'
+        , 'UserPermission'
     ]
 
     , 'invoice': [

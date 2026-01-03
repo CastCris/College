@@ -20,11 +20,46 @@ class User(Base, UserAuth):
     DEFAULT_id = id_generate
 
     ##
-    def load_json(self)->dict:
-        from database.session import instance_get_columns_value
+    @property
+    def permissions_json(self)->dict[str:str]:
+        from database.methods import UserPermission
+        from database.session import session_SQL, instance_get
 
-        json = instance_get_columns_value(self)
-        return json
+        user_id = instance_get(self, "id")[0]
+        userPermissions = session_SQL(f"""
+        SELECT up.id, up.tag FROM \"User\" AS u
+        LEFT JOIN \"UserPermission\" AS up
+        ON
+            ( u.permissions & up.value ) = up.value AND 
+            (( up.value = 0 AND u.permissions = 0) OR ( up.value <> 0 AND u.permissions <> 0 ))
+        WHERE u.id = '{user_id}'
+        """).all()
+
+        return { row[0]:row[1] for row in userPermissions }
+
+    def load_json(self)->dict:
+        from database.methods import UserInfos
+        from database.session import session_query, instance_get, instance_get_columns_value
+
+        ##
+        user_id = instance_get(self, "id")[0]
+
+        userInfos_id = instance_get(self, "userInfos_id")[0]
+        userInfos = session_query(UserInfos, id=userInfos_id)[0]
+
+        user_name, user_email = instance_get(userInfos, "name", "email")
+        user_permissionsJson = self.permissions_json
+
+        ##
+        return {
+            "id": user_id
+
+            , "userInfos_id": userInfos_id
+            , "name": user_name
+            , "email": user_email
+
+            , "permissions": user_permissionsJson
+        }
 
     ##
     def password_auth(self, password_input:str)->None:

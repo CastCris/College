@@ -18,8 +18,15 @@ class UserInfos(Base):
 
     ##
     def load_json(self)->dict:
-        from database.session import instance_get_columns_value
+        from database.methods import User
+        from database.session import session_query, instance_get_columns_value
 
         json = instance_get_columns_value(self)
-        return json
+        user_id = session_query(User.id, userInfos_id=json["id"])[0][0]
 
+        return {
+            "id": json["id"]
+            , "user_id": user_id
+            , "name": json["name"]
+            , "email": json["email"]
+        }

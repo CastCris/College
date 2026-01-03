@@ -48,13 +48,15 @@ op_comp_by_operator = {
 
 
 ##
-def model_args_filter(model:DeclarativeMeta, *args, **kwargs)->dict:
+def model_kwargs_filter(model:DeclarativeMeta, *args, **kwargs)->dict:
     field_cipher = FIELD_CIPHER(model)
     field_hashed = FIELD_HASHED(model)
     field_phashed = FIELD_PHASHED(model)
     field_default = FIELD_DEFAULT(model)
 
     kwargs_copy = kwargs.copy()
+
+    default_values = 'default_values' in args
 
     ##
     for i in field_cipher:
@@ -90,7 +92,7 @@ def model_args_filter(model:DeclarativeMeta, *args, **kwargs)->dict:
         kwargs_copy[i] = clm_encrypt_phash(kwargs_copy[attr_name])
 
     for i in field_default:
-        if not 'default_values' in args:
+        if not default_values:
             break
 
         _, attr_name = i.split('DEFAULT_')
@@ -121,7 +123,7 @@ def model_args_filter(model:DeclarativeMeta, *args, **kwargs)->dict:
 
             break
         
-        print('model_args_filter: ', model, attr_name, kwargs_copy.get(attr_name))
+        print('model_kwargs_filter: ', model, attr_name, kwargs_copy.get(attr_name))
         # if not attr_name in model.__dict__.keys() or attr_name in kwargs_copy.keys():
         # if not attr_name in model.__dict__.keys():
         if not hasattr(model, attr_name):
@@ -143,6 +145,36 @@ def model_args_filter(model:DeclarativeMeta, *args, **kwargs)->dict:
 
     return kwargs_copy
 
+def model_args_filter(model:DeclarativeMeta, *args)->list[str]:
+    field_cipher = FIELD_CIPHER(model)
+    field_hashed = FIELD_HASHED(model)
+    field_phashed = FIELD_PHASHED(model)
+
+    no_cipher = 'no_cipher' in args
+    no_hashed = 'no_hashed' in args
+    no_phashed = 'no_phashed' in args
+
+    ##
+    args_filtered = []
+    for attr_name in args:
+        attr_cipher = 'cipher_' + attr_name
+        attr_hashed = 'hashed_' + attr_name
+        attr_phashed = 'phashed_' + attr_name
+
+        if attr_cipher in field_cipher and not no_cipher:
+            args_filtered.append(attr_cipher)
+        
+        if attr_hashed in field_hashed and not no_hashed:
+            args_filtered.append(attr_hasehd)
+
+        if attr_phashed in field_phashed and not no_phashed:
+            args_filtered.append(attr_phashed)
+
+        if not getattr(model, attr_name, None) is None:
+            args_filtered.append(attr_name)
+
+    return args_filtered
+
 
 ## Model create
 def model_create(model:DeclarativeMeta, **kwargs)->object|None:
@@ -153,11 +185,11 @@ def model_create(model:DeclarativeMeta, **kwargs)->object|None:
             kwargs_copy["dek"] = dek_encrypt(dek_generate())
 
         ## Create Instance
-        model_args = model_args_filter(model, 'default_values', **kwargs_copy)
-        instance = model(**model_args)
+        model_kwargs = model_kwargs_filter(model, 'default_values', **kwargs_copy)
+        instance = model(**model_kwargs)
 
         print('kwargs_copy: ', kwargs_copy)
-        print('model_args: ', model_args)
+        print('model_kwargs: ', model_kwargs)
 
         ## Run create_ functions
         for attr_name, attr_value in kwargs.items():
@@ -181,18 +213,18 @@ def model_create_SQL(model:DeclarativeMeta, **kwargs)->dict|None:
 
         ##
         print('kwargs_copy: ', kwargs_copy)
-        model_args = model_args_filter(model, 'default_values', **kwargs_copy)
-        print('model_args: ', model_args)
+        model_kwargs = model_kwargs_filter(model, 'default_values', **kwargs_copy)
+        print('model_kwargs: ', model_kwargs)
 
-        INSERT = STMT_INSERT(model, model_args)
-        VALUES = STMT_VALUES(list(model_args.keys()))
+        INSERT = STMT_INSERT(model, model_kwargs)
+        VALUES = STMT_VALUES(list(model_kwargs.keys()))
         STATEMENT = INSERT + VALUES
 
         print('stmt: ', STATEMENT)
 
         args = {
             'stmt': text(STATEMENT),
-            'model_args': model_args
+            'model_kwargs': model_kwargs
         }
 
         return args
@@ -325,8 +357,8 @@ def instance_update(instance:DeclarativeMeta, **kwargs)->None:
                 del kwargs_copy[attr_name]
 
         model = type(instance)
-        model_args = model_args_filter(model, **kwargs_copy, dek=getattr(instance, "dek", None))
-        for attr_name, attr_value in model_args.items():
+        model_kwargs = model_kwargs_filter(model, **kwargs_copy, dek=getattr(instance, "dek", None))
+        for attr_name, attr_value in model_kwargs.items():
             setattr(instance, attr_name, attr_value)
 
         ##
@@ -350,9 +382,12 @@ def instance_get(instance:DeclarativeMeta, *args)->tuple|None:
         field_hashed = FIELD_HASHED(model)
         
         #
+        args_filtered = model_args_filter(model, *args, 'no_hashed')
+        print('args_filtered: ', args_filtered)
+
         values = []
 
-        for i in args:
+        for i in args_filtered:
             dek_wrap = getattr(instance, "dek", None)
             dek = dek_decrypt(dek_wrap) if not dek_wrap is None else None
 

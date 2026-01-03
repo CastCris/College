@@ -2,7 +2,8 @@ from begin.globals.flask_auth import Role
 
 ##
 roleAdmin = Role({
-    "MANAGE_USER": 1
+    "NOTHING": 0
+    , "MANAGE_USER": 1
     , "MANAGE_ROOM": 2
     , "MANAGE_INVOICE": 4
     , "MANAGE_RESERVE": 8

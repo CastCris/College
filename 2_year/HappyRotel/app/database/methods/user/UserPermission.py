@@ -22,4 +22,3 @@ class UserPermission(Base):
 
         json = instance_get_columns_value(self)
         return json
-

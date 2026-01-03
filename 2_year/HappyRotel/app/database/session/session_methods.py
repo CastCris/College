@@ -39,7 +39,7 @@ def session_insert(model:DeclarativeMeta, **kwargs)->DeclarativeMeta:
 def session_insert_SQL(model:DeclarativeMeta, **kwargs)->None:
     try:
         args = model_create_SQL(model, **kwargs)
-        session.execute(args['stmt'], args['model_args'])
+        session.execute(args['stmt'], args['model_kwargs'])
         session.commit();
 
     except Exception as e:
@@ -78,7 +78,7 @@ def session_query(*columns, **kwargs)->tuple|None:
         filters = []
 
         #
-        filter_args = model_args_filter(model, **kwargs)
+        filter_args = model_kwargs_filter(model, **kwargs)
 
         for i in kwargs.keys():
             if i in filter_args.keys():

@@ -1,0 +1,35 @@
+{% extends "layouts/layout_1.html" %}
+
+{% block title %}User Infos{% endblock %}
+
+{% block page_javascript %}
+<script type="module" src="{{ url_for("static", filename="scripts/management/management_item.js") }}"></script>
+{% endblock %}
+
+<!-- -->
+{% block content_main %}
+<form id="formsItem">
+    {{ formsUser.hidden_tag() }}
+
+    <h1>
+        Id: {{ userJson["id"] }}
+    </h1>
+
+    <ul>
+        <li>
+            <b>User</b>:
+            <a href="{{ url_for("management_item_user_topic_id_display", topic="User", user_id=userJson["user_id"] ) }}">
+                {{ userJson["user_id"] }}
+            </a>
+        </li>
+    </ul>
+
+    {{ formsUser.userInfos_name.label }}
+    {{ formsUser.userInfos_name }}
+
+    {{ formsUser.userInfos_email.label }}
+    {{ formsUser.userInfos_email }}
+
+    <input type="submit">
+</form>
+{% endblock %}

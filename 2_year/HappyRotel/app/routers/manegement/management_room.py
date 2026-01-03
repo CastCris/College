@@ -25,6 +25,22 @@ WHERE id IN ({ ','.join([ f"'{i}'" for i in tags ]) })
 """
 
 ##
+class FormRoomBase(flask_wtf.FlaskForm):
+    field = wtf.HiddenField(
+        'Field'
+    )
+
+    topic = wtf.HiddenField(
+        'Topic'
+    )
+
+    def __init__(self, *args, **kwargs)->None:
+        super().__init__(*args, **kwargs)
+
+        self.field.data = 'room'
+        if not kwargs.get("topic") is None:
+            self.topic.data = kwargs.get("topic")
+
 class FormRoomStatusItems(flask_wtf.FlaskForm):
     def __init__(self, *args, **kwargs)->None:
         from database.methods import Room
@@ -107,7 +123,7 @@ class FormRoomStatusItems(flask_wtf.FlaskForm):
 
         return True
 
-class FormRoom(flask_wtf.FlaskForm):
+class FormRoom(FormRoomBase):
     room_id = wtf.HiddenField(
         'Room Id'
         , validators=[InputRequired(), length(max=32)]
@@ -199,7 +215,7 @@ class FormRoom(flask_wtf.FlaskForm):
             raise StopValidation('This location doens\' exists')
 
 
-class FormRoomType(flask_wtf.FlaskForm):
+class FormRoomType(FormRoomBase):
     roomType_id = wtf.HiddenField(
         'RoomType Id'
         , validators=[InputRequired(), length(max=32)]
@@ -263,7 +279,7 @@ class FormRoomType(flask_wtf.FlaskForm):
         if field.data < 1 or field.data > 10000:
             raise StopValidation('Invalid price value')
 
-class FormRoomLocation(flask_wtf.FlaskForm):
+class FormRoomLocation(FormRoomBase):
     roomLocation_id = wtf.HiddenField(
         'Room Location id'
     )
@@ -339,7 +355,7 @@ class FormRoomLocation(flask_wtf.FlaskForm):
         if roomLocation_id[0][0] != self.roomLocation_id.data:
             raise StopValidation('This tag suffix already exist')
 
-class FormRoomStatus(flask_wtf.FlaskForm):
+class FormRoomStatus(FormRoomBase):
     roomStatus_1_id = wtf.HiddenField(
         'Room Status Id Instance 1'
         , validators=[InputRequired(), length(max=16)]
@@ -493,15 +509,18 @@ def register_app(app:object, **kwargs)->None:
         ##
         room_instance = session_query(model, id=room_id)[0]
         roomJson = room_instance.load_json()
-        formsRoom = forms_class(room_id=room_id)
+        formsRoom = forms_class(
+            room_id=room_id
+            , topic = topic
+        )
 
         return flask.render_template(template_path, formsRoom=formsRoom, roomJson=roomJson)
 
 
     ## Auth management auth
-    @app.route("/management/item/room/Room/<room_id>/auth", methods=['POST'])
+    @app.route("/management/item/room/Room/auth", methods=['POST'])
     @ManagerUser.required_permission(roleAdmin)
-    def management_item_Room_auth(pkUser, room_id:str)->object:
+    def management_item_Room_auth(pkUser)->object:
         from begin.globals import Messages
 
         from database.methods import Room, RoomType, RoomLocation
@@ -541,9 +560,9 @@ def register_app(app:object, **kwargs)->None:
             'message': Messages.MSuccess('Operation success completed').json
         })
 
-    @app.route("/management/item/room/RoomType/<room_id>/auth", methods=['POST'])
+    @app.route("/management/item/room/RoomType/auth", methods=['POST'])
     @ManagerUser.required_permission(roleAdmin)
-    def management_item_RoomType_auth(pkUser, room_id:str)->object:
+    def management_item_RoomType_auth(pkUser)->object:
         from begin.globals import Messages
 
         from database.methods import RoomType
@@ -578,9 +597,9 @@ def register_app(app:object, **kwargs)->None:
             'message': Messages.MSuccess('Operation completed').json
         })
 
-    @app.route("/management/item/room/RoomLocation/<room_id>/auth", methods=['POST'])
+    @app.route("/management/item/room/RoomLocation/auth", methods=['POST'])
     @ManagerUser.required_permission(roleAdmin)
-    def management_item_RoomLocation_auth(pkUser, room_id:str)->object:
+    def management_item_RoomLocation_auth(pkUser)->object:
         from begin.globals import Messages
 
         from database.methods import RoomLocation
@@ -614,9 +633,9 @@ def register_app(app:object, **kwargs)->None:
             'message': Messages.MSuccess('Operation completed').json
         })
 
-    @app.route("/management/item/room/RoomStatus/<room_id>/auth", methods=['POST'])
+    @app.route("/management/item/room/RoomStatus/auth", methods=['POST'])
     @ManagerUser.required_permission(roleAdmin)
-    def management_item_RoomStatus_auth(pkUser, room_id:str)->object:
+    def management_item_RoomStatus_auth(pkUser)->object:
         from begin.globals import Messages
 
         from database.methods import RoomStatus
