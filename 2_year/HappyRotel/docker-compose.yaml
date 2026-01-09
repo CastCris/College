@@ -1,7 +1,6 @@
 version: "3"
 
 services:
-
   postgres:
     image: postgres:latest
     container_name: "happyRotel_postgres"
@@ -50,6 +49,8 @@ services:
 
       HAPPYROTEL_REDIS_HOST: "redis"
       HAPPYROTEL_REDIS_PORT: "6379"
+
+      HAPPYROTEL_DOCKER_ADDR: "172.17.0.1"
 
     ports:
       - "5000:5000"

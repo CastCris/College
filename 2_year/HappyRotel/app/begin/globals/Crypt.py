@@ -5,7 +5,9 @@ import os
 
 ## Keys
 MASTER_KEY = AESGCM.generate_key(bit_length=256)
-SALT_KEY = os.urandom(12)
+
+SHA256_SALT_KEY_DB = os.urandom(12)
+SHA256_SALT_KEY = os.urandom(12)
 
 ## Code generate
 CODE_PREFIX = ''
@@ -33,3 +35,11 @@ def argon2_auth(text_hashed:str, text:str)->bool:
 
     except:
         return False
+
+## Sha256 Implementation
+def sha256_crypt(value:str, salt:bytes=SHA256_SALT_KEY)->str:
+    import hashlib
+    import base64
+
+    hashed_value = hashlib.sha256(value.encode() + salt).digest()
+    return base64.b64encode(hashed_value).decode()

@@ -163,6 +163,7 @@ class FormUserInfos(FormUserBase):
             user_id = kwargs.get("user_id")
             self.populate(user_id)
 
+    ##
     def populate(self, user_id:str)->None:
         from database.methods import UserInfos
         from database.session import session_query, instance_get
@@ -173,6 +174,13 @@ class FormUserInfos(FormUserBase):
         self.userInfos_id.data = userInfos_json["id"]
         self.userInfos_name.data = userInfos_json["name"]
         self.userInfos_email.data = userInfos_json["email"]
+
+    def validate_userInfos_id(self, field)->None:
+        from database.methods import UserInfos
+        from database.session import session_query
+
+        if not session_query(UserInfos, id=field.data):
+            raise StopValidation('Invalid UserInfos id')
 
 class FormUserPermission(FormUserBase):
     userPermission_id = wtf.HiddenField(

@@ -1,5 +1,5 @@
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from begin.globals.Crypt import MASTER_KEY, SALT_KEY
+from begin.globals.Crypt import MASTER_KEY, SHA256_SALT_KEY_DB
 
 import base64
 import os
@@ -47,12 +47,10 @@ def clm_decrypt_dek(value:str, dek:bytes)->str:
     return plaintext.decode()
 
 ## Hash encryptuon
-def clm_encrypt_sha256(value:str, salt_key:bytes=SALT_KEY)->str:
-    import hashlib
-    import base64
+def clm_encrypt_sha256(value:str)->str:
+    from begin.globals import Crypt
 
-    value_hashed =  hashlib.sha256(salt_key + value.encode()).digest()
-    return base64.b64encode(value_hashed).decode()
+    return Crypt.sha256_crypt(value, SHA256_SALT_KEY_DB)
 
 
 def clm_encrypt_phash(password:str, **kwargs)->str:

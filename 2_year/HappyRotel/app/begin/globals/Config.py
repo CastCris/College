@@ -25,6 +25,8 @@ class Config:
     REDIS_HOST = os.getenv("HAPPYROTEL_REDIS_HOST", '')
     REDIS_PORT = os.getenv("HAPPYROTEL_REDIS_PORT", '')
 
+    DOCKER_ADDR = os.getenv("HAPPYROTEL_DOCKER_ADDR", '')
+
     ## Develop Options
     DEBUG = True
 
@@ -34,7 +36,8 @@ class Config:
     COOKIE_TEMPLATE_NAME = 'session_deleted.html'
 
     ## ManagerUser
-    USER_TABLE = 'User'
+    MU_TOKEN_TYPE = 'Redis'
+    MU_TOKEN_REDIS = redis.Redis.from_url(f"redis://{DOCKER_ADDR}:{REDIS_PORT}", decode_responses=True)
 
 r = redis.Redis(
     host = Config.REDIS_HOST
