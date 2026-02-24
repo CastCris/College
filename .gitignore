@@ -9,6 +9,8 @@
 
 !requirements.txt
 
+!*.java
+
 ## Flask archictecture
 !/**/app/**/*.py
 
