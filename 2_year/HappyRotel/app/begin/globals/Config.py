@@ -36,8 +36,8 @@ class Config:
     COOKIE_TEMPLATE_NAME = 'session_deleted.html'
 
     ## ManagerUser
-    MU_TOKEN_TYPE = 'Redis'
-    MU_TOKEN_REDIS = redis.Redis.from_url(f"redis://{DOCKER_ADDR}:{REDIS_PORT}", decode_responses=True)
+    MU_SERVICE_TYPE = 'Redis'
+    MU_SERVICE_REDIS = redis.Redis.from_url(f"redis://{DOCKER_ADDR}:{REDIS_PORT}", decode_responses=True)
 
 r = redis.Redis(
     host = Config.REDIS_HOST

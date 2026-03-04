@@ -25,8 +25,6 @@ def flask_app(__context__:str, **kwargs)->None:
     app = flask.Flask(__context__, **kwargs)
     app.config.from_object(Config)
 
-    app.jinja_env.globals["load_cookie"] = CookieSession.get
-
     ##
     # If DEBUG flask options is enable, let this statement
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":

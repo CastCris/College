@@ -16,9 +16,9 @@ def register_app(app:object, **kwargs)->None:
     @app.route("/permission/employer/int")
     @ManagerUser.required_permission(12)
     def permission_employer_int()->object:
-        return f"You have permission to access this page! This is your data:{flask.session.user}"
+        return f"You have permission to access this page! This is your data:{flask.session.get("user")}"
 
     @app.route("/permission/employer/role")
     @ManagerUser.required_permission(roleEmployer)
     def permission_employer_role()->object:
-        return f"You have permission to access this page! This is your data:{flask.session.user}"
+        return f"You have permission to access this page! This is your data:{flask.session.get("user")}"

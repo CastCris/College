@@ -15,7 +15,7 @@
     <header>
         <div class="client_reception">
             {% if session.get("token_auth") %}
-            <h2>Hello {{ load_cookie("user_name") }}</h2>
+            <h2>Hello {{ session.get("user")["name"] }}</h2>
             {% else %}
             <h2> Hello Guested! </h2>
             {% endif %}
