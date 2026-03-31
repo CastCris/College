@@ -25,3 +25,8 @@
 ## Ignore all venvs
 /**/.venv/
 /**/__pycache__/
+
+## SPOWEB
+!/3_year/SPOWEB/**/*.html
+!/3_year/SPOWEB/**/*.css
+!/3_year/SPOWEB/**/*.js

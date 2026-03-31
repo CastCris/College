@@ -1,0 +1,182 @@
+<html>
+<head>
+	<title>Cep search</title>
+</head>
+<body>
+	<div class="output">
+    	<h1 id="out_error">
+    	</h1>
+
+    	<div>
+        	<h3>City: </h3>
+        	</span>
+        	<p id="out_city">
+        	</p>
+    	</div>
+
+    	<div>
+        	<h3>District: </h3>
+        	<p id="out_district">
+        	</p>
+    	</div>
+
+    	<div>
+        	<h3>Logradouro: </h3>
+        	<p id="out_logradouro">
+        	</p>
+    	</div>
+	</div>
+
+	<div id="input">
+        <button id="in_inputType">
+            Bar
+        </button>
+    	<input type="text" id="in_cep" keyup=>
+    	<h1>Input your cep</h1>
+        <!--
+    	<input type="range" id="in_cep" min=0 max=99999999>
+        -->
+    	<p id="out_cep_selected"></p>
+	</div>
+
+	<script>
+    	function isDigit(c)
+    	{
+        	return c >= '0' && c <= '9';
+    	}
+
+    	//
+    	function valid_cep(cep)
+    	{
+        	let c;
+        	for(c of cep){
+            	if(!isDigit(c)){
+                	return false;
+            	}
+        	}
+
+        	return cep.length == 8;
+    	}
+
+    	function fetch_cep(cep)
+    	{
+        	const url = `https://viacep.com.br/ws/${cep}/json/`;
+        	fetch(url)
+            	.then(response => {
+                	if(!response.ok)
+                    	throw new Error("Error server side");
+                	return response.json();
+            	})
+            	.then(data => {
+                	if(data.erro)
+                    	throw new Error("Invalid cep");
+                	show_cep_data(data);
+            	})
+            	.catch(e => {
+                	show_error(e);
+            	});
+    	}
+
+    	//
+    	function show_error(e)
+    	{
+        	const out_error = document.querySelector("#out_error");
+        	out_error.textContent = e;
+    	}
+
+    	function show_cep_data(data)
+    	{
+        	const out_logradouro = document.querySelector("#out_logradouro");
+        	const out_district = document.querySelector("#out_district");
+        	const out_city = document.querySelector("#out_city");
+
+        	out_logradouro.textContent = data["logradouro"];
+        	out_district.textContent = data["bairro"];
+        	out_city.textContent = data["localidade"];
+    	}
+
+    	function show_cep(cep)
+    	{
+        	const out_cep_selected = document.querySelector("#out_cep_selected");
+        	out_cep_selected.textContent = cep;
+    	}
+
+
+    	function clean_error()
+    	{
+        	const out_error = document.querySelector("#out_error");
+        	out_error.textContent = "";
+    	}
+
+    	function clean_cep_data()
+    	{
+        	const out_logradouro = document.querySelector("#out_logradouro");
+        	const out_district = document.querySelector("#out_district");
+        	const out_city = document.querySelector("#out_city");
+
+        	out_logradouro.textContent =
+            	out_district.textContent =
+            	out_city.textContent =  "";
+    	}
+
+    	//
+        const INPUT_TYPE_BAR = 0;
+        const INPUT_TYPE_TXT = 1;
+
+
+    	const in_cep = document.querySelector("#in_cep");
+        const in_inputType = document.querySelector("#in_inputType");
+        let inputType = INPUT_TYPE_TXT;
+
+    	in_cep.addEventListener('input', (e) => {
+            let cep;
+            switch(inputType){
+                case INPUT_TYPE_BAR:
+                    cep = in_cep.value.toString().padStart(8, '0');
+                    break;
+
+                case INPUT_TYPE_TXT:
+                    cep = in_cep.value.trim();
+            }
+
+        	show_cep(cep);
+        	clean_error();
+        	clean_cep_data();
+
+        	if(!valid_cep(cep)){
+            	show_error("Invalid cep");
+            	return;
+        	}
+        	fetch_cep(cep);
+    	});
+
+        in_inputType.addEventListener('click', (e) => {
+            console.log(e);
+
+            switch(inputType){
+                case INPUT_TYPE_BAR:
+                    inputType = INPUT_TYPE_TXT;
+                    in_cep.type = "text";
+                    in_inputType.textContent = "Bar";
+
+                    break;
+
+                case INPUT_TYPE_TXT:
+                    inputType = INPUT_TYPE_BAR;
+
+                    in_cep.type = "range";
+                    in_cep.min = 0;
+                    in_cep.max = 99999999;
+                    in_inputType.textContent = "Text";
+
+                    break;
+
+                default:
+                    break;
+            }
+        });
+
+	</script>
+
+</body>
+</html>
