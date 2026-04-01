@@ -7,7 +7,7 @@
 !requirements.txt
 
 
-!dockerfile
+!Dockerfile
 !.dockerignore
 !docker-compose.yml
 

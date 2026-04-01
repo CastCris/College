@@ -1,11 +1,8 @@
 {% extends "default/layout_1.html" %}
-
-{% block page_javascript %}
-<script src="{{ url_for("static", filename="scripts/manager.js") }}" type="module" defer></script>
+{% block page_style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style/pages/home.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='style/pages/manager.css') }}">
 {% endblock %}
-
-{% block title %}Manager{% endblock %}
-
 {% block content_main %}
 <form id="manager_form_crud">
     <select name="entity_name" id="manager_select_entityName">
