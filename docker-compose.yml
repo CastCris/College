@@ -1,32 +1,9 @@
-version: '3'
-
 services:
 
   app:
     build: .
-    container_name: "schoolmanager"
+    container_name: "schoolManager"
     working_dir: /app
-
-    develop:
-      watch:
-        - action: rebuild
-          path: .
-          target: .
-          ignore:
-            - "templates/"
-            - "static/"
-        
-        - action: sync+restart
-          path: requirements.txt
-          target: .
-
-        - action: sync
-          path: templates/
-          target: .
-
-        - action: sync
-          path: static
-          target: .
 
     volumes:
       - .:/app
@@ -59,8 +36,8 @@ services:
       MYSQL_DATABASE: schoolDB
       MYSQL_PASSWORD: admin
 
-    volumes:
-      - mariadb_data:/var/lib/mysql
+#     volumes:
+#       - schoolDB:/var/lib/mysql
 
     ports:
       - "5467:5467"
@@ -71,6 +48,3 @@ services:
 networks:
   backend:
     driver: bridge
-
-volumes:
-  mariadb_data:

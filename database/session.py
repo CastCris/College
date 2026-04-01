@@ -117,4 +117,4 @@ def session_init(dbms_name:str)->None:
 ##
 engine = metadata = Base = session = None
 
-session_init('mariadb')
+session_init('sqlite')
