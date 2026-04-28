@@ -13,91 +13,167 @@
     </table>
     
     <script>
-        const tableTasks = document.querySelector("#tasks");
-        // const tableTasks_table_id_prefix = "tableTasks_task_id";
+        class Task
+        {
+            constructor(id, name)
+            {
+                this._id = id || Date.now();
+                this._name = name || "Tarefa não definida";
+                this._conclued = 0;
+            }
 
-        let tableTasks_id = 0;
-        const tableTasks_tasks_row_html = () => `
-        <tr id="tableTasks_task_${tableTasks_id}">
-            <td>
-                Task ${tableTasks_id + 1}
-            </td>
+            // getters
+            get id()
+            {
+                return this._id;
+            }
 
-            <td>
-                <p id="tableTasks_task_id_${tableTasks_id}_status">
-                    Não concluída
-                </p>
-            </td>
+            get name()
+            {
+                return this._name;
+            }
 
-            <td>
-                <button id="tableTasks_task_id_${tableTasks_id}_butt_mark">
-                    Concluir
-                </button>
+            get conclued()
+            {
+                return this._conclued;
+            }
 
-            </td>
+            // setters
+            set name(name)
+            {
+                this._name = name;
+            }
 
-            <td>
-                <button id="tableTasks_task_id_${tableTasks_id}_butt_remove">
-                    Remover
-                </button>
-            </td>
-        </tr>
-        `
+            set conclued(conclued)
+            {
+                this._conclued = conclued;
+            }
+        }
 
-        const tableTasks_butt_add_task = document.querySelector("#add_task");
+        class TaskManager
+        {
+            constructor()
+            {
+                this._task = {};
+                this._tableRow = (task) => `
+                <tr id="${task.id}">
+                    <td id="task_name">
+                        ${task.name}
+                    </td>
+
+                    <td id="task_conclued">
+                        ${(task.conclued)?"Concluída": "Não concluída"}
+                    </td>
+
+                    <td id="task_butt_mark_row">
+                        <button id="task_butt_mark">
+                            ${(task.conclued)?"Marcar como não concluída": "Marcar como concluída"}
+                        </button>
+                    </td>
+
+                    <td id="task_remove">
+                        <button id="task_butt_remove">
+                            Remover
+                        </button>
+                    </td>
+                </tr>
+                `
+            }
+
+            // getters
+            get innerHTML()
+            {
+                let innerHTML = "";
+                for(let i of Object.values(this._task)){
+                    innerHTML += this._tableRow(i);
+                }
+
+                return `<table>${innerHTML}</table>`;
+            }
+
+            // methods
+            task(id)
+            {
+                return this._task[id];
+            }
+
+            task_delete(id)
+            {
+                delete this._task[id];
+            }
+
+            task_add(task)
+            {
+                this._task[task.id] = task;
+            }
+
+            task_update(id, task)
+            {
+                if(!(Object.keys(this._task).includes(id)))
+                    return;
+                this._task[id] = task;
+            }
+
+
+            generate_id()
+            {
+                return Date.now();
+            }
+
+
+            put_in_html(table)
+            {
+                table.innerHTML = this.innerHTML;
                 
-        //
-        function add_task()
-        {
-            tableTasks.innerHTML += tableTasks_tasks_row_html()
-            const task_butt_remove = 
-                document.querySelector(`#tableTasks_task_id_${tableTasks_id}_butt_remove`);
-            const task_butt_mark = 
-                document.querySelector(`#tableTasks_task_id_${tableTasks_id}_butt_mark`);
-            console.log(task_butt_remove);
+                const butts_mark = Array.from(document.querySelectorAll("#task_butt_mark"));
+                const butts_remove = Array.from(document.querySelectorAll("#task_butt_remove"));
 
-            task_butt_remove.addEventListener('click', (e) => {
-                const task_butt_rm = e.target;
-                let task = task_butt_rm;
-                while(task.tagName != "TR"){
-                    task = task.parentElement;
+                for(const i of butts_mark){
+                    i.addEventListener('click', (e) => {
+                        let task = e.target;
+                        let table = e.target;
+                        while(task.tagName != "TR"){
+                            task = task.parentElement;
+                        }
+
+                        while(table.tagName != "TABLE"){
+                            table = table.parentElement;
+                        }
+
+                        this._task[task.id].conclued = !this._task[task.id].conclued;
+                        this.put_in_html(table.id);
+                    });
                 }
 
-                rm_task(task.id);
-            });
-            task_butt_mark.addEventListener('click', (e) => {
-                const task_butt_mark = e.target;
-                let task = task_butt_mark;
-                while(task.tagName != "TR"){
-                    task = task.parentElement;
+                for(const j of butts_remove){
+                    j.addEventListener('click', (e) => {
+                        let task = e.target;
+                        let table = e.target;
+                        while(task.tagName != "TR"){
+                            task = task.parentElement;
+                        }
+
+                        while(table.tagName != "TABLE"){
+                            table = table.parentElement;
+                        }
+
+                        console.log(this._task);
+                        delete this._task[task.id];
+                        console.log(this._task);
+
+                        this.put_in_html(table.id);
+                    });
                 }
-
-                mark_task(task.id);
-            });
-
-            ++tableTasks_id;
-
-        }
-
-        function rm_task(task_id)
-        {
-            const task = document.querySelector(`#${task_id}`);
-            task.remove();
-        }
-
-        function mark_task(task_id)
-        {
-            const task_maked =
-                document.querySelector(`#${taks_id}_status`);
-            taks_marked.innerHTML = "Concluída";
+            }
         }
 
         //
-        tableTasks_butt_add_task.addEventListener('click', e => {
-            add_task();
-        });
+        const manager = new TaskManager();
+        const table = document.querySelector("#tasks");
+        // const butt_add = document.querySelector("#
 
-        //
 
+        console.log(manager.innerHTML);
+        manager.put_in_html(table);
     </script>
 </body>
