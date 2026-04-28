@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AAAAAAA</title>
+</head>
+<body>
+    <h1>Bem-vindo ao gerenciador de tarefas super legal e divertido!</h1>
+    <button id="add_task">
+        ADICIONAR TAREFA
+    </button>
+
+    <table id="tasks">
+    </table>
+    
+    <script>
+        const tableTasks = document.querySelector("#tasks");
+        // const tableTasks_table_id_prefix = "tableTasks_task_id";
+
+        let tableTasks_id = 0;
+        const tableTasks_tasks_row_html = () => `
+        <tr id="tableTasks_task_${tableTasks_id}">
+            <td>
+                Task ${tableTasks_id + 1}
+            </td>
+
+            <td>
+                <p id="tableTasks_task_id_${tableTasks_id}_status">
+                    Não concluída
+                </p>
+            </td>
+
+            <td>
+                <button id="tableTasks_task_id_${tableTasks_id}_butt_mark">
+                    Concluir
+                </button>
+
+            </td>
+
+            <td>
+                <button id="tableTasks_task_id_${tableTasks_id}_butt_remove">
+                    Remover
+                </button>
+            </td>
+        </tr>
+        `
+
+        const tableTasks_butt_add_task = document.querySelector("#add_task");
+                
+        //
+        function add_task()
+        {
+            tableTasks.innerHTML += tableTasks_tasks_row_html()
+            const task_butt_remove = 
+                document.querySelector(`#tableTasks_task_id_${tableTasks_id}_butt_remove`);
+            const task_butt_mark = 
+                document.querySelector(`#tableTasks_task_id_${tableTasks_id}_butt_mark`);
+            console.log(task_butt_remove);
+
+            task_butt_remove.addEventListener('click', (e) => {
+                const task_butt_rm = e.target;
+                let task = task_butt_rm;
+                while(task.tagName != "TR"){
+                    task = task.parentElement;
+                }
+
+                rm_task(task.id);
+            });
+            task_butt_mark.addEventListener('click', (e) => {
+                const task_butt_mark = e.target;
+                let task = task_butt_mark;
+                while(task.tagName != "TR"){
+                    task = task.parentElement;
+                }
+
+                mark_task(task.id);
+            });
+
+            ++tableTasks_id;
+
+        }
+
+        function rm_task(task_id)
+        {
+            const task = document.querySelector(`#${task_id}`);
+            task.remove();
+        }
+
+        function mark_task(task_id)
+        {
+            const task_maked =
+                document.querySelector(`#${taks_id}_status`);
+            taks_marked.innerHTML = "Concluída";
+        }
+
+        //
+        tableTasks_butt_add_task.addEventListener('click', e => {
+            add_task();
+        });
+
+        //
+
+    </script>
+</body>
