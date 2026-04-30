@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AAAAAAA</title>
+    <title>Index</title>
 </head>
 <body>
     <h1>Bem-vindo ao gerenciador de tarefas super legal e divertido!</h1>
@@ -9,15 +9,17 @@
         ADICIONAR TAREFA
     </button>
 
-    <table id="tasks">
-    </table>
+    <form>
+        <table id="tasks">
+        </table>
+    </form>
     
     <script>
         class Task
         {
-            constructor(id, name)
+            constructor(name)
             {
-                this._id = id || Date.now();
+                this._id = Date.now();
                 this._name = name || "Tarefa não definida";
                 this._conclued = 0;
             }
@@ -38,7 +40,22 @@
                 return this._conclued;
             }
 
+            get json()
+            {
+                return {
+                    "id": this.id,
+                    "name": this.name,
+                    "conclued": this.conclued
+                };
+            }
+
+
             // setters
+            set id(id)
+            {
+                this._id = id;
+            }
+
             set name(name)
             {
                 this._name = name;
@@ -58,7 +75,7 @@
                 this._tableRow = (task) => `
                 <tr id="${task.id}">
                     <td id="task_name">
-                        ${task.name}
+                        <input value="${task.name}" id="task_name_input">
                     </td>
 
                     <td id="task_conclued">
@@ -91,6 +108,17 @@
                 return `<table>${innerHTML}</table>`;
             }
 
+
+            get json()
+            {
+                let json = {};
+                for(const i of Object.values(this._task)){
+                    json[i.id] = i.json;
+                }
+
+                return json;
+            }
+
             // methods
             task(id)
             {
@@ -100,11 +128,13 @@
             task_delete(id)
             {
                 delete this._task[id];
+                this.save_in_localStorage()
             }
 
             task_add(task)
             {
                 this._task[task.id] = task;
+                this.save_in_localStorage()
             }
 
             task_update(id, task)
@@ -112,6 +142,30 @@
                 if(!(Object.keys(this._task).includes(id)))
                     return;
                 this._task[id] = task;
+            }
+
+
+            save_in_localStorage()
+            {
+                localStorage.setItem("taskManager", JSON.stringify(this.json));
+                console.log(JSON.stringify(this.json));
+            }
+
+            load_from_localStorage()
+            {
+                const json_str = localStorage.getItem("taskManager");
+                if(!json_str)
+                    return;
+
+                const json = JSON.parse(json_str);
+                for(const i of Object.values(json)){
+                    const task_new = new Task();
+                    task_new.id = i.id;
+                    task_new.name = i.name;
+                    task_new.conclued = i.conclued;
+
+                    this.task_add(task_new);
+                }
             }
 
 
@@ -127,53 +181,84 @@
                 
                 const butts_mark = Array.from(document.querySelectorAll("#task_butt_mark"));
                 const butts_remove = Array.from(document.querySelectorAll("#task_butt_remove"));
+                const inputs_name = Array.from(document.querySelectorAll("#task_name_input"));
 
+                // Buttons mark
                 for(const i of butts_mark){
                     i.addEventListener('click', (e) => {
                         let task = e.target;
-                        let table = e.target;
+                        let task_table = e.target;
                         while(task.tagName != "TR"){
                             task = task.parentElement;
                         }
 
-                        while(table.tagName != "TABLE"){
-                            table = table.parentElement;
+                        while(task_table.tagName != "TABLE"){
+                            task_table = task_table.parentElement;
                         }
 
                         this._task[task.id].conclued = !this._task[task.id].conclued;
-                        this.put_in_html(table.id);
+                        this.put_in_html(table);
                     });
                 }
 
-                for(const j of butts_remove){
-                    j.addEventListener('click', (e) => {
+                // Buttons remove
+                for(const i of butts_remove){
+                    i.addEventListener('click', (e) => {
                         let task = e.target;
-                        let table = e.target;
+                        let task_table = e.target;
                         while(task.tagName != "TR"){
                             task = task.parentElement;
                         }
 
-                        while(table.tagName != "TABLE"){
-                            table = table.parentElement;
+                        while(task_table.tagName != "TABLE"){
+                            task_table = task_table.parentElement;
                         }
 
-                        console.log(this._task);
-                        delete this._task[task.id];
-                        console.log(this._task);
+                        // console.log(this._task);
+                        // delete this._task[task.id];
+                        // console.log(this._task);
+                        this.task_delete(task.id);
 
-                        this.put_in_html(table.id);
+                        this.put_in_html(table);
+                    });
+                }
+
+                // Input name field
+                for(const i of inputs_name){
+                    i.addEventListener('input', (e) => {
+                        let task = e.target;
+                        let task_table = e.target;
+                        while(task.tagName != "TR"){
+                            task = task.parentElement;
+                        }
+
+                        while(task_table.tagName != "TABLE"){
+                            task_table = task_table.parentElement;
+                        }
+
+                        const task_element = this._task[task.id];
+                        task_element.name = e.target.value;
+                        this.save_in_localStorage()
                     });
                 }
             }
         }
 
         //
-        const manager = new TaskManager();
+        const taskManager = new TaskManager();
         const table = document.querySelector("#tasks");
-        // const butt_add = document.querySelector("#
+        const butt_add = document.querySelector("#add_task");
+
+        butt_add.addEventListener('click', (e) => {
+            taskManager.task_add(new Task("Tarefa sem nome"));
+            taskManager.put_in_html(table);
+
+            taskManager.save_in_localStorage();
+        });
+
+        taskManager.load_from_localStorage();
+        taskManager.put_in_html(table);
 
 
-        console.log(manager.innerHTML);
-        manager.put_in_html(table);
     </script>
 </body>
