@@ -1,4 +1,4 @@
-package packages;
+package school;
 
 public class Student extends Person
 {
@@ -45,4 +45,16 @@ public class Student extends Person
     {
         return this.grade() >= GRADE_MIN;
     }
+
+    @Override
+    public String display_infos()
+    {
+        return 
+            "Name: " + this.name() + "\n"
+            + "Age: " + this.age() + "\n"
+            + "Log: " + this.log() + "\n"
+            + "Grade: " + this.grade() + "\n"
+            ;
+    }
 }
+

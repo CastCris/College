@@ -1,4 +1,4 @@
-package packages;
+package school;
 
 public class Teacher extends Person
 {
@@ -45,5 +45,15 @@ public class Teacher extends Person
    public double salary_annual()
    {
        return this._salary * 13;
+   }
+
+   @Override
+   public String display_infos()
+   {
+       return "Name: " + this.name() + "\n"
+           + "Age: " + this.age() + "\n"
+           + "Course: " + this.course() + "\n"
+           + "Salary: " + this.salary() + "\n"
+           + "Annual salary: " + this.salary_annual() + "\n";
    }
 }

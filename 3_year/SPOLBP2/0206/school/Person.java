@@ -1,4 +1,4 @@
-package packages;
+package school;
 
 public class Person
 {
@@ -14,7 +14,7 @@ public class Person
     public Person(String name, int age)
     {
         this._name = name;
-        this._age = 0;
+        this._age = age;
     }
 
     //
@@ -39,11 +39,11 @@ public class Person
     }
 
     //
-    public void display_infos()
+    public String display_infos()
     {
-        System.out.println(
+        return
             "Name: " + this.name() + "\n"
             + "Age: " + this.age() + "\n"
-        );
+        ;
     }
 }
